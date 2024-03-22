@@ -72,7 +72,7 @@ nextflow clean -f
 ```
 ## Acknowledgements
 
-We extend our heartfelt thanks to [Youyupei](https://github.com/youyupei) for developing SLSim [https://github.com/youyupei/SLSim], which laid the groundwork for our `wf-SLSim` workflow. Our enhancements build upon SLSim's approach to simulate single-cell sequencing reads, aiming to broaden its applicability and utility in the research community.
+We extend our heartfelt thanks to [Youyupei](https://github.com/youyupei) for developing SLSim [https://github.com/youyupei/SLSim], which laid the groundwork for `wf-SLSim` workflow. Our enhancements build upon SLSim's approach to simulate single-cell sequencing reads, aiming to broaden its applicability and utility in the research community.
 
 ## Support and Contributions
 
