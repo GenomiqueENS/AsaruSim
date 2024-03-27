@@ -55,6 +55,25 @@ process ERRORS_SIMULATOR {
     """
 }
 
+process GROUND_TRUTH {
+    publishDir params.outdir, mode:'copy'
+    
+    input:
+    path template
+
+    output:
+    path "ground_truth.tsv"
+
+    script:
+    """
+    seqkit seq -n $template | sed 's/_/\t/3' > ground_truth.tsv
+
+    """
+}
+
+//| sed 's/_/\t/g' > ground_truth.tsv
+ //   sed -i -e '1i\BC\tUMI\tindex\tfeature' ground_truth.tsv
+
 process QC {
     publishDir params.outdir, mode:'copy'
     
@@ -81,8 +100,9 @@ workflow {
                                              file("no_qscore_model", type: "file")
     
     template_ch = READ_GENERATOR(transcriptome_ch, barcodes_ch, dist_ch)
-    quant_ch = ERRORS_SIMULATOR(template_ch, error_model_ch, qscore_model_ch)
-    qc_ch = QC(quant_ch)
+    quant_ch    = ERRORS_SIMULATOR(template_ch, error_model_ch, qscore_model_ch)
+    gr_truth_ch = GROUND_TRUTH(template_ch)
+    qc_ch       = QC(quant_ch)
 }
 
 workflow.onComplete {
