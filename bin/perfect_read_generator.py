@@ -1,3 +1,10 @@
+"""
+This script is based on the original work from https://github.com/youyupei/SLSim/tree/main.
+It has been modified and adapted
+to meet specific requirements and functionalities not present in the original version.
+All original rights are acknowledged.
+"""
+
 import pandas as pd
 import numpy as np
 import argparse

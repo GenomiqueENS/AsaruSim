@@ -1,3 +1,7 @@
+"""
+This script is based on the original work from https://github.com/youyupei/SLSim/tree/main.
+All original rights are acknowledged.
+"""
 import sys
 import argparse
 import Bio.SeqIO
