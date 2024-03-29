@@ -52,7 +52,7 @@ def parse_arg():
                         Filename of simulated reads.
                         '''
                         ))
-    parser.add_argument('--mRNA-len',  type=int, default=200,
+    parser.add_argument('--mRNA-len',  type=int, default=False,
                         help=textwrap.dedent('''
                         Filename of simulated reads.
                         '''
@@ -176,27 +176,37 @@ def get_random_frag(ref, frag_len):
     # There should be one and only one record, the entire genome:
     records = list(SeqIO.parse(ref, "fasta"))
     num_records = len(records)
-    limits = [len(r.seq) for r in records]
-    while True:
-        i = randint(0, num_records-1)
-        record = records[i]
-        limit = limits[i]
-        if frag_len > limit:
+    if not frag_len:
+        while True:
+            i = randint(0, num_records-1)
+            record = records[i]
             frag = record.seq
             name = record.name.split(' ')[0]
             if 'N' in frag:
                 continue
-            yield name, helper.reverse_complement(frag)
-        else:
-            start = randint(0, limit - frag_len)
-            end = start + frag_len
-            frag = record.seq[start:end]
-            name = record.name.split(' ')[0]
-
-            if 'N' in frag:
-                continue
-            #yield helper.reverse_complement(frag)
-            yield name, helper.reverse_complement(frag)
+            yield name, helper.reverse_complement(frag)    
+    else:
+        limits = [len(r.seq) for r in records]
+        while True:
+            i = randint(0, num_records-1)
+            record = records[i]
+            limit = limits[i]
+            if frag_len > limit:
+                frag = record.seq
+                name = record.name.split(' ')[0]
+                if 'N' in frag:
+                    continue
+                yield name, helper.reverse_complement(frag)
+            else:
+                start = randint(0, limit - frag_len)
+                end = start + frag_len
+                frag = record.seq[start:end]
+                name = record.name.split(' ')[0]
+    
+                if 'N' in frag:
+                    continue
+                #yield helper.reverse_complement(frag)
+                yield name, helper.reverse_complement(frag)
 
 
 def get_random_frag_with_distribution(ref, frag_len_dist):                    
@@ -281,6 +291,7 @@ def main():
                             TSO=config.TSO_SEQ,
                             output_fn=f'{tmp_dirname}/tmp_{idx}',
                             fastq_dist=args.fit_distribution,
+                            thread=args.thread,
                             amp_rate=args.amp_rate,
                             pbar_pos = idx+1)] = None
         concurrent.futures.wait(futures)
