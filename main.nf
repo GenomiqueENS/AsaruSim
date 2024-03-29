@@ -27,6 +27,7 @@ process READ_GENERATOR {
     -r $transcriptome \
     $dist_arg \
     --amp-rate $params.amp \
+    --thread $params.threads \
     -o template.fa
     """
 }
@@ -85,7 +86,7 @@ process QC {
 
     script:
     """
-    python $projectDir/bin/QC.py -q $fastq 
+    python $projectDir/bin/QC.py -q $fastq -n $params.projetctName
     """
 }
 
