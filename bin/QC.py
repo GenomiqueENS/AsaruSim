@@ -1,7 +1,7 @@
 import pandas as pd
 import argparse
 
-from libs import toullig
+from libs import qc_generator
 from libs.figs import over_time_graph
 from libs.figs import ATGC_graph
 from libs.figs import GC_content_plot
