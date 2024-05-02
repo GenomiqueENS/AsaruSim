@@ -1,13 +1,17 @@
 log.info """\
     SINGLE CELL NANOPORE READS SIMULATOR - N F   P I P E L I N E
     ===================================
-    matrix                   : ${params.matrix} 
-    transcriptome            : ${params.transcriptome}
-    barcodes                 : ${params.barcodes}
-    read length distribution : ${params.ref_distribution}
-    GTF                      : ${params.gtf} 
-    amplification rate       : ${params.amp}
-    outdir                   : ${params.outdir}
+    matrix                        : ${params.matrix} 
+    transcriptome                 : ${params.transcriptome}
+    matrix rownames               : ${params.features}
+    GTF                           : ${params.gtf}
+    filtered out barcodes         : ${params.filtered_out_bc}
+    simulate cell types           : ${params.sim_celltypes}
+    ref cell type annotation      : ${params.cell_types_annotation}
+    error model                   : ${params.error_model}
+    Qscore model                  : ${params.qscore_model}
+    outdir                        : ${params.outdir}
+    amplification rate            : ${params.amp}
     """
     .stripIndent()
 
@@ -16,15 +20,15 @@ process COUNT_SIMULATOR {
     
     input:
     path matrix
-    path cell_type_csv
+    path cell_types_annotation
 
     output:
     path "simulated_counts.csv"
     
     script:
     """
-    Rscript counts_simulator.R $matrix \
-    $cell_type_csv \
+    Rscript $projectDir/bin/counts_simulator.R $matrix \
+    $cell_types_annotation \
     simulated_counts.csv
     """
 }
@@ -97,9 +101,6 @@ process GROUND_TRUTH {
     """
 }
 
-//| sed 's/_/\t/g' > ground_truth.tsv
- //   sed -i -e '1i\BC\tUMI\tindex\tfeature' ground_truth.tsv
-
 process QC {
     publishDir params.outdir, mode:'copy'
     
@@ -120,13 +121,13 @@ workflow {
 
     transcriptome_ch = Channel.fromPath(params.transcriptome, checkIfExists: true)
 
-    barcodes_ch = params.filtered_barcodes != null ? Channel.fromPath(params.filtered_barcodes, checkIfExists: true) : 
+    barcodes_ch = params.filtered_out_bc != null ? Channel.fromPath(params.filtered_out_bc, checkIfExists: true) : 
                                              file("no_barcode_counts", type: "file")
 
     gtf_ch = params.features != "transcript_id" ? Channel.fromPath(params.gtf, checkIfExists: true) : 
                                              file("no_gtf", type: "file")
 
-    cell_types_ch = params.sim_celltypes == true ? Channel.fromPath(params.cell_types_csv, checkIfExists: true) : 
+    cell_types_ch = params.sim_celltypes == true ? Channel.fromPath(params.cell_types_annotation, checkIfExists: true) : 
                                              file("no_cell_types", type: "file")
 
     error_model_ch = params.error_model != null ? Channel.fromPath(params.error_model, checkIfExists: true) : 
@@ -142,10 +143,9 @@ workflow {
     } else { 
         template_ch = TEMPLATE_MAKER(matrix_ch, transcriptome_ch, barcodes_ch, gtf_ch)
     }
-
-    quant_ch    = ERRORS_SIMULATOR(template_ch, error_model_ch, qscore_model_ch)
     gr_truth_ch = GROUND_TRUTH(template_ch)
-    qc_ch       = QC(quant_ch)
+    error_ch    = ERRORS_SIMULATOR(template_ch, error_model_ch, qscore_model_ch)
+    qc_ch       = QC(error_ch)
 }
 
 workflow.onComplete {
