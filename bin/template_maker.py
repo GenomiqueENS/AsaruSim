@@ -112,7 +112,7 @@ class TemplateGenerator:
             
         transcript_id = True if features=="transcript_id" else False
         
-        with open(filename, "w") as fasta:
+        with open(filename, mode) as fasta:
             idx = 0
             unfound = 0
             for trns, count in umi_counts.items():
