@@ -62,6 +62,7 @@ class Transcriptome:
 
 class TemplateGenerator:
     def __init__(self, transcriptome, adapter, len_dT, TSO, outFasta, threads):
+        self.COMPLEMENT_MAP  = str.maketrans('ATCG', 'TAGC')
         self.transcriptome = transcriptome
         self.adapter = adapter
         self.dT = "T"*int(len_dT)
@@ -74,6 +75,9 @@ class TemplateGenerator:
     def generate_random_umi(self, length=12):
         bases = 'ATCG'
         return ''.join(random.choice(bases) for _ in range(length))
+
+    def complement(self, sequence):
+        return sequence.translate(self.COMPLEMENT_MAP)
     
     def make_random_template(self, cell, umi_counts):
         if self.threads == 1:
@@ -90,9 +94,13 @@ class TemplateGenerator:
                 cDNA = self.transcriptome.get_sequence(trns)
                 if cDNA:
                     umi = self.generate_random_umi()
+                    seq = f"{self.adapter}{cell}{umi}{self.dT}{cDNA}{self.TSO}"
+                    if random.randint(0, 1) == 1:
+                        seq = self.complement(seq)[::-1]
                     fasta.write(f">{cell}_{umi}_{trns}_{idx}\n"
-                                f"{self.adapter}{cell}{umi}{self.dT}{cDNA}{self.TSO}\n")
+                                f"{seq}\n")
                     idx += 1
+
 
     def make_template(self, cell, umi_counts, transcripts_index, features):
         if self.threads == 1:
@@ -104,7 +112,7 @@ class TemplateGenerator:
             
         transcript_id = True if features=="transcript_id" else False
         
-        with open(filename, 'w') as fasta:
+        with open(filename, "w") as fasta:
             idx = 0
             unfound = 0
             for trns, count in umi_counts.items():
@@ -114,8 +122,11 @@ class TemplateGenerator:
                     if cDNA:
                         for i in range(count):
                             umi = self.generate_random_umi()
+                            seq = f"{self.adapter}{cell}{umi}{self.dT}{cDNA}{self.TSO}"
+                            if random.randint(0, 1) == 1:
+                                seq = self.complement(seq)[::-1]
                             fasta.write(f">{cell}_{umi}_{trns}_{idx}\n"
-                                        f"{self.adapter}{cell}{umi}{self.dT}{cDNA}{self.TSO}\n")
+                                        f"{seq}\n")
                             idx += 1
                     else : unfound += 1
             self.counter += idx
