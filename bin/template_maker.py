@@ -28,7 +28,6 @@ parser.add_argument('-b','--unfilteredBC', type=str, help="Path to the unfiltere
 
 parser.add_argument('-o','--outFasta', type=str, default="template.fa", help="Output file name for the generated template sequences.")
 parser.add_argument('-t','--threads', type=int, default=1, help="Number of threads to use.")
-parser.add_argument('--unfiltered', action='store_true', help="Whether to simulate unfiltered matrix, unfiltered BC counts file is needed (-b).")
 parser.add_argument('-f','--features', type=str, default="transcript_id", help="Feature rownames in input matrix.")
 parser.add_argument('--on_disk', action='store_true', help="Whether to use Faidx to index the FASTA or load the FASTA in memory.")
 
@@ -128,7 +127,6 @@ def main():
     logging.info("_____________________________")
     logging.info("Output file name : %s" , args.outFasta)
     logging.info("Threads: %d", args.threads)
-    logging.info("Simulate unfiltered BC: %s", args.unfiltered)
     logging.info("Features to simulate: %s", args.features)
     logging.info("Path to the transcriptome file: %s", args.transcriptome)
     logging.info("Path to the matrix file: %s", args.matrix)
@@ -146,8 +144,6 @@ def main():
     transcriptome = Transcriptome(args.transcriptome)
     generator = TemplateGenerator(transcriptome, args.adapter, args.len_dT, args.TSO, args.outFasta, args.threads)
     matrix = pd.read_csv(args.matrix, header=0, index_col=0) 
-    unfiltered_bc = pd.read_csv(args.unfilteredBC)
-    unfiltered_bc.columns =['BC', 'counts']
 
     transcripts_index = None
     if args.features != "transcript_id":
@@ -160,6 +156,9 @@ def main():
             sys.exit(1)
             
     logging.info("Creating template sequences...")
+    if args.unfilteredBC:
+        unfiltered_bc = pd.read_csv(args.unfilteredBC)
+        unfiltered_bc.columns =['BC', 'counts']
     
     if args.threads == 1:
         logging.info("Filtered Matrix...")
@@ -167,8 +166,8 @@ def main():
             umi_counts = matrix[cell]
             generator.make_template(cell, umi_counts, transcripts_index, args.features)
             
-        logging.info("Unfiltered BC counts ...")
-        if args.unfiltered:
+        if args.unfilteredBC:
+            logging.info("Unfiltered BC counts ...")
             unfiltered_bc = unfiltered_bc[~unfiltered_bc['BC'].isin(matrix.columns)]
             for _, row in tqdm(unfiltered_bc.iterrows(), total=len(unfiltered_bc)):
                 generator.make_random_template(row['BC'], row['counts'])
@@ -189,8 +188,9 @@ def main():
                 future.result()
                 
             futures = []
-            logging.info("Unfiltered BC counts ...")
-            if args.unfiltered:
+            
+            if args.unfilteredBC:
+                logging.info("Unfiltered BC counts ...")
                 unfiltered_bc = unfiltered_bc[~unfiltered_bc['BC'].isin(matrix.columns)]
                 for idx, (_, row) in tqdm(enumerate(unfiltered_bc.iterrows()), total=len(unfiltered_bc)):
                     future = executor.submit(generator.make_random_template, row['BC'], row['counts'])
@@ -207,7 +207,7 @@ def main():
         for filename in glob.glob("tmp_cells/*.fa"):
             os.remove(filename)
             
-    count_unfiltered_bc = len(unfiltered_bc) if args.unfiltered else 0
+    count_unfiltered_bc = len(unfiltered_bc) if args.unfilteredBC else 0
     logging.info("Completed successfully. Have a great day!")
     logging.info("Stats : "+
                  "\nSimulated Cell BC: "+

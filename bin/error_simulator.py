@@ -14,7 +14,7 @@ import random
 import numpy as np
 
 import helper
-import config
+#import config
 
 def parse_arg():
     parser = argparse.ArgumentParser(

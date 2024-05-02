@@ -30,7 +30,7 @@ columns = ["pos",
 
 
 def compQC(fastq, positions, reverse=False):
-    _stats, quality_average, length = toullig.process_fastq_file(fastq, positions,  reverse=reverse)
+    _stats, quality_average, length = qc_generator.process_fastq_file(fastq, positions,  reverse=reverse)
     df_stats = pd.DataFrame(_stats, columns=columns)
     df_stats['GC_percentage'] =  df_stats["%G"]+ df_stats["%C"]
     

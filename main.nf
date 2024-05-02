@@ -11,26 +11,21 @@ log.info """\
     """
     .stripIndent()
 
-process READ_GENERATOR {
+process COUNT_SIMULATOR {
     publishDir params.outdir, mode:'copy'
     
     input:
-    path transcriptome
-    path barcodes
-    path ref_dist
+    path matrix
+    path cell_type_csv
 
     output:
-    path "template.fa"
+    path "simulated_counts.csv"
     
     script:
-        def dist_arg = ref_dist.name != "random_dist" ? "-f $ref_dist" : ""
     """
-    python3.11 $projectDir/bin/perfect_read_generator.py  -i ${barcodes} \
-    -r $transcriptome \
-    $dist_arg \
-    --amp-rate $params.amp \
-    --thread $params.threads \
-    -o template.fa
+    Rscript counts_simulator.R $matrix \
+    $cell_type_csv \
+    simulated_counts.csv
     """
 }
 
@@ -47,11 +42,12 @@ process TEMPLATE_MAKER {
     path "template.fa"
     
     script:
-        def gtf = params.features != "transcript_id" ? "--gtf $gtf" : ""
+        def gtf = params.features != "transcript_id" ? "--features $params.features --gtf $gtf" : ""
+        def unfiltered = barcodes.name != "no_barcode_counts" ? "--unfilteredBC $barcodes" : ""
     """
     python3.11 $projectDir/bin/template_maker.py  --matrix ${matrix} \
-    --unfilteredBC ${barcodes} \
     --transcriptome $transcriptome \
+    $unfiltered \
     $gtf \
     --thread 1 \
     --adapter $params.ADPTER_SEQ \
@@ -96,7 +92,7 @@ process GROUND_TRUTH {
 
     script:
     """
-    seqkit seq -n $template | sed 's/_/\t/3' > ground_truth.tsv
+    seqkit seq -n $template | sed 's/_/\t/g'  > ground_truth.tsv
 
     """
 }
@@ -121,18 +117,32 @@ process QC {
 
 workflow {
     matrix_ch = Channel.fromPath(params.matrix, checkIfExists: true)
-    transcriptome_ch = Channel.fromPath(params.transcriptome, checkIfExists: true)
-    barcodes_ch = Channel.fromPath(params.barcodes, checkIfExists: true)
-    gtf_ch = Channel.fromPath(params.gtf)
 
-    dist_ch = params.ref_distribution != null ? Channel.fromPath(params.ref_distribution, checkIfExists: true) : 
-                                             file("random_dist", type: "file")
+    transcriptome_ch = Channel.fromPath(params.transcriptome, checkIfExists: true)
+
+    barcodes_ch = params.filtered_barcodes != null ? Channel.fromPath(params.filtered_barcodes, checkIfExists: true) : 
+                                             file("no_barcode_counts", type: "file")
+
+    gtf_ch = params.features != "transcript_id" ? Channel.fromPath(params.gtf, checkIfExists: true) : 
+                                             file("no_gtf", type: "file")
+
+    cell_types_ch = params.sim_celltypes == true ? Channel.fromPath(params.cell_types_csv, checkIfExists: true) : 
+                                             file("no_cell_types", type: "file")
+
     error_model_ch = params.error_model != null ? Channel.fromPath(params.error_model, checkIfExists: true) : 
                                              file("no_error_model", type: "file")
+
     qscore_model_ch = params.qscore_model != null ? Channel.fromPath(params.qscore_model, checkIfExists: true) : 
                                              file("no_qscore_model", type: "file")
-    
-    template_ch = TEMPLATE_MAKER(matrix_ch, transcriptome_ch, barcodes_ch, dist_ch)
+
+    if (params.sim_celltypes == true) {  
+        counts_ch = COUNT_SIMULATOR(matrix_ch, cell_types_ch)
+        template_ch = TEMPLATE_MAKER(counts_ch, transcriptome_ch, barcodes_ch, gtf_ch)
+
+    } else { 
+        template_ch = TEMPLATE_MAKER(matrix_ch, transcriptome_ch, barcodes_ch, gtf_ch)
+    }
+
     quant_ch    = ERRORS_SIMULATOR(template_ch, error_model_ch, qscore_model_ch)
     gr_truth_ch = GROUND_TRUTH(template_ch)
     qc_ch       = QC(quant_ch)
