@@ -48,7 +48,7 @@ Configuration for running the workflow:
 | Parameter         | Description                        | Default Value             |
 |-------------------|------------------------------------|---------------------------|
 | `threads`         | Number of threads to use           | `4`                       |
-| `container`       | Docker container for the workflow  | `'alihamraoui/wf-SLSim'`    |
+| `container`       | Docker container for the workflow  | `'hamraouii/wf-SLSim'`    |
 | `docker.runOptions` | Docker run options to use       | `'-u $(id -u):$(id -g)'`  |
 
 ## Execution
@@ -75,7 +75,7 @@ nextflow clean -f
 ## Acknowledgements
 
 - We would like to express our gratitude to [Youyupei](https://github.com/youyupei) for the development of [SLSim](https://github.com/youyupei/SLSim), which has been foundational to the `AsaruSim` workflow.
-- Additionally, our thanks go to the teams behind [Badread](https://github.com/rrwick/Badread) and [Sparsim](https://gitlab.com/sysbiobig/sparsim), whose tools are integral to the `AsaruSim` workflow.
+- Additionally, our thanks go to the teams behind [Badread](https://github.com/rrwick/Badread) and [SPARSim](https://gitlab.com/sysbiobig/sparsim), whose tools are integral to the `AsaruSim` workflow.
 
 ## Support and Contributions
 
@@ -83,4 +83,4 @@ For support, please open an issue in the repository's "Issues" section. Contribu
 
 ## License
 
-`wf-SLSim` is distributed under a specific license. Check the `LICENSE` file in the GitHub repository for details.
+`AsaruSim` is distributed under a specific license. Check the `LICENSE` file in the GitHub repository for details.
