@@ -1,6 +1,8 @@
-# wf-SLSim Documentation
+# AsaruSim Documentation
 
-`wf-SLSim` is an automated Nextflow workflow designed for simulating 10x single-cell Nanopore reads using SLSim. It allows researchers to benchmark and optimize single-cell Nanopore long read  data processing pipelines.
+`AsaruSim` is an automated Nextflow workflow designed for simulating 10x single-cell Nanopore reads using SLSim. It allows researchers to benchmark and optimize single-cell Nanopore long read  data processing pipelines.
+
+![Workflow Schema](images/workflow.png)
 
 ## Prerequisites
 
@@ -12,11 +14,11 @@ Before starting, ensure the following tools are installed and properly set up on
 
 ## Installation
 
-Clone the `wf-SLSim` GitHub repository:
+Clone the `AsaruSim` GitHub repository:
 
 ```bash
-git clone https://github.com/alihamraoui/wf-SLSim.git
-cd wf-SLSim
+git clone https://github.com/alihamraoui/AsaruSim.git
+cd AsaruSim
 ```
 
 ## Configuration
@@ -72,7 +74,8 @@ nextflow clean -f
 ```
 ## Acknowledgements
 
-We extend our heartfelt thanks to [Youyupei](https://github.com/youyupei) for developing SLSim [https://github.com/youyupei/SLSim], which laid the groundwork for `wf-SLSim` workflow. Our enhancements build upon SLSim's approach to simulate single-cell sequencing reads, aiming to broaden its applicability and utility in the research community.
+- We would like to express our gratitude to [Youyupei](https://github.com/youyupei) for the development of [SLSim](https://github.com/youyupei/SLSim), which has been foundational to the `AsaruSim` workflow.
+- Additionally, our thanks go to the teams behind [Badread](https://github.com/rrwick/Badread) and [Sparsim](https://gitlab.com/sysbiobig/sparsim), whose tools are integral to the `AsaruSim` workflow.
 
 ## Support and Contributions
 
