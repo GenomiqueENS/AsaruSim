@@ -1,3 +1,10 @@
+[![Made with Docker](https://img.shields.io/badge/Made_with-Docker-blue?logo=docker&logoColor=white)](https://www.docker.com/ "Go to Docker homepage")
+[![dependency - Nextflow](https://img.shields.io/badge/dependency-Nextflow-green)](https://pkg.go.dev/Nextflow)
+[![GitHub tag](https://img.shields.io/github/tag/alihamraoui/AsaruSim?include_prereleases=&sort=semver&color=blue)](https://github.com/alihamraoui/AsaruSim/releases/)
+![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)
+[![issues - AsaruSim](https://img.shields.io/github/issues/alihamraoui/AsaruSim)](https://github.com/alihamraoui/AsaruSim/issues)
+[![Twitter Follow](https://img.shields.io/twitter/follow/Genomique_ENS.svg?style=social)](https://twitter.com/Genomique_ENS)
+
 # AsaruSim Documentation
 
 `AsaruSim` is an automated Nextflow workflow designed for simulating 10x single-cell Nanopore reads. It allows to benchmark and optimize single-cell Nanopore long read data processing pipelines.
