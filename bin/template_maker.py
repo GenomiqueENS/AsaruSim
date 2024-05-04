@@ -82,7 +82,7 @@ class TemplateGenerator:
     def make_random_template(self, cell, umi_counts):
         if self.threads == 1:
             filename = self.outFasta
-            mode = 'a'
+            mode = 'w'
         else:
             filename = f"tmp_cells/{cell}.fa"
             mode = 'w'
@@ -105,7 +105,7 @@ class TemplateGenerator:
     def make_template(self, cell, umi_counts, transcripts_index, features):
         if self.threads == 1:
             filename = self.outFasta
-            mode = 'a'
+            mode = 'w'
         else:
             filename = f"tmp_cells/{cell}.fa"
             mode = 'w'
@@ -134,6 +134,7 @@ class TemplateGenerator:
 
 
 def main():
+    
     args = parser.parse_args()
     logging.info("_____________________________")
     logging.info("Output file name : %s" , args.outFasta)
@@ -151,10 +152,19 @@ def main():
     root_logger = logging.getLogger()
     for handler in root_logger.handlers:
         handler.setFormatter(logging.Formatter(GRAY+'%(asctime)s - %(levelname)s' +RESET+ ' - %(message)s'))
+
+    if not args.matrix: 
+        if args.unfilteredBC:
+            logging.warning("Count matrix simulation skipped. Transcripts will be generated randomly.")
+        else:
+            logging.error("\033[91mError: Please provide the path to the count matrix file using the '--matrix' or cell barcode counts using '--unfilteredBC' argument.\033[0m")
+            sys.exit(1)
+            
     
     transcriptome = Transcriptome(args.transcriptome)
     generator = TemplateGenerator(transcriptome, args.adapter, args.len_dT, args.TSO, args.outFasta, args.threads)
-    matrix = pd.read_csv(args.matrix, header=0, index_col=0) 
+    if args.matrix:
+        matrix = pd.read_csv(args.matrix, header=0, index_col=0) 
 
     transcripts_index = None
     if args.features != "transcript_id":
@@ -165,6 +175,7 @@ def main():
         else:
             logging.error("\033[91mError: Please provide the path to the GTF file using the '--gtf' argument.\033[0m")
             sys.exit(1)
+    
             
     logging.info("Creating template sequences...")
     if args.unfilteredBC:
@@ -172,10 +183,11 @@ def main():
         unfiltered_bc.columns =['BC', 'counts']
     
     if args.threads == 1:
-        logging.info("Filtered Matrix...")
-        for cell in tqdm(matrix.columns):
-            umi_counts = matrix[cell]
-            generator.make_template(cell, umi_counts, transcripts_index, args.features)
+        if args.matrix:
+            logging.info("Filtered Matrix...")
+            for cell in tqdm(matrix.columns):
+                umi_counts = matrix[cell]
+                generator.make_template(cell, umi_counts, transcripts_index, args.features)
             
         if args.unfilteredBC:
             logging.info("Unfiltered BC counts ...")
@@ -189,17 +201,17 @@ def main():
         
         with ThreadPoolExecutor(max_workers=args.threads) as executor:
             futures = []
-            logging.info("Filtered Matrix...")
-            for cell in tqdm(matrix.columns):
-                umi_counts = matrix[cell]
-                future = executor.submit(generator.make_template, cell, umi_counts, transcripts_index, args.features)
-                futures.append(future)
-
-            for future in futures:
-                future.result()
+            if args.matrix:
+                logging.info("Filtered Matrix...")
+                for cell in tqdm(matrix.columns):
+                    umi_counts = matrix[cell]
+                    future = executor.submit(generator.make_template, cell, umi_counts, transcripts_index, args.features)
+                    futures.append(future)
+    
+                for future in futures:
+                    future.result()
                 
             futures = []
-            
             if args.unfilteredBC:
                 logging.info("Unfiltered BC counts ...")
                 unfiltered_bc = unfiltered_bc[~unfiltered_bc['BC'].isin(matrix.columns)]

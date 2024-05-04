@@ -15,115 +15,26 @@ log.info """\
     """
     .stripIndent()
 
-process COUNT_SIMULATOR {
-    publishDir params.outdir, mode:'copy'
-    
-    input:
-    path matrix
-    path cell_types_annotation
-
-    output:
-    path "simulated_counts.csv"
-    
-    script:
-    """
-    Rscript $projectDir/bin/counts_simulator.R $matrix \
-    $cell_types_annotation \
-    simulated_counts.csv
-    """
-}
-
-process TEMPLATE_MAKER {
-    publishDir params.outdir, mode:'copy'
-    
-    input:
-    path matrix
-    path transcriptome
-    path barcodes
-    path gtf
-
-    output:
-    path "template.fa"
-    
-    script:
-        def gtf = params.features != "transcript_id" ? "--features $params.features --gtf $gtf" : ""
-        def unfiltered = barcodes.name != "no_barcode_counts" ? "--unfilteredBC $barcodes" : ""
-    """
-    python3.11 $projectDir/bin/template_maker.py  --matrix ${matrix} \
-    --transcriptome $transcriptome \
-    $unfiltered \
-    $gtf \
-    --thread 1 \
-    --adapter $params.ADPTER_SEQ \
-    --TSO $params.TSO_SEQ \
-    --len_dT $params.dT_LENGTH \
-    -o template.fa
-    """
-}
-
-process ERRORS_SIMULATOR {
-    publishDir params.outdir, mode:'copy'
-
-    input:
-    path template
-    path error_model
-    path qscore_model
-
-    output:
-    path "simulated.fastq"
-
-    script:
-        def error_model_arg = error_model.name != "no_error_model" ? "--badread-error-model $error_model" : ""
-        def qscore_model_arg = qscore_model.name != "no_qscore_model" ? "--badread-qscore-model $qscore_model" : ""
-    """
-    python3.11 $projectDir/bin/error_simulator.py --thread $params.threads \
-    -t $template \
-    --badread-identity $params.badread_identity \
-    $error_model_arg \
-    $qscore_model_arg \
-    -o simulated.fastq
-    """
-}
-
-process GROUND_TRUTH {
-    publishDir params.outdir, mode:'copy'
-    
-    input:
-    path template
-
-    output:
-    path "ground_truth.tsv"
-
-    script:
-    """
-    seqkit seq -n $template | sed 's/_/\t/g'  > ground_truth.tsv
-
-    """
-}
-
-process QC {
-    publishDir params.outdir, mode:'copy'
-    
-    input:
-    path fastq
-
-    output:
-    path "${params.projetctName}.html"
-
-    script:
-    """
-    python3.11 $projectDir/bin/QC.py -q $fastq -n $params.projetctName
-    """
-}
+include { COUNT_SIMULATOR } from './modules/modules.nf'
+include { TEMPLATE_MAKER } from './modules/modules.nf'
+include { ERRORS_SIMULATOR } from './modules/modules.nf'
+include { GROUND_TRUTH } from './modules/modules.nf'
+include { QC } from './modules/modules.nf'
 
 workflow {
-    matrix_ch = Channel.fromPath(params.matrix, checkIfExists: true)
-
     transcriptome_ch = Channel.fromPath(params.transcriptome, checkIfExists: true)
+    
+    matrix_ch = params.matrix != null ? file(params.matrix, checkIfExists: true) : 
+                                             file("no_matrix_counts", type: "file")
 
-    barcodes_ch = params.filtered_out_bc != null ? Channel.fromPath(params.filtered_out_bc, checkIfExists: true) : 
-                                             file("no_barcode_counts", type: "file")
+    barcodes_ch = params.filtered_out_bc != null ? file(params.filtered_out_bc, checkIfExists: true) : 
+                                            file("no_barcode_counts", type: "file")
 
+    if (barcodes_ch.name == "no_barcode_counts" && matrix_ch.name == "no_matrix_counts") {
+        log.error("Please provide one of the parameters: 'matrix counts' or 'barcodes counts'.")
+        System.exit(1) 
+    }
+    
     gtf_ch = params.features != "transcript_id" ? Channel.fromPath(params.gtf, checkIfExists: true) : 
                                              file("no_gtf", type: "file")
 
@@ -136,7 +47,7 @@ workflow {
     qscore_model_ch = params.qscore_model != null ? Channel.fromPath(params.qscore_model, checkIfExists: true) : 
                                              file("no_qscore_model", type: "file")
 
-    if (params.sim_celltypes == true) {  
+    if (params.sim_celltypes) {  
         counts_ch = COUNT_SIMULATOR(matrix_ch, cell_types_ch)
         template_ch = TEMPLATE_MAKER(counts_ch, transcriptome_ch, barcodes_ch, gtf_ch)
 
