@@ -5,7 +5,7 @@
 [![issues - AsaruSim](https://img.shields.io/github/issues/alihamraoui/AsaruSim)](https://github.com/alihamraoui/AsaruSim/issues)
 [![Twitter Follow](https://img.shields.io/twitter/follow/Genomique_ENS.svg?style=social)](https://twitter.com/Genomique_ENS)
 
-# AsaruSim Documentation
+# Asaru Sim Documentation
 
 `AsaruSim` is an automated Nextflow workflow designed for simulating 10x single-cell Nanopore reads. It allows to benchmark and optimize single-cell Nanopore long read data processing pipelines.
 
