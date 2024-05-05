@@ -42,3 +42,8 @@ RUN python3.11 -m pip install --upgrade pip && \
     rm -rf /var/lib/apt/lists/* && \
     Rscript -e "install.packages(c('devtools', 'remotes', 'dplyr'), repos='https://cloud.r-project.org')" && \
     Rscript -e "remotes::install_gitlab('sysbiobig/sparsim', build_opts = c('--no-resave-data', '--no-manual'), build_vignettes = FALSE)"
+
+
+RUN wget https://github.com/lh3/minimap2/releases/download/v2.28/minimap2-2.28_x64-linux.tar.bz2 && \
+tar -xvf minimap2-2.28_x64-linux.tar.bz2 -C /usr/local/bin --strip-components=1 && \
+rm minimap2-2.28_x64-linux.tar.bz2
