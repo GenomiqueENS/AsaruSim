@@ -4,6 +4,7 @@
 [![GitHub tag](https://img.shields.io/github/tag/alihamraoui/AsaruSim?include_prereleases=&sort=semver&color=blue)](https://github.com/alihamraoui/AsaruSim/releases/tag/v1.0)
 ![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)
 [![issues - AsaruSim](https://img.shields.io/github/issues/alihamraoui/AsaruSim)](https://github.com/alihamraoui/AsaruSim/issues)
+
 [![Twitter Follow](https://img.shields.io/twitter/follow/Genomique_ENS.svg?style=social)](https://twitter.com/Genomique_ENS)
 
 # Asaru Sim Documentation
