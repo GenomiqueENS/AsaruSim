@@ -56,8 +56,15 @@ process ERRORS_SIMULATOR {
     path "simulated.fastq"
 
     script:
-        def error_model_arg = error_model.name != "no_error_model" ? "--badread-error-model $error_model" : ""
-        def qscore_model_arg = qscore_model.name != "no_qscore_model" ? "--badread-qscore-model $qscore_model" : ""
+    def error_model_arg = ""
+    def qscore_model_arg = ""
+    if (params.trained_model) {
+        error_model_arg = "--badread-error-model ${params.trained_model}"
+        qscore_model_arg = "--badread-qscore-model ${params.trained_model}"
+    } else {
+        error_model_arg = error_model.name != "no_error_model" ? "--badread-error-model $error_model" : ""
+        qscore_model_arg = qscore_model.name != "no_qscore_model" ? "--badread-qscore-model $qscore_model" : ""
+    }
     """
     python3.11 $projectDir/bin/SLSim/error_simulator.py --thread $params.threads \
     -t $template \

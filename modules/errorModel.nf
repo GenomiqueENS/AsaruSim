@@ -1,0 +1,59 @@
+process SUBSAMPLE {
+    input:
+    path reads_fastq
+    
+    output:
+    path "sub_reads.fq.gz"
+
+    
+    script:
+    """
+    seqkit head -n 15000 $reads_fastq -o sub_reads.fq.gz
+    """
+}
+
+process ALIGNMENT {
+    input:
+    path reads_fastq
+    path ref_genome
+    
+
+    output:
+    path "alignments.paf.gz"
+
+    
+    script:
+    """
+    /minimap2-2.28_x64-linux/minimap2 -t $params.threads -c -x map-ont $ref_genome $reads_fastq | gzip > alignments.paf.gz
+    """
+}
+
+process ERROR_MODLING {
+    input:
+    path reads_fastq
+    path ref_genome
+    path alignment
+    
+    output:
+    path "new_error_model",  emit: error_model_ch
+    path "new_qscore_model",  emit: qscore_model_ch
+
+    script:
+    """
+    python3.11 /bin/Badread/badread-runner.py error_model --reference $ref_genome --reads $reads_fastq --alignment $alignment > new_error_model
+    python3.11 /bin/Badread/badread-runner.py qscore_model --reference $ref_genome --reads $reads_fastq --alignment $alignment > new_qscore_model
+    """
+}
+
+process IDENTITY {
+    input:
+    path alignment
+    
+    output:
+    path "identity.txt"
+
+    script:
+    """
+    python3.11 identity.py --alignment $alignment > identity.txt
+    """
+}
