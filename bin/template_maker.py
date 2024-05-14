@@ -8,6 +8,7 @@ import argparse
 import logging
 import sys
 import pandas as pd
+import numpy as np
 from Bio import SeqIO
 from tqdm import tqdm
 from concurrent.futures import ThreadPoolExecutor
@@ -30,6 +31,7 @@ parser.add_argument('-o','--outFasta', type=str, default="template.fa", help="Ou
 parser.add_argument('-t','--threads', type=int, default=1, help="Number of threads to use.")
 parser.add_argument('-f','--features', type=str, default="transcript_id", help="Feature rownames in input matrix.")
 parser.add_argument('--on_disk', action='store_true', help="Whether to use Faidx to index the FASTA or load the FASTA in memory.")
+parser.add_argument('-c','--amp', type=int, default=1, help="amplification rate.")
 
 parser.add_argument('--adapter', type=str, default="ATGCGTAGTCAGTCATGATC", help="Adapter sequence.")
 parser.add_argument('--TSO', type=str, default="ATGCGTAGTCAGTCATGATC", help="TSO sequence.")
@@ -61,12 +63,13 @@ class Transcriptome:
 
 
 class TemplateGenerator:
-    def __init__(self, transcriptome, adapter, len_dT, TSO, outFasta, threads):
+    def __init__(self, transcriptome, adapter, len_dT, TSO, outFasta, threads, amp):
         self.COMPLEMENT_MAP  = str.maketrans('ATCG', 'TAGC')
         self.transcriptome = transcriptome
         self.adapter = adapter
         self.dT = "T"*int(len_dT)
         self.TSO = TSO
+        self.amp = amp
         self.outFasta = outFasta
         self.threads = threads
         self.counter = 0
@@ -82,7 +85,7 @@ class TemplateGenerator:
     def make_random_template(self, cell, umi_counts):
         if self.threads == 1:
             filename = self.outFasta
-            mode = 'w'
+            mode = 'a'
         else:
             filename = f"tmp_cells/{cell}.fa"
             mode = 'w'
@@ -97,15 +100,16 @@ class TemplateGenerator:
                     seq = f"{self.adapter}{cell}{umi}{self.dT}{cDNA}{self.TSO}"
                     if random.randint(0, 1) == 1:
                         seq = self.complement(seq)[::-1]
-                    fasta.write(f">{cell}_{umi}_{trns}_{idx}\n"
-                                f"{seq}\n")
-                    idx += 1
+                    for j in range(np.random.poisson(self.amp)):
+                        fasta.write(f">{cell}_{umi}_{trns}_{idx}\n"
+                                    f"{seq}\n")
+                        idx += 1
 
 
     def make_template(self, cell, umi_counts, transcripts_index, features):
         if self.threads == 1:
             filename = self.outFasta
-            mode = 'w'
+            mode = 'a'
         else:
             filename = f"tmp_cells/{cell}.fa"
             mode = 'w'
@@ -125,9 +129,10 @@ class TemplateGenerator:
                             seq = f"{self.adapter}{cell}{umi}{self.dT}{cDNA}{self.TSO}"
                             if random.randint(0, 1) == 1:
                                 seq = self.complement(seq)[::-1]
-                            fasta.write(f">{cell}_{umi}_{trns}_{idx}\n"
-                                        f"{seq}\n")
-                            idx += 1
+                            for j in range(np.random.poisson(self.amp)):
+                                fasta.write(f">{cell}_{umi}_{trns}_{idx}\n"
+                                            f"{seq}\n")
+                                idx += 1
                     else : unfound += 1
             self.counter += idx
             self.unfound += unfound
@@ -162,7 +167,7 @@ def main():
             
     
     transcriptome = Transcriptome(args.transcriptome)
-    generator = TemplateGenerator(transcriptome, args.adapter, args.len_dT, args.TSO, args.outFasta, args.threads)
+    generator = TemplateGenerator(transcriptome, args.adapter, args.len_dT, args.TSO, args.outFasta, args.threads, args.amp)
     if args.matrix:
         matrix = pd.read_csv(args.matrix, header=0, index_col=0) 
 

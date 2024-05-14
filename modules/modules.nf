@@ -37,6 +37,7 @@ process TEMPLATE_MAKER {
     $unfiltered \
     $gtf \
     --thread 1 \
+    --amp $params.amp \
     --adapter $params.ADPTER_SEQ \
     --TSO $params.TSO_SEQ \
     --len_dT $params.dT_LENGTH \
