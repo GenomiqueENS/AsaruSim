@@ -132,7 +132,7 @@ class TemplateGenerator:
                     trns = trns if transcript_id else fetch_transcript_id_by_gene(trns, transcripts_index)
                     cDNA = self.transcriptome.get_sequence(trns) if trns else None
                     if cDNA:
-                        if not self.full_length:
+                        if not self.full_length and len(cDNA)>500:
                             cDNA = cut_sequence(cDNA, self.length_dist)
                         for i in range(count):
                             umi = self.generate_random_umi()
