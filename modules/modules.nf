@@ -24,6 +24,7 @@ process TEMPLATE_MAKER {
     path transcriptome
     path barcodes
     path gtf
+    val length_dist
 
     output:
     path "template.fa"
@@ -31,6 +32,7 @@ process TEMPLATE_MAKER {
     script:
         def gtf = params.features != "transcript_id" ? "--features $params.features --gtf $gtf" : ""
         def unfiltered = barcodes.name != "no_barcode_counts"? "--unfilteredBC $barcodes" : ""
+        def full_length = params.full_length? "--full_length" : ""
     """
     python3.11 $projectDir/bin/template_maker.py  --matrix ${matrix} \
     --transcriptome $transcriptome \
@@ -41,6 +43,8 @@ process TEMPLATE_MAKER {
     --adapter $params.ADPTER_SEQ \
     --TSO $params.TSO_SEQ \
     --len_dT $params.dT_LENGTH \
+    $full_length \
+    --length_dist ${length_dist.trim()} \
     -o template.fa
     """
 }

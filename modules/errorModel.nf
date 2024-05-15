@@ -8,7 +8,7 @@ process SUBSAMPLE {
     
     script:
     """
-    seqkit head -n 15000 $reads_fastq -o sub_reads.fq.gz
+    seqkit head -n 100000 $reads_fastq -o sub_reads.fq.gz
     """
 }
 
@@ -45,7 +45,7 @@ process ERROR_MODLING {
     """
 }
 
-process IDENTITY {
+process IDENTITY_ESTIMATION {
     input:
     path alignment
     
@@ -54,6 +54,19 @@ process IDENTITY {
 
     script:
     """
-    python3.11 $projectDir/bin/estimator.py -p $alignment 
+    python3.11 $projectDir/bin/params_estimator/estimator.py -r identity -p $alignment 
+    """
+}
+
+process LENGTH_ESTIMATION {
+    input:
+    path reads_fastq
+    
+    output:
+    stdout emit: length_params
+
+    script:
+    """
+    python3.11 $projectDir/bin/params_estimator/estimator.py -r length -f $reads_fastq -t $params.threads 
     """
 }

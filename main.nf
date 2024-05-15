@@ -5,6 +5,7 @@ log.info """\
     transcriptome                 : ${params.transcriptome}
     matrix rownames               : ${params.features}
     barcodes counts distribution  : ${params.bc_counts}
+    full length transcripts       : ${params.full_length}
     simulate cell types           : ${params.sim_celltypes}
     cell type annotation          : ${params.cell_types_annotation}
     GTF                           : ${params.gtf}
@@ -23,7 +24,8 @@ log.info """\
 include { SUBSAMPLE } from './modules/errorModel.nf'
 include { ALIGNMENT } from './modules/errorModel.nf'
 include { ERROR_MODLING } from './modules/errorModel.nf'
-include { IDENTITY } from './modules/errorModel.nf'
+include { IDENTITY_ESTIMATION } from './modules/errorModel.nf'
+include { LENGTH_ESTIMATION } from './modules/errorModel.nf'
 
 include { COUNT_SIMULATOR } from './modules/modules.nf'
 include { TEMPLATE_MAKER } from './modules/modules.nf'
@@ -59,6 +61,8 @@ workflow {
     
     identity_ch = params.badread_identity != null ? channel.from(params.badread_identity) :
                                                     channel.from("96,2,98")
+    length_dist_ch = params.length_dist != null ? channel.from(params.length_dist) :
+                                                    channel.from("0.37,0.0,824.94")
 
     if (params.build_model) {
         fastq_ch = Channel.fromPath(params.model_fastq, checkIfExists: true)
@@ -66,17 +70,18 @@ workflow {
         sub_fastq_ch = SUBSAMPLE(fastq_ch)
         paf_ch = ALIGNMENT(sub_fastq_ch, genome_ch)
         ERROR_MODLING(sub_fastq_ch, genome_ch, paf_ch)
-        identity_ch = IDENTITY(paf_ch)
+        identity_ch = IDENTITY_ESTIMATION(paf_ch)
+        length_dist_ch = LENGTH_ESTIMATION(fastq_ch)
         error_model_ch = ERROR_MODLING.out.error_model_ch
         qscore_model_ch = ERROR_MODLING.out.qscore_model_ch
     }
 
     if (params.sim_celltypes) {  
         counts_ch = COUNT_SIMULATOR(matrix_ch, cell_types_ch)
-        template_ch = TEMPLATE_MAKER(counts_ch, transcriptome_ch, barcodes_ch, gtf_ch)
+        template_ch = TEMPLATE_MAKER(counts_ch, transcriptome_ch, barcodes_ch, gtf_ch, length_dist_ch)
 
     } else { 
-        template_ch = TEMPLATE_MAKER(matrix_ch, transcriptome_ch, barcodes_ch, gtf_ch)
+        template_ch = TEMPLATE_MAKER(matrix_ch, transcriptome_ch, barcodes_ch, gtf_ch, length_dist_ch)
     }
 
     gr_truth_ch = GROUND_TRUTH(template_ch)

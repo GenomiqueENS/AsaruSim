@@ -2,6 +2,7 @@
 # Date: 25-04-2024
 
 import random
+from scipy import stats
 
 def fetch_transcript_id_by_gene(gene, transcripts_index):
     transcript_ids = transcripts_index.get(gene, [])
@@ -9,6 +10,20 @@ def fetch_transcript_id_by_gene(gene, transcripts_index):
         return transcript_ids[0]
     else:
         return None
+
+
+def cut_sequence(sequence, length_distribution):
+    """
+    Function to truncate sequences to a random length based on a given log-normal distribution.
+    Inputs:
+    sequences: List of sequences (byte strings).
+    length_distribution: Tuple (shape, loc, scale) defining the parameters of the log-normal distribution.
+    Returns: List of truncated sequences.
+    """
+    shape, loc, scale = length_distribution
+    cut_length = int(stats.lognorm.rvs(shape, loc, scale))-100
+    cut_length = min(cut_length, len(sequence))
+    return sequence[:cut_length]
 
 
 def parse_gtf(gtf_file, index_by, protein_coding=False):

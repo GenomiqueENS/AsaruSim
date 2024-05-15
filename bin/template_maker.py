@@ -33,6 +33,9 @@ parser.add_argument('-f','--features', type=str, default="transcript_id", help="
 parser.add_argument('--on_disk', action='store_true', help="Whether to use Faidx to index the FASTA or load the FASTA in memory.")
 parser.add_argument('-c','--amp', type=int, default=1, help="amplification rate.")
 
+parser.add_argument('--full_length', action='store_true', help="Simulate a full length transcripts.")
+parser.add_argument('--length_dist', type=str, default="0.37,0.0,824.94", help="amplification rate.")
+
 parser.add_argument('--adapter', type=str, default="ATGCGTAGTCAGTCATGATC", help="Adapter sequence.")
 parser.add_argument('--TSO', type=str, default="ATGCGTAGTCAGTCATGATC", help="TSO sequence.")
 parser.add_argument('--len_dT', type=str, default=15, help="Poly-dT sequence.")
@@ -63,9 +66,11 @@ class Transcriptome:
 
 
 class TemplateGenerator:
-    def __init__(self, transcriptome, adapter, len_dT, TSO, outFasta, threads, amp):
+    def __init__(self, transcriptome, adapter, len_dT, TSO, outFasta, threads, amp, full_length, length_dist):
         self.COMPLEMENT_MAP  = str.maketrans('ATCG', 'TAGC')
         self.transcriptome = transcriptome
+        self.full_length = full_length
+        self.length_dist = length_dist
         self.adapter = adapter
         self.dT = "T"*int(len_dT)
         self.TSO = TSO
@@ -96,6 +101,8 @@ class TemplateGenerator:
             for idx, trns in enumerate(trns_ids):
                 cDNA = self.transcriptome.get_sequence(trns)
                 if cDNA:
+                    if not self.full_length and len(cDNA)>500:
+                        cDNA = cut_sequence(cDNA, self.length_dist)
                     umi = self.generate_random_umi()
                     seq = f"{self.adapter}{cell}{umi}{self.dT}{cDNA}{self.TSO}"
                     if random.randint(0, 1) == 1:
@@ -120,10 +127,13 @@ class TemplateGenerator:
             idx = 0
             unfound = 0
             for trns, count in umi_counts.items():
+                count=int(count)
                 if count > 1:
                     trns = trns if transcript_id else fetch_transcript_id_by_gene(trns, transcripts_index)
                     cDNA = self.transcriptome.get_sequence(trns) if trns else None
                     if cDNA:
+                        if not self.full_length:
+                            cDNA = cut_sequence(cDNA, self.length_dist)
                         for i in range(count):
                             umi = self.generate_random_umi()
                             seq = f"{self.adapter}{cell}{umi}{self.dT}{cDNA}{self.TSO}"
@@ -166,8 +176,24 @@ def main():
             sys.exit(1)
             
     
+    if not args.full_length:
+        try:
+            shape, loc, scale = args.length_dist.split(",")
+            length_dist = [float(x) for x in [shape, loc, scale]]
+        except:
+            length_dist = [0.37, 0.0, 824.94]
+
+
     transcriptome = Transcriptome(args.transcriptome)
-    generator = TemplateGenerator(transcriptome, args.adapter, args.len_dT, args.TSO, args.outFasta, args.threads, args.amp)
+    generator = TemplateGenerator(transcriptome = transcriptome, 
+                                  adapter = args.adapter, 
+                                  len_dT = args.len_dT, 
+                                  TSO = args.TSO,
+                                  full_length = args.full_length,
+                                  length_dist = length_dist,
+                                  outFasta = args.outFasta, 
+                                  threads = args.threads,
+                                  amp = args.amp)
     if args.matrix:
         matrix = pd.read_csv(args.matrix, header=0, index_col=0) 
 
