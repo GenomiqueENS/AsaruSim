@@ -50,10 +50,10 @@ process IDENTITY {
     path alignment
     
     output:
-    path "identity.txt"
+    stdout emit: beta_params
 
     script:
     """
-    python3.11 identity.py --alignment $alignment > identity.txt
+    python3.11 $projectDir/bin/estimator.py -p $alignment 
     """
 }

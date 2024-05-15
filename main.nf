@@ -57,12 +57,16 @@ workflow {
     qscore_model_ch = params.qscore_model != null ? file(params.qscore_model) : 
                                              file("no_qscore_model", type: "file")
     
+    identity_ch = params.badread_identity != null ? channel.from(params.badread_identity) :
+                                                    channel.from("96,2,98")
+
     if (params.build_model) {
         fastq_ch = Channel.fromPath(params.model_fastq, checkIfExists: true)
         genome_ch = Channel.fromPath(params.ref_genome, checkIfExists: true)
         sub_fastq_ch = SUBSAMPLE(fastq_ch)
         paf_ch = ALIGNMENT(sub_fastq_ch, genome_ch)
         ERROR_MODLING(sub_fastq_ch, genome_ch, paf_ch)
+        identity_ch = IDENTITY(paf_ch)
         error_model_ch = ERROR_MODLING.out.error_model_ch
         qscore_model_ch = ERROR_MODLING.out.qscore_model_ch
     }
@@ -76,7 +80,7 @@ workflow {
     }
 
     gr_truth_ch = GROUND_TRUTH(template_ch)
-    error_ch    = ERRORS_SIMULATOR(template_ch, error_model_ch, qscore_model_ch)
+    error_ch    = ERRORS_SIMULATOR(template_ch, error_model_ch, qscore_model_ch, identity_ch)
     qc_ch       = QC(error_ch)
 }
 

@@ -52,6 +52,7 @@ process ERRORS_SIMULATOR {
     path template
     path error_model
     path qscore_model
+    val identity
 
     output:
     path "simulated.fastq"
@@ -69,7 +70,7 @@ process ERRORS_SIMULATOR {
     """
     python3.11 $projectDir/bin/SLSim/error_simulator.py --thread $params.threads \
     -t $template \
-    --badread-identity $params.badread_identity \
+    --badread-identity ${identity.trim()} \
     $error_model_arg \
     $qscore_model_arg \
     -o simulated.fastq
