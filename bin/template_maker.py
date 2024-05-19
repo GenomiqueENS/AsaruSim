@@ -101,7 +101,7 @@ class TemplateGenerator:
             for idx, trns in enumerate(trns_ids):
                 cDNA = self.transcriptome.get_sequence(trns)
                 if cDNA:
-                    if not self.full_length and len(cDNA)>500:
+                    if not self.full_length and len(cDNA)>800:
                         cDNA = cut_sequence(cDNA, self.length_dist)
                     umi = self.generate_random_umi()
                     seq = f"{self.adapter}{cell}{umi}{self.dT}{cDNA}{self.TSO}"
@@ -132,7 +132,7 @@ class TemplateGenerator:
                     trns = trns if transcript_id else fetch_transcript_id_by_gene(trns, transcripts_index)
                     cDNA = self.transcriptome.get_sequence(trns) if trns else None
                     if cDNA:
-                        if not self.full_length and len(cDNA)>500:
+                        if not self.full_length and len(cDNA)>800:
                             cDNA = cut_sequence(cDNA, self.length_dist)
                         for i in range(count):
                             umi = self.generate_random_umi()
@@ -175,8 +175,10 @@ def main():
             logging.error("\033[91mError: Please provide the path to the count matrix file using the '--matrix' or cell barcode counts using '--unfilteredBC' argument.\033[0m")
             sys.exit(1)
             
-    
-    if not args.full_length:
+    if args.full_length:
+        length_dist = None
+        
+    else :
         try:
             shape, loc, scale = args.length_dist.split(",")
             length_dist = [float(x) for x in [shape, loc, scale]]
