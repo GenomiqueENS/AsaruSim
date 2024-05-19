@@ -8,6 +8,7 @@ import argparse
 import gzip
 import sys
 import logging
+import re
 
 from libs import *
 
@@ -28,11 +29,12 @@ col_names = [
     'query_name', 'query_length', 'query_start', 'query_end',
     'strand', 'target_name', 'target_length', 'target_start',
     'target_end', 'residue_matches', 'alignment_block_length', 'mapping_quality',
-    'col13', 'col14', 'col15', 'col16', 'col17', 'col18',
-    'col19', 'col20', 'col21', 'col22', 'col23'
+    'NM', 'ms', 'AS', 'nn', 'tp', 'cm',
+    's1', 's2', 'de', 'rl', 'cigar'
 ]
 
-def calc_identity(paf_file):
+
+def BLAST_identity(paf_file):
     """
     Calculate the sequence identity percentage for alignments in a PAF file.
 
@@ -44,11 +46,61 @@ def calc_identity(paf_file):
     """
     paf_df = pd.read_csv(paf_file, sep='\t',on_bad_lines='skip', header=None, names=col_names)
 
-    paf_df['identity_percentage'] = (paf_df['residue_matches'] / paf_df['alignment_block_length']) * 100
+    paf_df['identity_percentage'] = (paf_df['residue_matches'] / paf_df['alignment_block_length']) 
 
-    paf_df = paf_df[paf_df['identity_percentage']>79]
+    paf_df = paf_df[(paf_df['identity_percentage']>0) & (paf_df['identity_percentage']<1)]
 
-    return paf_df['identity_percentage']/100.01
+    return paf_df['identity_percentage']
+
+
+def parse_cigar(cigar):
+    """ Extract the total number of bases accounted for by gaps in the CIGAR string. """
+    if pd.isna(cigar):
+        return 0 
+    return sum(int(x[:-1]) for x in re.findall(r'\d+[DI]', cigar))
+
+
+def gap_excluded_identity(paf_file):
+    """
+    Calculate the Gap-excluded sequence identity percentage for alignments in a PAF file.
+    
+    Parameters:
+    paf_file (str): The file path to the PAF file.
+    
+    Returns:
+    pandas.Series: A Series containing the Gap-excluded identity percentages normalized by 100.01 for each alignment.
+    """
+    paf_df = pd.read_csv(paf_file, sep='\t', on_bad_lines='skip', header=None, names=col_names)
+
+    paf_df['gap_count'] = paf_df['cigar'].apply(parse_cigar)
+
+    paf_df['adjusted_alignment_length'] = paf_df['alignment_block_length'] - paf_df['gap_count']
+
+    paf_df['identity_percentage'] = (paf_df['residue_matches'] / paf_df['adjusted_alignment_length'])
+
+    paf_df = paf_df[(paf_df['identity_percentage'] > 0) & (paf_df['identity_percentage'] < 1)]
+
+    return paf_df['identity_percentage']
+
+
+def gap_compressed_identity(paf_file):
+    """
+    Calculate the sequence identity percentage for alignments in a PAF file,
+    excluding gaps from the calculation entirely.
+    
+    Parameters:
+    paf_file (str): The file path to the PAF file.
+    
+    Returns:
+    pandas.Series: A Series containing the identity percentages.
+    """
+    paf_df = pd.read_csv(paf_file, sep='\t', on_bad_lines='skip', header=None, names=col_names)
+
+    paf_df['identity_percentage'] = 1 - paf_df['de'].str.split(':').str[2].astype(float)
+
+    filtered_paf_df = paf_df[(paf_df['identity_percentage'] > 0) & (paf_df['identity_percentage'] < 1)]
+
+    return filtered_paf_df['identity_percentage']
 
 
 def read_fastq(fastq):
@@ -71,7 +123,7 @@ def read_fastq(fastq):
     return records
 
 
-def estimate_beta_parames(data):
+def estimate_beta_params(data):
     """
     Estimate the parameters of a beta distribution given data.
 
@@ -85,10 +137,16 @@ def estimate_beta_parames(data):
     mean = alpha / (alpha + beta)
     variance = (alpha * beta) / ((alpha + beta) ** 2 * (alpha + beta + 1))
     std_dev = np.sqrt(variance)
+    
     if alpha > 1 and beta > 1:
         mode = (alpha - 1) / (alpha + beta - 2)
+    elif alpha < 1 and beta > 1:
+        mode = 0
+    elif alpha > 1 and beta < 1:
+        mode = 0.99 
     else:
-        mode = "NA" 
+        mode = "NA"
+
     return mean, std_dev, mode
 
 
@@ -105,8 +163,9 @@ def main():
         print("{},{},{}".format(round(shape,2), round(loc,2), round(scale,2)))
 
     elif args.params == "identity":
-        identities = calc_identity(args.paf)
-        mean, std_dev, mode = estimate_beta_parames(identities)
+        identities = gap_excluded_identity(args.paf)
+        mean, std_dev, mode = estimate_beta_params(identities)
+        #print(mean, std_dev, mode)
         print("{},{},{}".format(round(mean,2)*100, round(std_dev,2)*100, round(mode,2)*100))
     
     else:
@@ -116,4 +175,3 @@ def main():
 
 if __name__ == "__main__":
     main()
- 
