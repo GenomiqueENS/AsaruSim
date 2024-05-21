@@ -23,7 +23,7 @@ def cut_sequence(sequence, length_distribution):
     shape, loc, scale = length_distribution
     cut_length = int(stats.lognorm.rvs(shape, loc, scale))-100
     cut_length = min(cut_length, len(sequence))
-    return sequence[:cut_length]
+    return sequence[-cut_length:]
 
 
 def parse_gtf(gtf_file, index_by, protein_coding=False):
