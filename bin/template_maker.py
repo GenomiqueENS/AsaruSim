@@ -94,15 +94,24 @@ class TemplateGenerator:
         else:
             filename = f"tmp_cells/{cell}.fa"
             mode = 'w'
-    
+            
+        max_len = 4000
+        min_len = 900
+        p_cut = 0.88
+        p_long = 0.9999
+        
         with open(filename, mode) as fasta:
             idx = 1
             trns_ids = random.choices(list(self.transcriptome.transcripts.keys()), k=umi_counts)
             for idx, trns in enumerate(trns_ids):
                 cDNA = self.transcriptome.get_sequence(trns)
                 if cDNA:
-                    if not self.full_length and len(cDNA)>800:
-                        cDNA = cut_sequence(cDNA, self.length_dist)
+                    
+                    if not self.full_length and (len(cDNA)>min_len or len(cDNA)>max_len):
+                        rndm=random.random()
+                        if (len(cDNA)>min_len and rndm<p_cut) or (len(cDNA)>max_len and rndm<p_long):
+                            cDNA = cut_sequence(cDNA, self.length_dist)
+                                
                     umi = self.generate_random_umi()
                     seq = f"{self.adapter}{cell}{umi}{self.dT}{cDNA}{self.TSO}"
                     if random.randint(0, 1) == 1:
@@ -122,6 +131,11 @@ class TemplateGenerator:
             mode = 'w'
             
         transcript_id = True if features=="transcript_id" else False
+
+        max_len = 4000
+        min_len = 900
+        p_cut = 0.88
+        p_long = 0.9999
         
         with open(filename, mode) as fasta:
             idx = 0
@@ -132,8 +146,12 @@ class TemplateGenerator:
                     trns = trns if transcript_id else fetch_transcript_id_by_gene(trns, transcripts_index)
                     cDNA = self.transcriptome.get_sequence(trns) if trns else None
                     if cDNA:
-                        if not self.full_length and len(cDNA)>800:
-                            cDNA = cut_sequence(cDNA, self.length_dist)
+                        
+                        if not self.full_length and (len(cDNA)>min_len or len(cDNA)>max_len):
+                            rndm=random.random()
+                            if (len(cDNA)>min_len and rndm<p_cut) or (len(cDNA)>max_len and rndm<p_long):
+                                cDNA = cut_sequence(cDNA, self.length_dist)
+                                
                         for i in range(count):
                             umi = self.generate_random_umi()
                             seq = f"{self.adapter}{cell}{umi}{self.dT}{cDNA}{self.TSO}"
