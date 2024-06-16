@@ -96,7 +96,7 @@ class TemplateGenerator:
             mode = 'w'
             
         max_len = 4000
-        min_len = 900
+        min_len = 3000
         p_cut = 0.88
         p_long = 0.9999
         
@@ -106,11 +106,8 @@ class TemplateGenerator:
             for idx, trns in enumerate(trns_ids):
                 cDNA = self.transcriptome.get_sequence(trns)
                 if cDNA:
-                    
-                    if not self.full_length and (len(cDNA)>min_len or len(cDNA)>max_len):
-                        rndm=random.random()
-                        if (len(cDNA)>min_len and rndm<p_cut) or (len(cDNA)>max_len and rndm<p_long):
-                            cDNA = cut_sequence(cDNA, self.length_dist)
+                    if len(cDNA) > min_len:
+                            cDNA = cut_sequence_proba(cDNA)
                                 
                     umi = self.generate_random_umi()
                     seq = f"{self.adapter}{cell}{umi}{self.dT}{cDNA}{self.TSO}"
@@ -132,10 +129,10 @@ class TemplateGenerator:
             
         transcript_id = True if features=="transcript_id" else False
 
-        max_len = 4000
-        min_len = 900
-        p_cut = 0.88
-        p_long = 0.9999
+        max_len = 2000
+        min_len = 1500
+        p_cut = 0.8
+        p_long = 0.999
         
         with open(filename, mode) as fasta:
             idx = 0
@@ -145,13 +142,7 @@ class TemplateGenerator:
                 if count > 1:
                     trns = trns if transcript_id else fetch_transcript_id_by_gene(trns, transcripts_index)
                     cDNA = self.transcriptome.get_sequence(trns) if trns else None
-                    if cDNA:
-                        
-                        if not self.full_length and (len(cDNA)>min_len or len(cDNA)>max_len):
-                            rndm=random.random()
-                            if (len(cDNA)>min_len and rndm<p_cut) or (len(cDNA)>max_len and rndm<p_long):
-                                cDNA = cut_sequence(cDNA, self.length_dist)
-                                
+                    if cDNA:   
                         for i in range(count):
                             umi = self.generate_random_umi()
                             seq = f"{self.adapter}{cell}{umi}{self.dT}{cDNA}{self.TSO}"
@@ -160,6 +151,7 @@ class TemplateGenerator:
                             for j in range(np.random.poisson(self.amp)):
                                 fasta.write(f">{cell}_{umi}_{trns}_{idx}\n"
                                             f"{seq}\n")
+                                
                                 idx += 1
                     else : unfound += 1
             self.counter += idx
