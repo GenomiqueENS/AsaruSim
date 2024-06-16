@@ -45,8 +45,7 @@ def multiprocessing_submit(func, iterator, n_process=mp.cpu_count()-1 ,pbar = Tr
             n_job_in_queue += 1
 
         job = next(as_completed(futures), None)
-
-        # no more job  
+ 
         if job is None:
             break
         else:
@@ -54,20 +53,6 @@ def multiprocessing_submit(func, iterator, n_process=mp.cpu_count()-1 ,pbar = Tr
             pbar.update(pbar_update)
             yield job
             del futures[job]
-
-
-def batch_iterator(iterator, batch_size):
-    batch = []
-    i=0
-    for entry in iterator:
-        i += 1
-        batch.append(entry)
-        if i == batch_size:
-            yield batch
-            batch = []
-            i = 0
-    if len(batch):
-        yield batch
 
 
 def read_batch_generator(fastq_fn, batch_size):

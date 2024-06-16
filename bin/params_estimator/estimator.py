@@ -48,7 +48,7 @@ def BLAST_identity(paf_file):
 
     paf_df['identity_percentage'] = (paf_df['residue_matches'] / paf_df['alignment_block_length']) 
 
-    paf_df = paf_df[(paf_df['identity_percentage']>0) & (paf_df['identity_percentage']<1)]
+    paf_df = paf_df[(paf_df['identity_percentage']>0.6) & (paf_df['identity_percentage']<1)]
 
     return paf_df['identity_percentage']
 
@@ -78,7 +78,7 @@ def gap_excluded_identity(paf_file):
 
     paf_df['identity_percentage'] = (paf_df['residue_matches'] / paf_df['adjusted_alignment_length'])
 
-    paf_df = paf_df[(paf_df['identity_percentage'] > 0) & (paf_df['identity_percentage'] < 1)]
+    paf_df = paf_df[(paf_df['identity_percentage'] > 0.8) & (paf_df['identity_percentage'] <= 1.0)]
 
     return paf_df['identity_percentage']
 
@@ -98,7 +98,7 @@ def gap_compressed_identity(paf_file):
 
     paf_df['identity_percentage'] = 1 - paf_df['de'].str.split(':').str[2].astype(float)
 
-    filtered_paf_df = paf_df[(paf_df['identity_percentage'] > 0) & (paf_df['identity_percentage'] < 1)]
+    filtered_paf_df = paf_df[(paf_df['identity_percentage'] > 0.6) & (paf_df['identity_percentage'] <= 1.0)]
 
     return filtered_paf_df['identity_percentage']
 
@@ -133,7 +133,7 @@ def estimate_beta_params(data):
     Returns:
     tuple: A tuple containing the mean, standard deviation, and mode of the estimated beta distribution.
     """
-    alpha, beta, loc, scale = stats.beta.fit(data, floc=0, fscale=1)
+    alpha, beta, loc, scale = stats.beta.fit(data, floc=0, fscale=1.00001)
     mean = alpha / (alpha + beta)
     variance = (alpha * beta) / ((alpha + beta) ** 2 * (alpha + beta + 1))
     std_dev = np.sqrt(variance)
@@ -143,7 +143,7 @@ def estimate_beta_params(data):
     elif alpha < 1 and beta > 1:
         mode = 0
     elif alpha > 1 and beta < 1:
-        mode = 0.99 
+        mode = 1
     else:
         mode = "NA"
 
@@ -155,17 +155,13 @@ def main():
 
     if args.params == "length":
         lengths_real = get_read_lengths(args.fastq, thread = args.thread, batch_size = 500)
-        #lower_bound = np.percentile(lengths_real, 0.5)
-        #upper_bound = np.percentile(lengths_real, 99.5)
 
-        #filtered_lengths_real = [length for length in lengths_real if lower_bound < length < upper_bound]
         shape, loc, scale = stats.lognorm.fit(lengths_real, floc=0)
         print("{},{},{}".format(round(shape,2), round(loc,2), round(scale,2)))
 
     elif args.params == "identity":
         identities = gap_excluded_identity(args.paf)
         mean, std_dev, mode = estimate_beta_params(identities)
-        #print(mean, std_dev, mode)
         print("{},{},{}".format(round(mean,2)*100, round(std_dev,2)*100, round(mode,2)*100))
     
     else:
