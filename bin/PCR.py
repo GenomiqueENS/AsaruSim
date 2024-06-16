@@ -108,8 +108,7 @@ def PCR(template, cycles, dup_rate, error_rate, totalNumber, outfile):
             product.append(child_mol)
             mol_counter += 1
 
-        pool_list.extend(product) 
-        #print(len(pool_list))
+        pool_list.extend(product)
 
     sequencing(pool_list, outfile, totalNumber)
 
