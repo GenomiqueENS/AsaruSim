@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Input parameters - AsaruSim</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Input parameters";
+        var mkdocs_page_input_path = "parameters.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> AsaruSim
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../introduction/">Introduction</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Installation</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Input parameters</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#count-matrix">Count matrix</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#-matrix">--matrix</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#-bc_counts">--bc_counts</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#-cell_types_annotation">--cell_types_annotation</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#template">Template</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#-dt_length">--dT_LENGTH</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#-adapter_seq">--ADAPTER_SEQ</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#-tso_seq">--TSO_SEQ</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#reference-transcriptome">Reference transcriptome</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#-transcriptome">--transcriptome</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#-length_dist">--length_dist</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#pcr-amplification">PCR amplification</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#-pcr_cycles">--PCR_cycles</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#-pcr_efficiency">--PCR_efficiency</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#-pcr_error_rate">--PCR_error_rate</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#-total_reads">--total_reads</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#error-model">Error model</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#-trained_model">--trained_model</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#-badread_identity">--badread_identity</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#-build_model">--build_model</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../examples/">Use example</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">AsaruSim</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Input parameters</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="input-parameters">Input parameters</h1>
+<p>AsaruSim simulation requires an input parameter to work, describing the macro characteristics of the desired synthetic reads.</p>
+<h2 id="count-matrix">Count matrix</h2>
+<h4 id="-matrix"><code>--matrix</code></h4>
+<p>The <code>--matrix</code> parameter is a feature-by-cell (gene/cell or isoform/cell) count table <code>(.CSV) file</code> where rows represent the features of interest  <em>(genes or transcripts)</em> and columns represent cells <em>(or spatial barcodes)</em>. The input matrix may be derived from an existing single-cell short- or long-read preprocessed run. this parameter is <strong>required</strong>.</p>
+<div class="admonition caution">
+<p class="admonition-title">AsaruSim require a feature name and GTF annotation for gene-per-cell matrix</p>
+<p>Since the sequence names in the reference transcriptome correspond to <strong>transcript ids</strong>, it is necessary for users to specify the feature name within their matrix when gene-per-cell matrix is provided. Set the feature name using the <code>--features</code> parameter. <br /> Available options include:</p>
+<blockquote>
+<ul>
+<li><code>transcript_id</code>  <em>(default)</em></li>
+<li><code>gene_id</code></li>
+<li><code>gene_name</code></li>
+</ul>
+</blockquote>
+<p>Additionally, users are required to supply a gene annotation <code>(.gtf format)</code> file using the <code>--gtf</code> parameter. </p>
+</div>
+<h4 id="-bc_counts"><code>--bc_counts</code></h4>
+<p>To simulate specific UMI counts per cell barcode, set the <code>--bc_counts</code> parameter to the path of a UMI counts <code>.CSV file</code>. This parameter eliminates the need for an input matrix, enabling the simulation of UMI counts where transcripts are chosed randomly.</p>
+<table>
+<thead>
+<tr>
+<th>CB</th>
+<th>counts</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ACGGCGATCGCGAGCC</td>
+<td>1260</td>
+</tr>
+<tr>
+<td>ACGGCGATCGCGAGCC</td>
+<td>1104</td>
+</tr>
+</tbody>
+</table>
+<h4 id="-cell_types_annotation"><code>--cell_types_annotation</code></h4>
+<p>AsaruSim can generate synthetic count tables with varying <strong>cell types</strong>, <strong>differentially expressed genes</strong>, or <strong>isoforms</strong>. This capability is particularly useful for simulating count matrices that mimic the characteristics of existing cell populations. <br />
+To simulate cell groups, AsaruSim requirs suplimentary parameters describing the characteristic of desired cell groups.</p>
+<p><strong>Requirements for simulating cell groups</strong> : <br />
+AsaruSim use <a href="https://sysbiobig.dei.unipd.it/software/sparsim/">SPARSim</a> R package to simulate <strong>synthetic count table</strong>. for each cell group to simulate, SPARSim needs 3 information as input:</p>
+<blockquote>
+<ul>
+<li>expression level <strong>intensities</strong>.</li>
+<li>expression level <strong>variabilities</strong>.</li>
+<li>cell group <strong>library sizes</strong>.</li>
+</ul>
+</blockquote>
+<p><em>fore more information see <a href="https://gitlab.com/sysbiobig/sparsim/-/blob/master/vignettes/sparsim.Rmd?ref_type=heads">SPARSim vignettes</a></em>.</p>
+<p>AsaruSim allows user to estimate this characteristic from an existing count table. To do so, the user need to set <code>--sim_celltypes</code> parameter to <code>true</code> and to provide the list of cell barcodes of each group <code>(.CSV file)</code> using <code>--cell_types_annotation</code> parameter:</p>
+<table>
+<thead>
+<tr>
+<th>CB</th>
+<th>cell_type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ACGGCGATCGCGAGCC</td>
+<td>type 1</td>
+</tr>
+<tr>
+<td>ACGGCGATCGCGAGCC</td>
+<td>type 2</td>
+</tr>
+</tbody>
+</table>
+<p>AsaruSim will then use the provided matrix to estimate characteristic of each cell groups and generate a synthetic count matrix.</p>
+<h2 id="template">Template</h2>
+<p>AsaruSim generates reads that correspond to a 10X Genomics library construction coupled with Nanopore sequencing. The final construction corresponds to : an <strong>adaptor sequence</strong> composed of 10X and Nanopore adaptors,  a <strong>cellular barcode</strong> (CB), <strong>UMI</strong> sequences at the same frequencies as in the synthetic count matrix, a 20 bp <em>oligo(dT)</em>, the feature-corresponding <strong>cDNA sequence</strong> from the reference transcriptome and a <strong>template switch oligo</strong> (TSO) at the end.</p>
+<h4 id="-dt_length"><code>--dT_LENGTH</code></h4>
+<p>Specifies the length of the oligo(dT) tail sequence. Default: <code>20</code> bp.</p>
+<h4 id="-adapter_seq"><code>--ADAPTER_SEQ</code></h4>
+<p>Defines the sequence of the adapter used in the ONT and 10X Genomics libraries. By default, the 10X 3' solution V3 adapter sequence is used
+Default: <code>ACTAAAGGCCATTACGGCCTACACGACGCTCTTCCGATCT</code>.</p>
+<h4 id="-tso_seq"><code>--TSO_SEQ</code></h4>
+<p>Specifies the sequence of the Template Switching Oligo (TSO) nucleotid. Default: <code>TGTACTCTGCGTTGATACCACTGCTT</code>.</p>
+<h2 id="reference-transcriptome">Reference transcriptome</h2>
+<p>The feature-corresponding cDNA sequence is sampled from the reference transcriptome.</p>
+<h4 id="-transcriptome"><code>--transcriptome</code></h4>
+<p>A reference transcriptome file in <code>.fasta</code> format can be downloaded from <a href="https://www.ensembl.org/Homo_sapiens/Info/Index">Ensembl</a>.</p>
+<h4 id="-length_dist"><code>--length_dist</code></h4>
+<p>To mimic the real read length distribution when a gene expression matrix is provided, a realistic read length distribution is achieved by selecting a random cDNA of the corresponding gene, with a prior probability favoring short-length cDNA.</p>
+<p>AsaruSim estimates this read length using a <a href="https://en.wikipedia.org/wiki/Log-normal_distribution">log-normal distribution</a>. Users may provide their parameters to personalize the distribution using three comma-delimited values (shape, location, scale) with the parameter <code>--length_dist</code>. 
+(<em>default</em> :<code>0.37,0.0,825</code>)</p>
+<ul>
+<li><code>Shape (σ)</code> : The <strong>standard deviation</strong> of the log values.</li>
+<li><code>Location (μ)</code> : The location parameter using the basic form of the log-normal distribution.</li>
+<li><code>Scale</code> : The scale factor (the <strong>median</strong> of your distribution).</li>
+</ul>
+<div class="admonition tip">
+<p class="admonition-title">Fit read distribution of real reads</p>
+<p>Users may also fit their real reads distribution with this approach by providing a subset of real reads (in <code>.FASTQ</code> format) using the <code>--model_fastq</code> parameter. (See also <strong>build model</strong> in the <a href="#build_model">Error model</a> section)</p>
+</div>
+<h2 id="pcr-amplification">PCR amplification</h2>
+<p>AsaruSim take into account the bias of PCR amplification introduced during library constructions process. The PCR amplification is simulated by replicating the synthetic reads at each cycle, with a capturing probabily and un error rate.</p>
+<h4 id="-pcr_cycles"><code>--PCR_cycles</code></h4>
+<p>The number of PCR cycles to simulate. During each cycle, the reads are duplicated exponentially, following the formula:
+$$\  N = N_0 \times (1 + E)^{C} \ $$</p>
+<p>where: <em>N</em> is the final number of reads,
+ <em>N0</em> is the initial number of reads,
+ <em>E</em> is the efficiency rate, and
+ <em>C</em> is the number of cycles.</p>
+<h4 id="-pcr_efficiency"><code>--PCR_efficiency</code></h4>
+<p>The efficiency rate of duplication is fixed by the user (<em>default</em>: <code>--PCR_efficiency 0.9</code>)</p>
+<h4 id="-pcr_error_rate"><code>--PCR_error_rate</code></h4>
+<p>The probability to be mutated during the process for each nucleotide in the duplicated read. The error rate is also fixed by the user (<em>default</em>: <code>--PCR_error_rate 3.5e-05</code>)</p>
+<h4 id="-total_reads"><code>--total_reads</code></h4>
+<p>Number of total reads to random subset from the resulting artificial PCR product, to mimic the experimental protocol where only a subset of the sample is used for the sequencing step.</p>
+<div class="admonition tip">
+<p class="admonition-title">Users can use amplification rate instead of PCR amplification</p>
+<p>Inspired by SLSim, the amplification rate allows users to repeat each template read a specified number of times. This is a simpler way to simulate amplification with: $$\ x \sim \text{Poi}(\text{amp_rate}) \ $$ The value of <strong>x</strong> is set by the user using <code>--amp_rate</code></p>
+</div>
+<h2 id="error-model">Error model</h2>
+<p>AsaruSim uses the <a href="https://github.com/rrwick/Badread">Badread</a> Python library to simulate nanopore sequencing errors and assign per-base quality scores based on pre-trained error models (see Badread documentation for more information). To do so, AsaruSim requires:</p>
+<h4 id="-trained_model"><code>--trained_model</code></h4>
+<p>This allows the user to choose one of the built-in error models within the <a href="https://github.com/rrwick/Badread?tab=readme-ov-file#error-model">Badread</a> database. The possible values are:</p>
+<blockquote>
+<p><code>nanopore2023</code>: a model trained on ONT R10.4.1 reads from 2023 (the default).<br />
+<code>nanopore2020</code>: a model trained on ONT R9.4.1 reads from 2020.<br />
+<code>nanopore2018</code>: a model trained on ONT R9.4/R9.4.1 reads from 2018.<br />
+<code>random</code>: a random error model with a 1/3 chance each of insertion, deletion, and substitution.
+    a file path for a trained model. <br /></p>
+</blockquote>
+<h4 id="-badread_identity"><code>--badread_identity</code></h4>
+<p>Badread uses the <a href="https://www.desmos.com/calculator/u9fivqmisa?lang=fr">Beta distribution</a> to sample read identities. The distribution is defined with three parameters: <code>mean</code>, <code>standard deviation</code>, and <code>maximum</code> value.<br />
+To pass these parameters to AsaruSim, use three comma-delimited values (identity mean, max, stdev). <em>default :</em> <code>--badread_identity 95,99,2.5</code>.</p>
+<h4 id="-build_model"><code>--build_model</code></h4>
+<p><a name="build_model"></a>
+To internally train a personalized <strong>read identity</strong>, <strong>Qscore</strong>, and <strong>error</strong> models, AsaruSim requires a real FASTQ read file that can be provided using <strong><code>--model_fastq</code></strong> and a reference genome (.FASTA) file using <strong><code>--ref_genome</code></strong>.</p>
+<div class="admonition tips">
+<p class="admonition-title">AsaruSim also accepts pre-built model files</p>
+<p>Users can use <strong><code>--error_model</code></strong> and <strong><code>--qscore_model</code></strong> to provide Badread pre-built models in file format.</p>
+</div>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href=".." class="btn btn-neutral float-left" title="Installation"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../examples/" class="btn btn-neutral float-right" title="Use example">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href=".." style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../examples/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
