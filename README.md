@@ -103,14 +103,6 @@ nextflow run main.nf --matrix test_data/matrix.csv \
                      --transcriptome test_data/transcriptome.fa
 ```
 
-## example 2:
-```bash
-nextflow run main.nf --matrix test_data/matrix.csv \
-                     --bc_counts test_data/test_bc.csv \
-                     --transcriptome test_data/transcriptome.fa \
-
-```
-
 ## Results
 
 After execution, results will be available in the specified `--outdir`. This includes simulated Nanopore reads `.fastq`, along with log files and QC report.
@@ -124,7 +116,7 @@ nextflow clean -f
 ```
 ## Acknowledgements
 
-- We would like to express our gratitude to [Youyupei](https://github.com/youyupei) for the development of [SLSim](https://github.com/youyupei/SLSim), which has been foundational to the `AsaruSim` workflow.
+- We would like to express our gratitude to [Youyupei](https://github.com/youyupei) for the development of [SLSim](https://github.com/youyupei/SLSim), which has been helpful to the `AsaruSim` workflow.
 - Additionally, our thanks go to the teams behind [Badread](https://github.com/rrwick/Badread) and [SPARSim](https://gitlab.com/sysbiobig/sparsim), whose tools are integral to the `AsaruSim` workflow.
 
 ## Support and Contributions
