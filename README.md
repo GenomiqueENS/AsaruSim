@@ -95,33 +95,15 @@ User can choose among 4 ways to simulate template reads.
 - specified by his/her own the input parameter
 - a combination of the above options
 
+We use SPARSIM tools to simulate count matrix. for more information a bout synthetic count matrix, please read [SPARSIM](https://gitlab.com/sysbiobig/sparsim/-/blob/master/vignettes/sparsim.Rmd?ref_type=heads#Sec_Input_parameter_estimated_from_data) documentaion.
+
 #### use a real count matrix
 ```bash
 nextflow run main.nf --matrix test_data/matrix.csv \
                      --transcriptome test_data/transcriptome.fa
 ```
 
-#### estimated the parameter from a real count matrix
-```bash
-nextflow run main.nf --matrix test_data/matrix.csv \
-                     --transcriptome test_data/transcriptome.fa
-```
-
-#### specified by his/her own the input parameter
-```bash
-nextflow run main.nf --matrix test_data/matrix.csv \
-                     --transcriptome test_data/transcriptome.fa
-```
-
-#### combination case
-```bash
-nextflow run main.nf --matrix test_data/matrix.csv \
-                     --transcriptome test_data/transcriptome.fa
-```
-
-We use SPARSIM tools to simulate count matrix. for more information a bout synthetic count matrix, please read [SPARSIM](https://gitlab.com/sysbiobig/sparsim/-/blob/master/vignettes/sparsim.Rmd?ref_type=heads#Sec_Input_parameter_estimated_from_data) documentaion.
-
-## example:
+## example 2:
 ```bash
 nextflow run main.nf --matrix test_data/matrix.csv \
                      --bc_counts test_data/test_bc.csv \
