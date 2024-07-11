@@ -16,7 +16,11 @@ log.info """\
     build erro model              : ${params.build_model}
     FASTQ model                   : ${params.model_fastq}
     reference genome              : ${params.ref_genome}
-    amplification rate            : ${params.amp}
+    UMI duplication               : ${params.amp}
+    PCR amplification cycles      : ${params.cycles}
+    PCR duplication rate          : ${params.dup_rate}
+    PCR error rate                : ${params.error_rate}
+    Total number of PCR reads     : ${params.totalNamber}
     outdir                        : ${params.outdir}
     """
     .stripIndent()
@@ -29,6 +33,7 @@ include { LENGTH_ESTIMATION } from './modules/errorModel.nf'
 
 include { COUNT_SIMULATOR } from './modules/modules.nf'
 include { TEMPLATE_MAKER } from './modules/modules.nf'
+include { PCR_SIMULATOR } from './modules/PCR.nf'
 include { ERRORS_SIMULATOR } from './modules/modules.nf'
 include { GROUND_TRUTH } from './modules/modules.nf'
 include { QC } from './modules/modules.nf'
@@ -82,6 +87,10 @@ workflow {
 
     } else { 
         template_ch = TEMPLATE_MAKER(matrix_ch, transcriptome_ch, barcodes_ch, gtf_ch, length_dist_ch)
+    }
+
+    if (params.cycles > 0) {
+        template_ch = PCR_SIMULATOR(template_ch)
     }
 
     gr_truth_ch = GROUND_TRUTH(template_ch)

@@ -95,12 +95,38 @@ User can choose among 4 ways to simulate template reads.
 - specified by his/her own the input parameter
 - a combination of the above options
 
-We use SPARSIM tools to simulate count matrix. for more information a bout synthetic count matrix, please read [SPARSIM](https://gitlab.com/sysbiobig/sparsim/-/blob/master/vignettes/sparsim.Rmd?ref_type=heads#Sec_Input_parameter_estimated_from_data) documentaion.
-
 #### use a real count matrix
 ```bash
 nextflow run main.nf --matrix test_data/matrix.csv \
                      --transcriptome test_data/transcriptome.fa
+```
+
+#### estimated the parameter from a real count matrix
+```bash
+nextflow run main.nf --matrix test_data/matrix.csv \
+                     --transcriptome test_data/transcriptome.fa
+```
+
+#### specified by his/her own the input parameter
+```bash
+nextflow run main.nf --matrix test_data/matrix.csv \
+                     --transcriptome test_data/transcriptome.fa
+```
+
+#### combination case
+```bash
+nextflow run main.nf --matrix test_data/matrix.csv \
+                     --transcriptome test_data/transcriptome.fa
+```
+
+We use SPARSIM tools to simulate count matrix. for more information a bout synthetic count matrix, please read [SPARSIM](https://gitlab.com/sysbiobig/sparsim/-/blob/master/vignettes/sparsim.Rmd?ref_type=heads#Sec_Input_parameter_estimated_from_data) documentaion.
+
+## example:
+```bash
+nextflow run main.nf --matrix test_data/matrix.csv \
+                     --bc_counts test_data/test_bc.csv \
+                     --transcriptome test_data/transcriptome.fa \
+
 ```
 
 ## Results
@@ -116,7 +142,7 @@ nextflow clean -f
 ```
 ## Acknowledgements
 
-- We would like to express our gratitude to [Youyupei](https://github.com/youyupei) for the development of [SLSim](https://github.com/youyupei/SLSim), which has been helpful to the `AsaruSim` workflow.
+- We would like to express our gratitude to [Youyupei](https://github.com/youyupei) for the development of [SLSim](https://github.com/youyupei/SLSim), which has been foundational to the `AsaruSim` workflow.
 - Additionally, our thanks go to the teams behind [Badread](https://github.com/rrwick/Badread) and [SPARSim](https://gitlab.com/sysbiobig/sparsim), whose tools are integral to the `AsaruSim` workflow.
 
 ## Support and Contributions

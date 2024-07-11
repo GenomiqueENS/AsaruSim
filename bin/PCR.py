@@ -5,7 +5,6 @@ import random
 import os, sys, math
 from toolkit import multiprocessing_submit
 
-
 YELLOW = "\033[93m"
 GRAY = "\033[90m"
 RESET = "\033[0m"
@@ -13,14 +12,15 @@ RESET = "\033[0m"
 logging.basicConfig(level=logging.INFO, format=GRAY+ '%(message)s' +RESET)
 parser = argparse.ArgumentParser(description="Script for generating template sequences for scRNAseq simulation.")
 
-parser.add_argument('-f','--template', type=str, help="Path to the template FASTA file.")
+parser.add_argument('-f','--template', type=str, required=True, help="Path to the template FASTA file.")
 parser.add_argument('-o','--out', type=str, default="out.fa", help="Path to the output FASTA file.")
 parser.add_argument('-c','--cycles', type=int, default=5, help="number of cycles.")
-parser.add_argument('-d','--dup', type=int, default=0.7, help="duplication rate.")
+parser.add_argument('-d','--dup', type=float, default=0.7, help="duplication rate.")
 parser.add_argument('-e','--error', type=float, default=0.00003, help="error rate.")
 parser.add_argument('-t','--thread', type=int, default=4, help="number of threads to use.")
 parser.add_argument('-b','--batch_size', type=int, default=500, help="batch size.")
 parser.add_argument('-n','--totalNamber', type=int, default=None, help="total number of sequence to select from the finel pool.")
+parser.add_argument('-s','--seed', type=int, default=2024, help="seed value.")
 
 class Molecule ():
     def __init__(self, name, length, seq, root, inherited_mut):
@@ -155,6 +155,9 @@ def main():
     logging.info("Thread             : %s" , args.thread)
     logging.info("Batch size         : %s" , args.batch_size)
     logging.info("_______________________________")
+
+    random.seed(args.seed)
+    np.random.seed(args.seed)
 
     root_logger = logging.getLogger()
     for handler in root_logger.handlers:
