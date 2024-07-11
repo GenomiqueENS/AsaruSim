@@ -16,7 +16,7 @@ log.info """\
     build erro model              : ${params.build_model}
     FASTQ model                   : ${params.model_fastq}
     reference genome              : ${params.ref_genome}
-    UMI duplication               : ${params.amp}
+    UMI duplication               : ${params.umi_duplication}
     PCR amplification cycles      : ${params.cycles}
     PCR duplication rate          : ${params.dup_rate}
     PCR error rate                : ${params.error_rate}
