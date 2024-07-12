@@ -146,7 +146,7 @@ nextflow run main.nf --matrix dataset/sub_pbmc_matrice.csv \
                       --features gene_name \
                       --gtf dataset/GRCh38-2020-A-genes.gtf \
                       --sim_celltypes true \
-                      --cell_types_annotation dataset/sub_pbmc_cell_type.csv
+                      --cell_types_annotation dataset/sub_pbmc_cell_type.csv \
                       --build_model true \
                       --fastq_model dataset/sub_pbmc_reads.fq \
                       --ref_genome dataset/GRCh38-2020-A-genome.fa 
