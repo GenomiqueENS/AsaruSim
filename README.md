@@ -78,17 +78,7 @@ Configuration for running the workflow:
 | `container`       | Docker container for the workflow  | `'hamraouii/wf-SLSim'`    |
 | `docker.runOptions` | Docker run options to use       | `'-u $(id -u):$(id -g)'`  |
 
-## Execution
-
-To run the workflow with basic example:
-
-You can simulate a realistic disribution of per barcodes UMI counts by providing in addition to the filtered counts matrix a .csv file of BC counts.  AsaruSim will add a random transcrips count to fit the real distribution.
-```bash
-nextflow run main.nf --matrix test_data/matrix.csv \
-                     --bc_counts test_data/test_bc.csv \
-                     --transcriptome test_data/transcriptome.fa \
-
-```
+## Usage
 User can choose among 4 ways to simulate template reads.
 - use a real count matrix
 - estimated the parameter from a real count matrix to simulate synthetic count matrix 
