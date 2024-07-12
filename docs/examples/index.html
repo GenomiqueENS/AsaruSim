@@ -53,6 +53,24 @@
               </ul>
               <ul class="current">
                 <li class="toctree-l1 current"><a class="reference internal current" href="#">Use example</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#examples">EXAMPLES</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#sample-data">Sample data</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#basic-workflow">BASIC WORKFLOW</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#with-pcr-amplifiction">WITH PCR AMPLIFICTION</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#with-simulated-cell-type-counts">WITH SIMULATED CELL TYPE COUNTS</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#with-personalized-error-model">WITH PERSONALIZED ERROR MODEL</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#complete-workflow">COMPLETE WORKFLOW</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
                 </li>
               </ul>
       </div>
@@ -78,7 +96,69 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                
+                <h2 id="usage">Usage</h2>
+<p>User can choose among 4 ways to simulate template reads.
+- use a real count matrix
+- estimated the parameter from a real count matrix to simulate synthetic count matrix 
+- specified by his/her own the input parameter
+- a combination of the above options</p>
+<p>We use SPARSIM tools to simulate count matrix. for more information a bout synthetic count matrix, please read <a href="https://gitlab.com/sysbiobig/sparsim/-/blob/master/vignettes/sparsim.Rmd?ref_type=heads#Sec_Input_parameter_estimated_from_data">SPARSIM</a> documentaion.</p>
+<h3 id="examples">EXAMPLES</h3>
+<h5 id="sample-data">Sample data</h5>
+<p>A demonstration dataset to initiate this workflow is accessible on zenodo DOI : <a href="https://zenodo.org/records/12731409">10.5281/zenodo.12731408</a>. This dataset is a subsample from a Nanopore run of the <a href="https://www.10xgenomics.com/datasets/5k-human-pbmcs-3-v3-1-chromium-controller-3-1-standard">10X 5k human pbmcs</a>.</p>
+<p>The human GRCh38 <a href="https://ftp.ensembl.org/pub/release-112/fasta/homo_sapiens/cdna/">reference transcriptome</a>, <a href="https://ftp.ensembl.org/pub/release-112/gtf/homo_sapiens/">gtf annotation</a> and <a href="https://ftp.ensembl.org/pub/release-112/fasta/homo_sapiens/dna/">fasta referance genome</a> can be downloaded from Ensembl.</p>
+<h5 id="basic-workflow">BASIC WORKFLOW</h5>
+<pre><code class="language-bash"> nextflow run main.nf --matrix dataset/sub_pbmc_matrice.csv \
+                      --transcriptome dataset/Homo_sapiens.GRCh38.cdna.all.fa \
+                      --features gene_name \
+                      --gtf dataset/genes.gtf
+</code></pre>
+<h5 id="with-pcr-amplifiction">WITH PCR AMPLIFICTION</h5>
+<pre><code class="language-bash"> nextflow run main.nf --matrix dataset/sub_pbmc_matrice.csv \
+                      --transcriptome dataset/Homo_sapiens.GRCh38.cdna.all.fa \
+                      --features gene_name \
+                      --gtf dataset/GRCh38-2020-A-genes.gtf \
+                      --pcr_cycles 2 \
+                      --pcr_dup_rate 0.7 \
+                      --pcr_error_rate 0.00003
+</code></pre>
+<h5 id="with-simulated-cell-type-counts">WITH SIMULATED CELL TYPE COUNTS</h5>
+<pre><code class="language-bash"> nextflow run main.nf --matrix dataset/sub_pbmc_matrice.csv \
+                      --transcriptome dataset/Homo_sapiens.GRCh38.cdna.all.fa \
+                      --features gene_name \
+                      --gtf dataset/GRCh38-2020-A-genes.gtf \
+                      --sim_celltypes true \
+                      --cell_types_annotation dataset/sub_pbmc_cell_type.csv
+</code></pre>
+<h5 id="with-personalized-error-model">WITH PERSONALIZED ERROR MODEL</h5>
+<pre><code class="language-bash">nextflow run main.nf --matrix dataset/sub_pbmc_matrice.csv \
+                     --transcriptome dataset/Homo_sapiens.GRCh38.cdna.all.fa \
+                     --features gene_name \
+                     --gtf dataset/GRCh38-2020-A-genes.gtf \
+                     --build_model true \
+                     --fastq_model dataset/sub_pbmc_reads.fq \
+                     --ref_genome dataset/GRCh38-2020-A-genome.fa 
+</code></pre>
+<h5 id="complete-workflow">COMPLETE WORKFLOW</h5>
+<pre><code class="language-bash"> nextflow run main.nf --matrix dataset/sub_pbmc_matrice.csv \
+                      --transcriptome dataset/Homo_sapiens.GRCh38.cdna.all.fa \
+                      --features gene_name \
+                      --gtf dataset/GRCh38-2020-A-genes.gtf \
+                      --sim_celltypes true \
+                      --cell_types_annotation dataset/sub_pbmc_cell_type.csv
+                      --build_model true \
+                      --fastq_model dataset/sub_pbmc_reads.fq \
+                      --ref_genome dataset/GRCh38-2020-A-genome.fa 
+                      --pcr_cycles 2 \
+                      --pcr_dup_rate 0.7 \
+                      --pcr_error_rate 0.00003
+</code></pre>
+<h2 id="results">Results</h2>
+<p>After execution, results will be available in the specified <code>--outdir</code>. This includes simulated Nanopore reads <code>.fastq</code>, along with log files and QC report.</p>
+<h2 id="cleaning-up">Cleaning Up</h2>
+<p>To clean up temporary files generated by Nextflow:</p>
+<pre><code class="language-bash">nextflow clean -f
+</code></pre>
               
             </div>
           </div><footer>
