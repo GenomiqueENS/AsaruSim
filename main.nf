@@ -14,13 +14,13 @@ log.info """\
     error model                   : ${params.error_model}
     Qscore model                  : ${params.qscore_model}
     build erro model              : ${params.build_model}
-    FASTQ model                   : ${params.model_fastq}
+    FASTQ model                   : ${params.fastq_model}
     reference genome              : ${params.ref_genome}
     UMI duplication               : ${params.umi_duplication}
-    PCR amplification cycles      : ${params.cycles}
-    PCR duplication rate          : ${params.dup_rate}
-    PCR error rate                : ${params.error_rate}
-    Total number of PCR reads     : ${params.totalNamber}
+    PCR amplification cycles      : ${params.pcr_cycles}
+    PCR duplication rate          : ${params.pcr_dup_rate}
+    PCR error rate                : ${params.pcr_error_rate}
+    Total number of PCR reads     : ${params.pcr_total_reads}
     outdir                        : ${params.outdir}
     """
     .stripIndent()
@@ -70,7 +70,7 @@ workflow {
                                                     channel.from("0.37,0.0,824.94")
 
     if (params.build_model) {
-        fastq_ch = Channel.fromPath(params.model_fastq, checkIfExists: true)
+        fastq_ch = Channel.fromPath(params.fastq_model, checkIfExists: true)
         genome_ch = Channel.fromPath(params.ref_genome, checkIfExists: true)
         sub_fastq_ch = SUBSAMPLE(fastq_ch)
         paf_ch = ALIGNMENT(sub_fastq_ch, genome_ch)
@@ -89,7 +89,7 @@ workflow {
         template_ch = TEMPLATE_MAKER(matrix_ch, transcriptome_ch, barcodes_ch, gtf_ch, length_dist_ch)
     }
 
-    if (params.cycles > 0) {
+    if (params.pcr_cycles > 0) {
         template_ch = PCR_SIMULATOR(template_ch)
     }
 
