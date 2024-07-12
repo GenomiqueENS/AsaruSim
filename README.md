@@ -97,33 +97,33 @@ The human GRCh38 [reference transcriptome](https://ftp.ensembl.org/pub/release-1
 ##### BASIC WORKFLOW
 
 ```bash
-# nextflow run main.nf --matrix dataset/sub_pbmc_matrice.csv \
-#                      --transcriptome dataset/Homo_sapiens.GRCh38.cdna.all.fa \
-#                      --features gene_name \
-#                      --gtf dataset/genes.gtf
+ nextflow run main.nf --matrix dataset/sub_pbmc_matrice.csv \
+                      --transcriptome dataset/Homo_sapiens.GRCh38.cdna.all.fa \
+                      --features gene_name \
+                      --gtf dataset/genes.gtf
 ```
 
 ##### WITH PCR AMPLIFICTION
 
 ```bash
-# nextflow run main.nf --matrix dataset/sub_pbmc_matrice.csv \
-#                      --transcriptome dataset/Homo_sapiens.GRCh38.cdna.all.fa \
-#                      --features gene_name \
-#                      --gtf dataset/GRCh38-2020-A-genes.gtf \
-#                      --pcr_cycles 2 \
-#                      --pcr_dup_rate 0.7 \
-#                      --pcr_error_rate 0.00003
+ nextflow run main.nf --matrix dataset/sub_pbmc_matrice.csv \
+                      --transcriptome dataset/Homo_sapiens.GRCh38.cdna.all.fa \
+                      --features gene_name \
+                      --gtf dataset/GRCh38-2020-A-genes.gtf \
+                      --pcr_cycles 2 \
+                      --pcr_dup_rate 0.7 \
+                      --pcr_error_rate 0.00003
 ```
 
 ##### WITH SIMULATED CELL TYPE COUNTS
 
 ```bash
-# nextflow run main.nf --matrix dataset/sub_pbmc_matrice.csv \
-#                      --transcriptome dataset/Homo_sapiens.GRCh38.cdna.all.fa \
-#                      --features gene_name \
-#                      --gtf dataset/GRCh38-2020-A-genes.gtf \
-#                      --sim_celltypes true \
-#                      --cell_types_annotation dataset/sub_pbmc_cell_type.csv
+ nextflow run main.nf --matrix dataset/sub_pbmc_matrice.csv \
+                      --transcriptome dataset/Homo_sapiens.GRCh38.cdna.all.fa \
+                      --features gene_name \
+                      --gtf dataset/GRCh38-2020-A-genes.gtf \
+                      --sim_celltypes true \
+                      --cell_types_annotation dataset/sub_pbmc_cell_type.csv
 ```
 
 ##### WITH PERSONALIZED ERROR MODEL
@@ -141,18 +141,18 @@ nextflow run main.nf --matrix dataset/sub_pbmc_matrice.csv \
 ##### COMPLETE WORKFLOW
 
 ```bash
-# nextflow run main.nf --matrix dataset/sub_pbmc_matrice.csv \
-#                      --transcriptome dataset/Homo_sapiens.GRCh38.cdna.all.fa \
-#                      --features gene_name \
-#                      --gtf dataset/GRCh38-2020-A-genes.gtf \
-#                      --sim_celltypes true \
-#                      --cell_types_annotation dataset/sub_pbmc_cell_type.csv
-#                      --build_model true \
-#                      --fastq_model dataset/sub_pbmc_reads.fq \
-#                      --ref_genome dataset/GRCh38-2020-A-genome.fa 
-#                      --pcr_cycles 2 \
-#                      --pcr_dup_rate 0.7 \
-#                      --pcr_error_rate 0.00003
+ nextflow run main.nf --matrix dataset/sub_pbmc_matrice.csv \
+                      --transcriptome dataset/Homo_sapiens.GRCh38.cdna.all.fa \
+                      --features gene_name \
+                      --gtf dataset/GRCh38-2020-A-genes.gtf \
+                      --sim_celltypes true \
+                      --cell_types_annotation dataset/sub_pbmc_cell_type.csv
+                      --build_model true \
+                      --fastq_model dataset/sub_pbmc_reads.fq \
+                      --ref_genome dataset/GRCh38-2020-A-genome.fa 
+                      --pcr_cycles 2 \
+                      --pcr_dup_rate 0.7 \
+                      --pcr_error_rate 0.00003
 ```
 
 ## Results
