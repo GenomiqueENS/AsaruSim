@@ -57,7 +57,7 @@ Configuration for error model:
 | `error_model`      | Custom error model file (optional)                            | `null`                                        |
 | `qscore_model`     | Custom Q-score model file (optional)                          | `null`                                        |
 | `build_model`      | to build your own error/Qscor model                           | `false`                                       |
-| `model_fastq`      | reference real read (.fastq) to train error model   (optional)      | `false`                                       |
+| `fastq_model`      | reference real read (.fastq) to train error model   (optional)      | `false`                                       |
 | `ref_genome`       | reference genome .fasta file (optional)                       | `false`                                       |
 
 ### Additional Parameters
@@ -97,10 +97,65 @@ User can choose among 4 ways to simulate template reads.
 
 We use SPARSIM tools to simulate count matrix. for more information a bout synthetic count matrix, please read [SPARSIM](https://gitlab.com/sysbiobig/sparsim/-/blob/master/vignettes/sparsim.Rmd?ref_type=heads#Sec_Input_parameter_estimated_from_data) documentaion.
 
-#### use a real count matrix
+##### BASIC WORKFLOW
+
 ```bash
-nextflow run main.nf --matrix test_data/matrix.csv \
-                     --transcriptome test_data/transcriptome.fa
+# nextflow run main.nf --matrix dataset/sub_pbmc_matrice.csv \
+#                      --transcriptome dataset/Homo_sapiens.GRCh38.cdna.all.fa \
+#                      --features gene_name \
+#                      --gtf dataset/genes.gtf
+```
+
+##### WITH PCR AMPLIFICTION
+
+```bash
+# nextflow run main.nf --matrix dataset/sub_pbmc_matrice.csv \
+#                      --transcriptome dataset/Homo_sapiens.GRCh38.cdna.all.fa \
+#                      --features gene_name \
+#                      --gtf dataset/GRCh38-2020-A-genes.gtf \
+#                      --pcr_cycles 2 \
+#                      --pcr_dup_rate 0.7 \
+#                      --pcr_error_rate 0.00003
+```
+
+##### WITH SIMULATED CELL TYPE COUNTS
+
+```bash
+# nextflow run main.nf --matrix dataset/sub_pbmc_matrice.csv \
+#                      --transcriptome dataset/Homo_sapiens.GRCh38.cdna.all.fa \
+#                      --features gene_name \
+#                      --gtf dataset/GRCh38-2020-A-genes.gtf \
+#                      --sim_celltypes true \
+#                      --cell_types_annotation dataset/sub_pbmc_cell_type.csv
+```
+
+##### WITH PERSONALIZED ERROR MODEL
+
+```bash
+nextflow run main.nf --matrix dataset/sub_pbmc_matrice.csv \
+                     --transcriptome dataset/Homo_sapiens.GRCh38.cdna.all.fa \
+                     --features gene_name \
+                     --gtf dataset/GRCh38-2020-A-genes.gtf \
+                     --build_model true \
+                     --fastq_model dataset/sub_pbmc_reads.fq \
+                     --ref_genome dataset/GRCh38-2020-A-genome.fa 
+```
+
+##### COMPLETE WORKFLOW
+
+```bash
+# nextflow run main.nf --matrix dataset/sub_pbmc_matrice.csv \
+#                      --transcriptome dataset/Homo_sapiens.GRCh38.cdna.all.fa \
+#                      --features gene_name \
+#                      --gtf dataset/GRCh38-2020-A-genes.gtf \
+#                      --sim_celltypes true \
+#                      --cell_types_annotation dataset/sub_pbmc_cell_type.csv
+#                      --build_model true \
+#                      --fastq_model dataset/sub_pbmc_reads.fq \
+#                      --ref_genome dataset/GRCh38-2020-A-genome.fa 
+#                      --pcr_cycles 2 \
+#                      --pcr_dup_rate 0.7 \
+#                      --pcr_error_rate 0.00003
 ```
 
 ## Results
