@@ -149,7 +149,7 @@ nextflow run main.nf --matrix dataset/sub_pbmc_matrice.csv \
                       --cell_types_annotation dataset/sub_pbmc_cell_type.csv \
                       --build_model true \
                       --fastq_model dataset/sub_pbmc_reads.fq \
-                      --ref_genome dataset/GRCh38-2020-A-genome.fa 
+                      --ref_genome dataset/GRCh38-2020-A-genome.fa \
                       --pcr_cycles 2 \
                       --pcr_dup_rate 0.7 \
                       --pcr_error_rate 0.00003
