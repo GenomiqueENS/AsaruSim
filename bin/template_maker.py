@@ -39,6 +39,7 @@ parser.add_argument('--length_dist', type=str, default="0.37,0.0,824.94", help="
 parser.add_argument('--adapter', type=str, default="ATGCGTAGTCAGTCATGATC", help="Adapter sequence.")
 parser.add_argument('--TSO', type=str, default="ATGCGTAGTCAGTCATGATC", help="TSO sequence.")
 parser.add_argument('--len_dT', type=str, default=15, help="Poly-dT sequence.")
+parser.add_argument('--log', type=str, help="Path to the log file CSV.")
 
 
 class Transcriptome:
@@ -274,6 +275,16 @@ def main():
             os.remove(filename)
             
     count_unfiltered_bc = len(unfiltered_bc) if args.unfilteredBC else 0
+
+    if args.log:
+        log_df = {
+        "Simulated Cell BC": len(matrix.columns), 
+        "Simulated Filtered-Out": count_unfiltered_bc,
+        "Simulated UMI counts": generator.counter,
+        "Unknown transcript counts": generator.unfound}
+        log_df = pd.DataFrame(log_df, index=[0])
+        log_df.to_csv(args.log, index=False)
+    
     logging.info("Completed successfully. Have a great day!")
     logging.info("Stats : "+
                  "\nSimulated Cell BC: "+

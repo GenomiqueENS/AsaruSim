@@ -103,7 +103,10 @@ def parse_gtf(gtf_file, index_by, protein_coding=False):
                 transcript_id = attributes['transcript_id']
                 transcript_type = attributes.get('transcript_biotype', attributes.get('transcript_type', ''))
 
-                index_key = attributes[index_by]
+                if index_by in attributes:
+                    index_key = attributes[index_by]
+                else:
+                    continue
                 
                 start = int(columns[3]) 
                 end = int(columns[4])  

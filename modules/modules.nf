@@ -27,7 +27,8 @@ process TEMPLATE_MAKER {
     val length_dist
 
     output:
-    path "template.fa"
+    path "template.fa", emit: template
+    path "log.csv", emit: logfile
     
     script:
         def gtf = params.features != "transcript_id" ? "--features $params.features --gtf $gtf" : ""
@@ -45,7 +46,8 @@ process TEMPLATE_MAKER {
     --len_dT $params.dT_LENGTH \
     $full_length \
     --length_dist ${length_dist.trim()} \
-    -o template.fa
+    -o template.fa \
+    --log log.csv
     """
 }
 
@@ -99,15 +101,28 @@ process GROUND_TRUTH {
 
 process QC {
     publishDir params.outdir, mode:'copy'
+    cache false
     
     input:
     path fastq
+    val conf_params
+    val work_params
+    path logo
+    path log_csv
 
     output:
     path "${params.projetctName}.html"
 
     script:
     """
-    python3.11 $projectDir/bin/QC.py -q $fastq -n $params.projetctName
+    bedread_version=\$(echo "-e \$(badread --version | head -n 1)")
+    nextflow_version=\$(echo "-e \$(Rscript -e "ip <- installed.packages()[, c('Package', 'Version')]; 
+                                    cat(paste(ip[,1], ip[,2], sep=': '), sep='\n')" | grep SPARSim)")
+
+    python3.11 $projectDir/bin/QC.py -q $fastq --stats $log_csv -n $params.projetctName \
+            ${conf_params.join(' ').replaceAll(/[\(\)\$]/, "")} \
+            ${work_params.join('').replaceAll(/[\(\)\$]/, "")} \
+            "\$bedread_version" \
+            "\$nextflow_version" \
     """
 }

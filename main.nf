@@ -25,6 +25,12 @@ log.info """\
     """
     .stripIndent()
 
+logo_ch = channel.fromPath('./images/asarusim_v2.png')
+config_params_ch = Channel.value(params)
+                          .map { p -> p.collect { key, value -> "--conf_params $key:$value" }}
+
+workflow_params_ch = Channel.from(workflow).map { p -> p.collect { value -> "--work_params '$value'" }}
+
 include { SUBSAMPLE } from './modules/errorModel.nf'
 include { ALIGNMENT } from './modules/errorModel.nf'
 include { ERROR_MODLING } from './modules/errorModel.nf'
@@ -83,19 +89,22 @@ workflow {
 
     if (params.sim_celltypes) {  
         counts_ch = COUNT_SIMULATOR(matrix_ch, cell_types_ch)
-        template_ch = TEMPLATE_MAKER(counts_ch, transcriptome_ch, barcodes_ch, gtf_ch, length_dist_ch)
+        TEMPLATE_MAKER(counts_ch, transcriptome_ch, barcodes_ch, gtf_ch, length_dist_ch)
 
     } else { 
-        template_ch = TEMPLATE_MAKER(matrix_ch, transcriptome_ch, barcodes_ch, gtf_ch, length_dist_ch)
+        TEMPLATE_MAKER(matrix_ch, transcriptome_ch, barcodes_ch, gtf_ch, length_dist_ch)
     }
+
+    template_fa_ch = TEMPLATE_MAKER.out.template
+    template_log_ch = TEMPLATE_MAKER.out.logfile
 
     if (params.pcr_cycles > 0) {
-        template_ch = PCR_SIMULATOR(template_ch)
+        template_fa_ch = PCR_SIMULATOR(template_fa_ch)
     }
 
-    gr_truth_ch = GROUND_TRUTH(template_ch)
-    error_ch    = ERRORS_SIMULATOR(template_ch, error_model_ch, qscore_model_ch, identity_ch)
-    qc_ch       = QC(error_ch)
+    gr_truth_ch = GROUND_TRUTH(template_fa_ch)
+    error_ch    = ERRORS_SIMULATOR(template_fa_ch, error_model_ch, qscore_model_ch, identity_ch)
+    qc_ch       = QC(error_ch, config_params_ch, workflow_params_ch, logo_ch, template_log_ch)
 }
 
 workflow.onComplete {
