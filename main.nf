@@ -1,3 +1,46 @@
+params.help = false
+
+if (params.help) {
+    println """
+    Usage:
+        nextflow run main.nf --matrix <path> [options]
+
+    Description:
+        ASARU - SINGLE CELL NANOPORE READS SIMULATOR PIPELINE
+        Simulates nanopore reads from single-cell data.
+
+    Required parameters:
+        --matrix <path>                Path to the expression matrix.
+        --transcriptome <path>         Path to the transcriptome file.
+        --matrix_rownames <value>      Row names for the matrix.
+
+    Optional parameters:
+        --barcodes_counts <value>      Distribution of barcode counts.
+        --full_length <boolean>        Indicates if transcripts are full length [default: false].
+        --simulate_cell_types <boolean>Simulate cell types [default: false].
+        --cell_type_annotation <path>  Path to cell type annotation.
+        --gtf <path>                   Path to the GTF file.
+        --trained_model <path>         Pre-trained error model.
+        --identity_model <value>       Identity model for Badread.
+        --error_model <path>           Custom error model.
+        --qscore_model <path>          Q score model.
+        --build_model <boolean>        Build an error model [default: false].
+        --fastq_model <path>           Path to the FASTQ model.
+        --ref_genome <path>            Path to the reference genome.
+        --umi_duplication <value>      UMI duplication.
+        --pcr_cycles <int>             Number of PCR amplification cycles.
+        --pcr_dup_rate <value>         PCR duplication rate.
+        --pcr_error_rate <value>       PCR error rate.
+        --pcr_total_reads <int>        Total number of PCR reads.
+        --outdir <path>                Output directory.
+
+    Example:
+        nextflow run main.nf --matrix 'path/to/matrix.csv' --transcriptome 'path/to/transcriptome.fa' --outdir 'results'
+
+    """
+    System.exit(0)
+}
+
 log.info """\
     ASARU - SINGLE CELL NANOPORE READS SIMULATOR P I P E L I N E
     ===================================
