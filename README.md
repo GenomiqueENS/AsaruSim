@@ -104,15 +104,6 @@ The human GRCh38 [reference transcriptome](https://ftp.ensembl.org/pub/release-1
                       --gtf dataset/genes.gtf
 ```
 
-##### USING SPARSIM PRESET MATRICES (e.g Chu et al. 10X Genomics datasets)
-
-```bash
-nextflow run main.nf --matrix Chu_param_preset \
-                      --transcriptome datasets/Homo_sapiens.GRCh38.cdna.all.fa \
-                      --features gene_name \
-                      --gtf datasets/Homo_sapiens.GRCh38.112.gtf
-```
-
 ##### WITH PCR AMPLIFICTION
 
 ```bash
@@ -134,6 +125,15 @@ nextflow run main.nf --matrix Chu_param_preset \
                       --gtf dataset/GRCh38-2020-A-genes.gtf \
                       --sim_celltypes true \
                       --cell_types_annotation dataset/sub_pbmc_cell_type.csv
+```
+
+##### USING A SPARSIM PRESET MATRIX (e.g Chu et al. 10X Genomics datasets)
+
+```bash
+nextflow run main.nf --matrix Chu_param_preset \
+                      --transcriptome datasets/Homo_sapiens.GRCh38.cdna.all.fa \
+                      --features gene_name \
+                      --gtf datasets/Homo_sapiens.GRCh38.112.gtf
 ```
 
 ##### WITH PERSONALIZED ERROR MODEL
