@@ -87,16 +87,24 @@ include { ERRORS_SIMULATOR } from './modules/modules.nf'
 include { GROUND_TRUTH } from './modules/modules.nf'
 include { QC } from './modules/modules.nf'
 
+def validSPARSIMOptions = ['Bacher', 'Camp', 'Chu', 'Engel', 'Horning', 'Tung', 'Zheng', 'Macosko', 'Saunders']
+validSPARSIMOptions = validSPARSIMOptions.collect { it + '_param_preset' }
+
 workflow {
     transcriptome_ch = Channel.fromPath(params.transcriptome, checkIfExists: true)
     
-    matrix_ch = params.matrix != null ? file(params.matrix, checkIfExists: true) : 
+    if (params.matrix in validSPARSIMOptions){
+        matrix_ch = file(params.matrix, type: "file")
+
+    } else {
+        matrix_ch =  params.matrix != null ? file(params.matrix, checkIfExists: true) : 
                                              file("no_matrix_counts", type: "file")
+    }
 
     barcodes_ch = params.bc_counts != null ? file(params.bc_counts, checkIfExists: true) : 
                                             file("no_barcode_counts", type: "file")
 
-    if (barcodes_ch.name == "no_barcode_counts" && matrix_ch.name == "no_matrix_counts") {
+    if (barcodes_ch.name == "no_barcode_counts" && matrix_ch.name == "no_matrix_counts" ) {
         log.error("Please provide one of the parameters: 'matrix counts' or 'barcodes counts'.")
         System.exit(1) 
     }
@@ -104,7 +112,7 @@ workflow {
     gtf_ch = params.features != "transcript_id" ? Channel.fromPath(params.gtf, checkIfExists: true) : 
                                              file("no_gtf", type: "file")
 
-    cell_types_ch = params.sim_celltypes == true ? Channel.fromPath(params.cell_types_annotation, checkIfExists: true) : 
+    cell_types_ch = params.sim_celltypes == true && (params.matrix !in validSPARSIMOptions)? Channel.fromPath(params.cell_types_annotation, checkIfExists: true) : 
                                              file("no_cell_types", type: "file")
 
     error_model_ch = params.error_model != null ? file(params.error_model) : 

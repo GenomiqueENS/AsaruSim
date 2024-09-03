@@ -1,5 +1,6 @@
 process COUNT_SIMULATOR {
     publishDir params.outdir, mode:'copy'
+    cache false
     
     input:
     path matrix
@@ -101,7 +102,6 @@ process GROUND_TRUTH {
 
 process QC {
     publishDir params.outdir, mode:'copy'
-    cache false
     
     input:
     path fastq
