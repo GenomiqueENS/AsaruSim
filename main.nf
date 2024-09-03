@@ -1,3 +1,46 @@
+params.help = false
+
+if (params.help) {
+    println """
+    Usage:
+        nextflow run main.nf --matrix <path> [options]
+
+    Description:
+        ASARU - SINGLE CELL NANOPORE READS SIMULATOR PIPELINE
+        Simulates nanopore reads from single-cell data.
+
+    Required parameters:
+        --matrix <path>                Path to the expression matrix.
+        --transcriptome <path>         Path to the transcriptome file.
+        --matrix_rownames <value>      Row names for the matrix.
+
+    Optional parameters:
+        --barcodes_counts <value>      Distribution of barcode counts.
+        --full_length <boolean>        Indicates if transcripts are full length [default: false].
+        --simulate_cell_types <boolean>Simulate cell types [default: false].
+        --cell_type_annotation <path>  Path to cell type annotation.
+        --gtf <path>                   Path to the GTF file.
+        --trained_model <path>         Pre-trained error model.
+        --identity_model <value>       Identity model for Badread.
+        --error_model <path>           Custom error model.
+        --qscore_model <path>          Q score model.
+        --build_model <boolean>        Build an error model [default: false].
+        --fastq_model <path>           Path to the FASTQ model.
+        --ref_genome <path>            Path to the reference genome.
+        --umi_duplication <value>      UMI duplication.
+        --pcr_cycles <int>             Number of PCR amplification cycles.
+        --pcr_dup_rate <value>         PCR duplication rate.
+        --pcr_error_rate <value>       PCR error rate.
+        --pcr_total_reads <int>        Total number of PCR reads.
+        --outdir <path>                Output directory.
+
+    Example:
+        nextflow run main.nf --matrix 'path/to/matrix.csv' --transcriptome 'path/to/transcriptome.fa' --outdir 'results'
+
+    """
+    System.exit(0)
+}
+
 log.info """\
     ASARU - SINGLE CELL NANOPORE READS SIMULATOR P I P E L I N E
     ===================================
@@ -44,16 +87,24 @@ include { ERRORS_SIMULATOR } from './modules/modules.nf'
 include { GROUND_TRUTH } from './modules/modules.nf'
 include { QC } from './modules/modules.nf'
 
+def validSPARSIMOptions = ['Bacher', 'Camp', 'Chu', 'Engel', 'Horning', 'Tung', 'Zheng', 'Macosko', 'Saunders']
+validSPARSIMOptions = validSPARSIMOptions.collect { it + '_param_preset' }
+
 workflow {
     transcriptome_ch = Channel.fromPath(params.transcriptome, checkIfExists: true)
     
-    matrix_ch = params.matrix != null ? file(params.matrix, checkIfExists: true) : 
+    if (params.matrix in validSPARSIMOptions){
+        matrix_ch = file(params.matrix, type: "file")
+
+    } else {
+        matrix_ch =  params.matrix != null ? file(params.matrix, checkIfExists: true) : 
                                              file("no_matrix_counts", type: "file")
+    }
 
     barcodes_ch = params.bc_counts != null ? file(params.bc_counts, checkIfExists: true) : 
                                             file("no_barcode_counts", type: "file")
 
-    if (barcodes_ch.name == "no_barcode_counts" && matrix_ch.name == "no_matrix_counts") {
+    if (barcodes_ch.name == "no_barcode_counts" && matrix_ch.name == "no_matrix_counts" ) {
         log.error("Please provide one of the parameters: 'matrix counts' or 'barcodes counts'.")
         System.exit(1) 
     }
@@ -61,7 +112,7 @@ workflow {
     gtf_ch = params.features != "transcript_id" ? Channel.fromPath(params.gtf, checkIfExists: true) : 
                                              file("no_gtf", type: "file")
 
-    cell_types_ch = params.sim_celltypes == true ? Channel.fromPath(params.cell_types_annotation, checkIfExists: true) : 
+    cell_types_ch = params.sim_celltypes == true && (params.matrix !in validSPARSIMOptions)? Channel.fromPath(params.cell_types_annotation, checkIfExists: true) : 
                                              file("no_cell_types", type: "file")
 
     error_model_ch = params.error_model != null ? file(params.error_model) : 

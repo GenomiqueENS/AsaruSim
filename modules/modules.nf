@@ -1,5 +1,6 @@
 process COUNT_SIMULATOR {
     publishDir params.outdir, mode:'copy'
+    cache false
     
     input:
     path matrix
@@ -35,7 +36,7 @@ process TEMPLATE_MAKER {
         def unfiltered = barcodes.name != "no_barcode_counts"? "--unfilteredBC $barcodes" : ""
         def full_length = params.full_length? "--full_length" : ""
     """
-    python3.11 $projectDir/bin/template_maker.py  --matrix ${matrix} \
+    python3.11 $projectDir/bin/AsaruSim.py template_maker  --matrix ${matrix} \
     --transcriptome $transcriptome \
     $unfiltered \
     $gtf \
@@ -74,7 +75,7 @@ process ERRORS_SIMULATOR {
         qscore_model_arg = qscore_model.name != "no_qscore_model" ? "--badread-qscore-model $qscore_model" : ""
     }
     """
-    python3.11 $projectDir/bin/SLSim/error_simulator.py --thread $params.threads \
+    python3.11 $projectDir/bin/AsaruSim.py call_badread --thread $params.threads \
     -t $template \
     --badread-identity ${identity.trim()} \
     $error_model_arg \
@@ -101,7 +102,6 @@ process GROUND_TRUTH {
 
 process QC {
     publishDir params.outdir, mode:'copy'
-    cache false
     
     input:
     path fastq

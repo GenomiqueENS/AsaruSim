@@ -4,23 +4,33 @@ import numpy as np
 import random
 import os, sys, math
 from toolkit import multiprocessing_submit
+from toolkit import read_template
 
 YELLOW = "\033[93m"
 GRAY = "\033[90m"
 RESET = "\033[0m"
 
 logging.basicConfig(level=logging.INFO, format=GRAY+ '%(message)s' +RESET)
-parser = argparse.ArgumentParser(description="Script for generating template sequences for scRNAseq simulation.")
 
-parser.add_argument('-f','--template', type=str, required=True, help="Path to the template FASTA file.")
-parser.add_argument('-o','--out', type=str, default="out.fa", help="Path to the output FASTA file.")
-parser.add_argument('-c','--cycles', type=int, default=5, help="number of cycles.")
-parser.add_argument('-d','--dup', type=float, default=0.7, help="duplication rate.")
-parser.add_argument('-e','--error', type=float, default=0.00003, help="error rate.")
-parser.add_argument('-t','--thread', type=int, default=4, help="number of threads to use.")
-parser.add_argument('-b','--batch_size', type=int, default=500, help="batch size.")
-parser.add_argument('-n','--totalNamber', type=int, default=None, help="total number of sequence to select from the finel pool.")
-parser.add_argument('-s','--seed', type=int, default=2024, help="seed value.")
+
+def setup_PCR_parameters(parent_parser):
+    description="Nanopore template maker."
+    if parent_parser:
+        parser = argparse.ArgumentParser(parents=[parent_parser], 
+                                        description=description)
+    else :
+        parser = argparse.ArgumentParser(description=description)
+
+    parser.add_argument('-f','--template', type=str, required=True, help="Path to the template FASTA file.")
+    parser.add_argument('-o','--out', type=str, default="out.fa", help="Path to the output FASTA file.")
+    parser.add_argument('-c','--cycles', type=int, default=5, help="number of cycles.")
+    parser.add_argument('-d','--dup', type=float, default=0.7, help="duplication rate.")
+    parser.add_argument('-e','--error', type=float, default=0.00003, help="error rate.")
+    parser.add_argument('-t','--thread', type=int, default=4, help="number of threads to use.")
+    parser.add_argument('-b','--batch_size', type=int, default=500, help="batch size.")
+    parser.add_argument('-n','--totalNamber', type=int, default=None, help="total number of sequence to select from the finel pool.")
+    parser.add_argument('-s','--seed', type=int, default=2024, help="seed value.")
+    return parser
 
 class Molecule ():
     def __init__(self, name, length, seq, root, inherited_mut):
@@ -113,39 +123,8 @@ def PCR(template, cycles, dup_rate, error_rate, totalNumber, outfile):
     sequencing(pool_list, outfile, totalNumber)
 
 
-def read_template(fasta, thread, batch_size):
-    """
-    Function to read and extract sequences from a FASTQ file. It supports both plain text and gzipped files.
-    Inputs:
-    fastq: String, path to the FASTQ file.
-    Returns: List of sequences encoded in ASCII.
-    """
-    if thread==1:
-        with open(fasta, 'rt') as f:
-            while True:
-                header = f.readline()
-                if not header: break
-                name = header[1:].strip()
-                seq = f.readline().strip()
-                yield name, seq
-    else:
-        batch = []
-        with open(fasta, 'r') as f:
-                while True:
-                    header = f.readline()
-                    if not header: break
-                    name = header[1:].strip()
-                    seq = f.readline().strip()
-                    batch.append([name, seq])
-                    if len(batch) == batch_size:
-                        yield batch
-                        batch = []
-                if len(batch) > 0:
-                    yield batch
+def PCR_amplificator(args):
 
-
-def main():
-    args = parser.parse_args()
     logging.info("_____________________________")
     logging.info("Template file name : %s" , args.template)
     logging.info("PCR cycles         : %s" , args.cycles)
@@ -206,4 +185,6 @@ def main():
     logging.info("DONE!_______________________________")
 
 if __name__ == "__main__":
-    main()  
+    args = setup_PCR_parameters(None).parse_args()
+    if args:
+        PCR_amplificator(args)

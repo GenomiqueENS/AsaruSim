@@ -20,26 +20,33 @@ GRAY = "\033[90m"
 RESET = "\033[0m"
 
 logging.basicConfig(level=logging.INFO, format=GRAY+ '%(message)s' +RESET)
-parser = argparse.ArgumentParser(description="Script for generating template sequences for scRNAseq simulation.")
 
-parser.add_argument('-r','--transcriptome', type=str, help="Path to the transcriptome FASTA file.")
-parser.add_argument('-m','--matrix', type=str, help="Path to the SPARSim matrix CSV file.")
-parser.add_argument('-g','--gtf', type=str, help="Path to the annotation GTF file.")
-parser.add_argument('-b','--unfilteredBC', type=str, help="Path to the unfiltered barcode counts CSV file.")
+def setup_template_parameters(parent_parser):
+    description="Nanopore template maker."
+    if parent_parser:
+        parser = argparse.ArgumentParser(parents=[parent_parser], 
+                                        description=description)
+    else :
+        parser = argparse.ArgumentParser(description=description)
+    parser.add_argument('-r','--transcriptome', type=str, help="Path to the transcriptome FASTA file.")
+    parser.add_argument('-m','--matrix', type=str, help="Path to the SPARSim matrix CSV file.")
+    parser.add_argument('-g','--gtf', type=str, help="Path to the annotation GTF file.")
+    parser.add_argument('-b','--unfilteredBC', type=str, help="Path to the unfiltered barcode counts CSV file.")
 
-parser.add_argument('-o','--outFasta', type=str, default="template.fa", help="Output file name for the generated template sequences.")
-parser.add_argument('-t','--threads', type=int, default=1, help="Number of threads to use.")
-parser.add_argument('-f','--features', type=str, default="transcript_id", help="Feature rownames in input matrix.")
-parser.add_argument('--on_disk', action='store_true', help="Whether to use Faidx to index the FASTA or load the FASTA in memory.")
-parser.add_argument('-c','--amp', type=int, default=1, help="amplification rate.")
+    parser.add_argument('-o','--outFasta', type=str, default="template.fa", help="Output file name for the generated template sequences.")
+    parser.add_argument('-t','--threads', type=int, default=1, help="Number of threads to use.")
+    parser.add_argument('-f','--features', type=str, default="transcript_id", help="Feature rownames in input matrix.")
+    parser.add_argument('--on_disk', action='store_true', help="Whether to use Faidx to index the FASTA or load the FASTA in memory.")
+    parser.add_argument('-c','--amp', type=int, default=1, help="amplification rate.")
 
-parser.add_argument('--full_length', action='store_true', help="Simulate a full length transcripts.")
-parser.add_argument('--length_dist', type=str, default="0.37,0.0,824.94", help="amplification rate.")
+    parser.add_argument('--full_length', action='store_true', help="Simulate a full length transcripts.")
+    parser.add_argument('--length_dist', type=str, default="0.37,0.0,824.94", help="amplification rate.")
 
-parser.add_argument('--adapter', type=str, default="ATGCGTAGTCAGTCATGATC", help="Adapter sequence.")
-parser.add_argument('--TSO', type=str, default="ATGCGTAGTCAGTCATGATC", help="TSO sequence.")
-parser.add_argument('--len_dT', type=str, default=15, help="Poly-dT sequence.")
-parser.add_argument('--log', type=str, help="Path to the log file CSV.")
+    parser.add_argument('--adapter', type=str, default="ATGCGTAGTCAGTCATGATC", help="Adapter sequence.")
+    parser.add_argument('--TSO', type=str, default="ATGCGTAGTCAGTCATGATC", help="TSO sequence.")
+    parser.add_argument('--len_dT', type=str, default=15, help="Poly-dT sequence.")
+    parser.add_argument('--log', type=str, help="Path to the log file CSV.")
+    return parser
 
 
 class Transcriptome:
@@ -159,9 +166,8 @@ class TemplateGenerator:
             self.unfound += unfound
 
 
-def main():
+def template_maker(args):
     
-    args = parser.parse_args()
     logging.info("_____________________________")
     logging.info("Output file name : %s" , args.outFasta)
     logging.info("Threads: %d", args.threads)
@@ -295,6 +301,7 @@ def main():
                  str(generator.counter)+
                  "\nUnknown transcript counts: "+str(generator.unfound))
     
-
 if __name__ == "__main__":
-    main()
+    args = setup_template_parameters(None).parse_args()
+    if args:
+        template_maker(args)
