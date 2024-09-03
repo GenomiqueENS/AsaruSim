@@ -5,7 +5,7 @@ from math import log
 from tqdm import tqdm
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
-from fqread.fastq_reader import SequenceStats
+from QC_tools.fqread.fastq_reader import SequenceStats
 
 
 def process_fastq_file(filename, pos, reverse):
@@ -16,14 +16,14 @@ def process_fastq_file(filename, pos, reverse):
     with open_fn(filename[0], 'rb') as f:
         while sequence_count < 100000:
             header = f.readline()
-            if not header: break  # EOF
+            if not header: break
             if reverse:
                 seq = f.readline().strip()[::-1][:pos]
-                f.readline()  # Plus line
+                f.readline() 
                 quality = f.readline().strip()[::-1]
             else:
                 seq = f.readline().strip()[:pos]
-                f.readline()  # Plus line
+                f.readline()
                 quality = f.readline().strip()
             
             stats.add_sequence(seq, quality)

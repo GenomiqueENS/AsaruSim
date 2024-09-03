@@ -52,7 +52,7 @@ def make_plots(df_stats, positions, q1, q_scores, q3):
                      percentage_T=df_stats["%T"],
                      result_directory='your/directory/path',
                      graph_name='Base % over sequence',
-                     yaxis_title='Q Score',
+                     yaxis_title='Base (%)',
                      log=False,
                      sigma=1,
                      yaxis_starts_zero=False,
@@ -249,33 +249,23 @@ def over_time_graph(time_series,
         ]
     )
                          
-    # Set minimal value of y axis to 0 if required
     y_axis_range_mode = 'tozero' if yaxis_starts_zero else 'normal'
 
-    # Update layout
     fig.update_layout(
         title=graph_name,
-        autosize=False,
-        width=1400,
-        height=400,
+        autosize=True,
         xaxis_title='<b> Position</b> ',
         yaxis_title='<b>' +yaxis_title +'</b>',
         hovermode='x unified',
         yaxis=dict(rangemode=y_axis_range_mode)
     )
 
-    # Set logarithmic scale if required
+
     if log:
         fig.update_yaxes(type="log")
 
-    # Show the figure
-    return fig #.write_html("Qscore_over_positions.html") #fig.show()
+    return fig 
 
-    # Dummy return values (modify as needed for your application)
-    #table_html = None
-    #div = None
-    #output_file = None
-    #return graph_name, output_file, table_html, div
 
 def ATGC_graph(time_series,
                      percentage_G,
@@ -292,16 +282,14 @@ def ATGC_graph(time_series,
                      green_zone_starts_at=None,
                      green_zone_color=toulligqc_colors['phred_score_over_time']):
 
-    # Apply Gaussian filter to the percentile series
     filtered_G = gaussian_filter1d(percentage_G[0], sigma=sigma)
     filtered_C = gaussian_filter1d(percentage_C[0], sigma=sigma)
     filtered_A = gaussian_filter1d(percentage_A[0], sigma=sigma)
     filtered_T = gaussian_filter1d(percentage_T[0], sigma=sigma)
 
-    # Create a Plotly figure
+
     fig = go.Figure()
 
-    # Add the 25th percentile trace
     fig.add_trace(go.Scatter(
         x=time_series[0], 
         y=filtered_G, 
@@ -311,29 +299,24 @@ def ATGC_graph(time_series,
         fill=None
     ))
 
-    # Add the 75th percentile trace
     fig.add_trace(go.Scatter(
         x=time_series[0], 
         y=filtered_A, 
         name="Base A Percentage",
         mode='lines',
         line=dict(color="green", width=2),
-        #fill='tonexty', # Fill the area between this line and the previous line
-        #fillcolor='rgba(0, 100, 0, 0.2)' # Semi-transparent fill
     ))
 
-    # Add the 75th percentile trace
+
     fig.add_trace(go.Scatter(
         x=time_series[0], 
         y=filtered_T, 
         name="Base T Percentage",
         mode='lines',
         line=dict(color="blue", width=2),
-        #fill='tonexty', # Fill the area between this line and the previous line
-        #fillcolor='rgba(0, 100, 0, 0.2)' # Semi-transparent fill
+
     ))
 
-    # Add the 50th percentile (median) trace
     fig.add_trace(go.Scatter(
         x=time_series[0], 
         y=filtered_C, 
@@ -345,12 +328,11 @@ def ATGC_graph(time_series,
     ######
     ### add REVERSE
     #####
-    # Apply Gaussian filter to the percentile series
     filtered_G = gaussian_filter1d(percentage_G[1], sigma=sigma)
     filtered_C = gaussian_filter1d(percentage_C[1], sigma=sigma)
     filtered_A = gaussian_filter1d(percentage_A[1], sigma=sigma)
     filtered_T = gaussian_filter1d(percentage_T[1], sigma=sigma)                   
-        # Add the 25th percentile trace
+
     fig.add_trace(go.Scatter(
         x=time_series[1].multiply(other = -1), 
         y=filtered_G, 
@@ -361,7 +343,6 @@ def ATGC_graph(time_series,
         visible=False
     ))
 
-    # Add the 75th percentile trace
     fig.add_trace(go.Scatter(
         x=time_series[1].multiply(other = -1), 
         y=filtered_A, 
@@ -369,11 +350,9 @@ def ATGC_graph(time_series,
         mode='lines',
         line=dict(color="green", width=2),
         visible=False
-        #fill='tonexty', # Fill the area between this line and the previous line
-        #fillcolor='rgba(0, 100, 0, 0.2)' # Semi-transparent fill
+
     ))
 
-    # Add the 75th percentile trace
     fig.add_trace(go.Scatter(
         x=time_series[1].multiply(other = -1), 
         y=filtered_T, 
@@ -381,11 +360,9 @@ def ATGC_graph(time_series,
         mode='lines',
         line=dict(color="blue", width=2),
         visible=False
-        #fill='tonexty', # Fill the area between this line and the previous line
-        #fillcolor='rgba(0, 100, 0, 0.2)' # Semi-transparent fill
     ))
 
-    # Add the 50th percentile (median) trace
+
     fig.add_trace(go.Scatter(
         x=time_series[1].multiply(other = -1), 
         y=filtered_C, 
@@ -407,7 +384,7 @@ def ATGC_graph(time_series,
                 buttons=list([
                     dict(
                         args=[{'visible': [True, True, True, True, False, False, False, False]},
-                              {**_xaxis('Q score', dict(visible=True)),
+                              {**_xaxis('Base percent', dict(visible=True)),
                                **_yaxis('Position', dict(visible=True)),
                                'plot_bgcolor': '#e5ecf6'}],
                         label="Begining ",
@@ -415,7 +392,7 @@ def ATGC_graph(time_series,
                     ),
                     dict(
                         args=[{'visible': [False, False, False, False, True, True, True, True]},
-                              {**_xaxis('Q score', dict(visible=True)),
+                              {**_xaxis('Base percent', dict(visible=True)),
                                **_yaxis('Position', dict(visible=True)),
                                'plot_bgcolor': '#e5ecf6'}],
                         label="End",
@@ -431,46 +408,32 @@ def ATGC_graph(time_series,
             )
         ]
     )
-    # Set minimal value of y axis to 0 if required
+
     y_axis_range_mode = 'tozero' if yaxis_starts_zero else 'normal'
 
-    # Update layout
+
     fig.update_layout(
         title=graph_name,
-        autosize=False,
-        width=1400,
-        height=400,
+        autosize=True,
         xaxis_title='<b> Position </b>',
         yaxis_title= '<b>' + yaxis_title + '</b>',
         hovermode='x unified',
         yaxis=dict(rangemode=y_axis_range_mode)
     )
 
-    # Set logarithmic scale if required
     if log:
         fig.update_yaxes(type="log")
-
-    # Show the figure
-    return fig #.write_html("ATGC_graph.html") #fig.show()
-
-    # Dummy return values (modify as needed for your application)
-    #table_html = None
-    #div = None
-    #output_file = None
-    #return graph_name, output_file, table_html, div
+    return fig 
 
 
 def GC_content_plot(gc_content_percentages):
-    # Distribution réelle
-    max_gc = 100  # Pourcentage max
+    max_gc = 100  
     gc_distribution = [0] * (max_gc + 1)
     for gc_content in gc_content_percentages:
         gc_distribution[int(gc_content)] += 1
     
-    # affichage en ligne
     real_distribution_smooth = np.convolve(gc_distribution, np.ones(5)/5, mode='same')
     
-    # Distribution théorique
     mean_gc = np.mean(gc_content_percentages)
     std_gc = np.std(gc_content_percentages)
     theoretical_distribution = [stats.norm.pdf(gc, mean_gc, std_gc) * len(gc_content_percentages) for gc in range(max_gc + 1)]
@@ -480,17 +443,16 @@ def GC_content_plot(gc_content_percentages):
     fig.add_trace(go.Scatter(x=list(range(max_gc + 1)), y=real_distribution_smooth, mode='lines', name='Distribution GC réelle'))
     fig.add_trace(go.Scatter(x=list(range(max_gc + 1)), y=theoretical_distribution, mode='lines', name='Distribution GC théorique'))
     
-    # Mise en forme
-    fig.update_layout(title='Distribution du contenu en GC',
-                      autosize=False,
-                      width=1400,
-                      height=400,
-                      xaxis_title='<b> Contenu en GC (%) </b>',
-                      yaxis_title='<b> Compte </b>',
+    fig.update_layout(title='GC content distribution',
+                      autosize=True,
+                      #width=1400,
+                      #height=400,
+                      xaxis_title='<b> GC content (%) </b>',
+                      yaxis_title='<b> Count </b>',
                       legend_title='<b> Légende </b>')
     
 
-    return fig #fig.write_html("GC_content.html") #.show()
+    return fig
 
 
 def interpolation_points(series, graph_name):

@@ -232,6 +232,37 @@ def cDNA_pool(trns, transcriptome):
         return sequence[:]
 
 
+def read_template(fasta, thread=1, batch_size=0):
+    """
+    Function to read and extract sequences from a FASTQ file. It supports both plain text and gzipped files.
+    Inputs:
+    fastq: String, path to the FASTQ file.
+    Returns: List of sequences encoded in ASCII.
+    """
+    if thread==1:
+        with open(fasta, 'rt') as f:
+            while True:
+                header = f.readline()
+                if not header: break
+                name = header[1:].strip()
+                seq = f.readline().strip()
+                yield name, seq
+    else:
+        batch = []
+        with open(fasta, 'r') as f:
+                while True:
+                    header = f.readline()
+                    if not header: break
+                    name = header[1:].strip()
+                    seq = f.readline().strip()
+                    batch.append([name, seq])
+                    if len(batch) == batch_size:
+                        yield batch
+                        batch = []
+                if len(batch) > 0:
+                    yield batch
+
+
 def multiprocessing_submit(func, iterator, n_process=mp.cpu_count()-1 ,pbar = True, pbar_update = 500,  *arg, **kwargs):
     executor = ProcessPoolExecutor(n_process)
 

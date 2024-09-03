@@ -11,7 +11,7 @@ process PCR_SIMULATOR {
         def totalNamber = params.pcr_total_reads == null? "" : "--totalNamber $params.pcr_total_reads"
 
     """
-    python3.11 $projectDir/bin/PCR.py -f ${fasta} \
+    python3.11 $projectDir/bin/AsaruSim.py PCR -f ${fasta} \
     --cycles $params.pcr_cycles \
     --dup $params.pcr_dup_rate \
     --error $params.pcr_error_rate \

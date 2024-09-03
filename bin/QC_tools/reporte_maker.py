@@ -4,7 +4,7 @@ import dominate
 from dominate.tags import *
 from dominate.util import raw
 from datetime import date, datetime
-from libs.css_style import body_style, head_style, div_summary_style
+from QC_tools.css_style import body_style, head_style, div_summary_style
 
 import plotly.express as px
 df2 = px.data.iris()

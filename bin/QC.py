@@ -1,12 +1,11 @@
 import pandas as pd
 import argparse
 
-from libs import qc_generator
-from libs.figs import over_time_graph
-from libs.figs import ATGC_graph
-from libs.figs import GC_content_plot
-from libs.report import make_report
-from libs.reporte_maker import reporter
+from QC_tools import qc_generator
+from QC_tools.figs import over_time_graph
+from QC_tools.figs import ATGC_graph
+from QC_tools.figs import GC_content_plot
+from QC_tools.reporte_maker import reporter
 import plotly.graph_objects as go
 
 parser = argparse.ArgumentParser(description='Process some integers.')
@@ -65,8 +64,8 @@ def create_table(stats_data, table_width=500, table_height=400, margin=10):
     data=[go.Table(
         header=dict(
             values=['', '<b>Value</b>'],
-            fill_color='#EBEBEB',  # Couleur de fond de l'en-tête
-            font=dict(color='black', size=12)  # Couleur et taille du texte de l'en-tête
+            fill_color='#EBEBEB',
+            font=dict(color='black', size=12)
         ),
         cells=dict(
             values=[
@@ -78,8 +77,8 @@ def create_table(stats_data, table_width=500, table_height=400, margin=10):
                     int(int(stats_data['Simulated UMI counts']) / int(stats_data['Simulated Cell BC']))
                 ]
             ],
-            fill_color='#f4f4f4',  # Couleur de fond des cellules
-            font=dict(color='black', size=11)  # Couleur et taille du texte des cellules
+            fill_color='#f4f4f4',
+            font=dict(color='black', size=11)
         )
     )]
 
@@ -131,7 +130,6 @@ def main():
     pie_fig = pie_unknown(df_stats)
     stats_table = create_table(df_stats)
 
-    #make_report(Q_over_time, atgc, gc, args.project, args.positions)
     reporter(stats_table, 
              pie_fig, 
              Q_over_time, 
