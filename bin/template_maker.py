@@ -50,8 +50,8 @@ def setup_template_parameters(parent_parser):
 
 
 class Transcriptome:
-    def __init__(self, fasta_file):
-        self.on_disk = True
+    def __init__(self, fasta_file, on_disk):
+        self.on_disk = on_disk
         self.transcripts = self.load(fasta_file)
 
     def load(self, fasta_file):
@@ -175,6 +175,7 @@ def template_maker(args):
     logging.info("Path to the transcriptome file: %s", args.transcriptome)
     logging.info("Path to the matrix file: %s", args.matrix)
     logging.info("Path to the unfiltered barcode counts file: %s", args.unfilteredBC)
+    logging.info("Amplification rate: %s", args.amp)
     logging.info("Adapter sequence: %s", args.adapter)
     logging.info("TSO sequence: %s", args.TSO)
     logging.info("Poly-dT sequence: %s", args.len_dT)
@@ -203,7 +204,7 @@ def template_maker(args):
             length_dist = [0.37, 0.0, 824.94]
 
 
-    transcriptome = Transcriptome(args.transcriptome)
+    transcriptome = Transcriptome(args.transcriptome, args.on_disk)
     generator = TemplateGenerator(transcriptome = transcriptome, 
                                   adapter = args.adapter, 
                                   len_dT = args.len_dT, 
