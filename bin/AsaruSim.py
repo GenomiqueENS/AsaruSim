@@ -1,4 +1,5 @@
 import argparse
+import version
 from badread_caller import badread_caller, setup_badread_command
 from template_maker import template_maker, setup_template_parameters
 from PCR_amplificator import PCR_amplificator, setup_PCR_parameters
@@ -6,6 +7,7 @@ from PCR_amplificator import PCR_amplificator, setup_PCR_parameters
 def setup_parent_parser():
     parent_parser = argparse.ArgumentParser(add_help=False)
     parent_parser.add_argument('--debug', action='store_true', help='Enable debug mode')
+    parent_parser.add_argument('--version', action='version', version=version.__version__)
     return parent_parser
 
 

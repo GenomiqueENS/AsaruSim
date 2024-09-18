@@ -1,6 +1,6 @@
 import pandas as pd
 import argparse
-
+import version
 from QC_tools import qc_generator
 from QC_tools.figs import over_time_graph
 from QC_tools.figs import ATGC_graph
@@ -138,7 +138,9 @@ def main():
              args.conf_params, 
              args.work_params, 
              args.project,
-             args.env)
+             args.env,
+             version.__version__
+             )
 
 
 if __name__ == "__main__":
