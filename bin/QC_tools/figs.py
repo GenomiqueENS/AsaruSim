@@ -36,8 +36,8 @@ def make_plots(df_stats, positions, q1, q_scores, q3):
                      percentile_50_series=q_scores,
                      percentile_75_series=q3,
                      result_directory='your/directory/path',
-                     graph_name='Qscore over position',
-                     yaxis_title='Q Score',
+                     graph_name='Base % over sequence',
+                     yaxis_title='Base (%)',
                      log=False,
                      sigma=1,
                      yaxis_starts_zero=False,
@@ -224,16 +224,16 @@ def over_time_graph(time_series,
                 buttons=list([
                     dict(
                         args=[{'visible': [True, True, True, False, False, False, ]},
-                              {**_xaxis('Q score', dict(visible=True)),
-                               **_yaxis('Position', dict(visible=True)),
+                              {**_xaxis('Sequence position (bp)', dict(visible=True)),
+                               **_yaxis('Q score', dict(visible=True)),
                                'plot_bgcolor': '#e5ecf6'}],
                         label="Begining ",
                         method="update"
                     ),
                     dict(
                         args=[{'visible': [False, False, False, True, True, True, ]},
-                              {**_xaxis('Q score', dict(visible=True)),
-                               **_yaxis('Position', dict(visible=True)),
+                              {**_xaxis('Sequence position (bp)', dict(visible=True)),
+                               **_yaxis('Q score', dict(visible=True)),
                                'plot_bgcolor': '#e5ecf6'}],
                         label="End",
                         method="update"
@@ -254,7 +254,7 @@ def over_time_graph(time_series,
     fig.update_layout(
         title=graph_name,
         autosize=True,
-        xaxis_title='<b> Position</b> ',
+        xaxis_title='<b>Sequence position (bp)</b> ',
         yaxis_title='<b>' +yaxis_title +'</b>',
         hovermode='x unified',
         yaxis=dict(rangemode=y_axis_range_mode)
@@ -384,16 +384,16 @@ def ATGC_graph(time_series,
                 buttons=list([
                     dict(
                         args=[{'visible': [True, True, True, True, False, False, False, False]},
-                              {**_xaxis('Base percent', dict(visible=True)),
-                               **_yaxis('Position', dict(visible=True)),
+                              {**_xaxis('Sequence position (bp)', dict(visible=True)),
+                               **_yaxis('Base (%)', dict(visible=True)),
                                'plot_bgcolor': '#e5ecf6'}],
                         label="Begining ",
                         method="update"
                     ),
                     dict(
                         args=[{'visible': [False, False, False, False, True, True, True, True]},
-                              {**_xaxis('Base percent', dict(visible=True)),
-                               **_yaxis('Position', dict(visible=True)),
+                              {**_xaxis('Sequence position (bp)', dict(visible=True)),
+                               **_yaxis('Base (%)', dict(visible=True)),
                                'plot_bgcolor': '#e5ecf6'}],
                         label="End",
                         method="update"
@@ -415,8 +415,8 @@ def ATGC_graph(time_series,
     fig.update_layout(
         title=graph_name,
         autosize=True,
-        xaxis_title='<b> Position </b>',
-        yaxis_title= '<b>' + yaxis_title + '</b>',
+        xaxis_title='<b> Sequence position (bp) </b>',
+        yaxis_title= '<b> Base (%)</b>',
         hovermode='x unified',
         yaxis=dict(rangemode=y_axis_range_mode)
     )
