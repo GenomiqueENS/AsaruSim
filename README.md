@@ -2,7 +2,7 @@
 [![dependency - Nextflow](https://img.shields.io/badge/dependency-Nextflow-green)](https://pkg.go.dev/Nextflow)
 
 ![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.2622997.svg)]([https://doi.org/10.5281/zenodo.2622997](https://doi.org/10.1101/2024.09.20.613625 )
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.2622997.svg)](https://doi.org/10.1101/2024.09.20.613625)
 [![issues - AsaruSim](https://img.shields.io/github/issues/GenomiqueENS/AsaruSim)](https://github.com/GenomiqueENS/AsaruSim/issues)
 [![Twitter Follow](https://img.shields.io/twitter/follow/Genomique_ENS.svg?style=social)](https://twitter.com/Genomique_ENS)
 
