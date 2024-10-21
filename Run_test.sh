@@ -22,6 +22,11 @@ if [ ! -d "dataset" ]; then
     tar -xzf sub_pbmc_datasets.tar.gz
 fi
 
+# Subset 10 cells from sub_pbmc_matrice for test
+if [ ! -f "dataset/test_sub_pbmc_matrice.csv" ]; then
+    cut -d ',' -f-11 dataset/sub_pbmc_matrice.csv > dataset/test_sub_pbmc_matrice.csv
+fi
+
 # Download reference transcriptome
 if [ ! -f "dataset/Homo_sapiens.GRCh38.cdna.all.fa" ]; then
     wget -O - https://ftp.ensembl.org/pub/release-112/fasta/homo_sapiens/cdna/Homo_sapiens.GRCh38.cdna.all.fa.gz | gzip -d > dataset/Homo_sapiens.GRCh38.cdna.all.fa
