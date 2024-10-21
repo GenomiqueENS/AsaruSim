@@ -9,7 +9,7 @@
 # Asaru Sim Documentation
 <a href="images/asarusim_v2.svg"><img src="images/asarusim_v2.svg" align="middle" height="100" width="290" >
 
-`AsaruSim` is an automated Nextflow workflow designed for simulating 10x single-cell Nanopore reads. It allows to benchmark and optimize single-cell Nanopore long read data processing pipelines.
+`AsaruSim` is an automated Nextflow workflow designed for simulating 10x single-cell Nanopore reads. This workflow aims to generate a gold standard dataset for the objective assessment and optimization of single-cell long-read methods.
 Full [documentation](https://GenomiqueENS.github.io/AsaruSim/) is avialable [here](https://GenomiqueENS.github.io/AsaruSim/).
 
 <a href="images/schema.png"><img src="images/schema.png" align="middle" height="650" width="920" >
@@ -29,6 +29,13 @@ Clone the `AsaruSim` GitHub repository:
 ```bash
 git clone https://github.com/alihamraoui/AsaruSim.git
 cd AsaruSim
+```
+
+## Test
+To test your installation, we provide an automated script to download reference annotations and simulate a subset of human PBMC dataset `run_test.sh`.
+
+```bash
+bash run_test.sh
 ```
 
 ## Configuration
@@ -96,13 +103,15 @@ A demonstration dataset to initiate this workflow is accessible on zenodo DOI : 
 The human GRCh38 [reference transcriptome](https://ftp.ensembl.org/pub/release-112/fasta/homo_sapiens/cdna/), [gtf annotation](https://ftp.ensembl.org/pub/release-112/gtf/homo_sapiens/) and [fasta referance genome](https://ftp.ensembl.org/pub/release-112/fasta/homo_sapiens/dna/) can be downloaded from Ensembl.
 
 
+You can use the `run_test.sh` script to automatically download all required datasets.
+
 ##### BASIC WORKFLOW
 
 ```bash
  nextflow run main.nf --matrix dataset/sub_pbmc_matrice.csv \
                       --transcriptome dataset/Homo_sapiens.GRCh38.cdna.all.fa \
                       --features gene_name \
-                      --gtf dataset/genes.gtf
+                      --gtf dataset/GRCh38-2020-A-genes.gtf
 ```
 
 ##### WITH PCR AMPLIFICTION
