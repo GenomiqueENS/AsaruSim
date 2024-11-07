@@ -3,7 +3,7 @@
 [![Made with Docker](https://img.shields.io/badge/Made_with-Docker-blue?logo=docker&logoColor=white)](https://www.docker.com/ "Go to Docker homepage")
 
 ![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.2622997.svg)](https://doi.org/10.1101/2024.09.20.613625)
+[![DOI](https://img.shields.io/badge/DOI-https%3A%2F%2Fdoi.org%2F10.1101%2F2024.09.20.613625%20-blue)](https://doi.org/10.1101/2024.09.20.613625)
 [![Twitter Follow](https://img.shields.io/twitter/follow/Genomique_ENS.svg?style=social)](https://twitter.com/Genomique_ENS)
 
 # Asaru Sim Documentation
