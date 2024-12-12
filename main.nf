@@ -12,7 +12,8 @@ if (params.help) {
     Required parameters:
         --matrix <path>                Path to the expression matrix.
         --transcriptome <path>         Path to the transcriptome file.
-        --matrix_rownames <value>      Row names for the matrix.
+        --features <value>              Features type provided in the count matrix (The matrix row names)
+                                       (transcript_id, gene_id or gene_name)[default: transcript_id]
 
     Optional parameters:
         --barcodes_counts <value>      Distribution of barcode counts.
@@ -32,6 +33,7 @@ if (params.help) {
         --pcr_dup_rate <value>         PCR duplication rate.
         --pcr_error_rate <value>       PCR error rate.
         --pcr_total_reads <int>        Total number of PCR reads.
+        --truncation_model <path>      Path to truncation probabilities .CSV file [default: bin/models/truncation_default_model.csv].
         --outdir <path>                Output directory.
 
     Example:
@@ -58,6 +60,7 @@ log.info """\
     Qscore model                  : ${params.qscore_model}
     build erro model              : ${params.build_model}
     FASTQ model                   : ${params.fastq_model}
+    Truncation model              : ${params.truncation_model}
     reference genome              : ${params.ref_genome}
     UMI duplication               : ${params.umi_duplication}
     PCR amplification cycles      : ${params.pcr_cycles}
@@ -79,6 +82,7 @@ include { ALIGNMENT } from './modules/errorModel.nf'
 include { ERROR_MODLING } from './modules/errorModel.nf'
 include { IDENTITY_ESTIMATION } from './modules/errorModel.nf'
 include { LENGTH_ESTIMATION } from './modules/errorModel.nf'
+include { TRUNCATION_ESTIMATION } from './modules/truncationModel.nf'
 
 include { COUNT_SIMULATOR } from './modules/modules.nf'
 include { TEMPLATE_MAKER } from './modules/modules.nf'
@@ -125,6 +129,8 @@ workflow {
                                                     channel.from("96,2,98")
     length_dist_ch = params.length_dist != null ? channel.from(params.length_dist) :
                                                     channel.from("0.37,0.0,824.94")
+    truncation_ch = params.truncation_model != null ? file(params.truncation_model) :
+                                                    file("bin/models/truncation_default_model.csv", type: "file")
 
     if (params.build_model) {
         fastq_ch = Channel.fromPath(params.fastq_model, checkIfExists: true)
@@ -133,6 +139,7 @@ workflow {
         paf_ch = ALIGNMENT(sub_fastq_ch, genome_ch)
         ERROR_MODLING(sub_fastq_ch, genome_ch, paf_ch)
         identity_ch = IDENTITY_ESTIMATION(paf_ch)
+        truncation_ch = TRUNCATION_ESTIMATION(paf_ch)
         length_dist_ch = LENGTH_ESTIMATION(fastq_ch)
         error_model_ch = ERROR_MODLING.out.error_model_ch
         qscore_model_ch = ERROR_MODLING.out.qscore_model_ch
@@ -140,10 +147,10 @@ workflow {
 
     if (params.sim_celltypes) {  
         counts_ch = COUNT_SIMULATOR(matrix_ch, cell_types_ch)
-        TEMPLATE_MAKER(counts_ch, transcriptome_ch, barcodes_ch, gtf_ch, length_dist_ch)
+        TEMPLATE_MAKER(counts_ch, transcriptome_ch, barcodes_ch, gtf_ch, length_dist_ch, truncation_ch)
 
     } else { 
-        TEMPLATE_MAKER(matrix_ch, transcriptome_ch, barcodes_ch, gtf_ch, length_dist_ch)
+        TEMPLATE_MAKER(matrix_ch, transcriptome_ch, barcodes_ch, gtf_ch, length_dist_ch, truncation_ch)
     }
 
     template_fa_ch = TEMPLATE_MAKER.out.template

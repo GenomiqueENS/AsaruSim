@@ -41,6 +41,7 @@ def setup_template_parameters(parent_parser):
 
     parser.add_argument('--full_length', action='store_true', help="Simulate a full length transcripts.")
     parser.add_argument('--length_dist', type=str, default="0.37,0.0,824.94", help="amplification rate.")
+    parser.add_argument('--truncation_model', type=str, default="truncation_default_model.csv", help="truncation model.")
 
     parser.add_argument('--adapter', type=str, default="ATGCGTAGTCAGTCATGATC", help="Adapter sequence.")
     parser.add_argument('--TSO', type=str, default="ATGCGTAGTCAGTCATGATC", help="TSO sequence.")
@@ -74,7 +75,7 @@ class Transcriptome:
 
 
 class TemplateGenerator:
-    def __init__(self, transcriptome, adapter, len_dT, TSO, outFasta, threads, amp, full_length, length_dist):
+    def __init__(self, transcriptome, adapter, len_dT, TSO, outFasta, threads, amp, truncation_model, full_length, length_dist):
         self.COMPLEMENT_MAP  = str.maketrans('ATCG', 'TAGC')
         self.transcriptome = transcriptome
         self.full_length = full_length
@@ -83,6 +84,7 @@ class TemplateGenerator:
         self.dT = "T"*int(len_dT)
         self.TSO = TSO
         self.amp = amp
+        self.truncation_model = truncation_model
         self.outFasta = outFasta
         self.threads = threads
         self.counter = 0
@@ -103,10 +105,9 @@ class TemplateGenerator:
             filename = f"tmp_cells/{cell}.fa"
             mode = 'w'
             
-        max_len = 4000
-        min_len = 3000
-        p_cut = 0.88
-        p_long = 0.9999
+        if not self.full_length:
+            left_probs = list(self.truncation_model.left)
+            right_probs = list(self.truncation_model.right)
         
         with open(filename, mode) as fasta:
             idx = 1
@@ -114,9 +115,8 @@ class TemplateGenerator:
             for idx, trns in enumerate(trns_ids):
                 cDNA = self.transcriptome.get_sequence(trns)
                 if cDNA:
-                    if len(cDNA) > min_len:
-                            cDNA = cut_sequence_proba(cDNA)
-                                
+                    if not self.full_length:
+                        cDNA = truncate_cDNA(cDNA, probs_3p=right_probs, probs_5p=left_probs)
                     umi = self.generate_random_umi()
                     seq = f"{self.adapter}{cell}{umi}{self.dT}{cDNA}{self.TSO}"
                     if random.randint(0, 1) == 1:
@@ -137,10 +137,9 @@ class TemplateGenerator:
             
         transcript_id = True if features=="transcript_id" else False
 
-        max_len = 2000
-        min_len = 1500
-        p_cut = 0.8
-        p_long = 0.999
+        if not self.full_length:
+            left_probs = list(self.truncation_model.left)
+            right_probs = list(self.truncation_model.right)
         
         with open(filename, mode) as fasta:
             idx = 0
@@ -150,7 +149,9 @@ class TemplateGenerator:
                 if count > 1:
                     trns = trns if transcript_id else fetch_transcript_id_by_gene(trns, transcripts_index)
                     cDNA = self.transcriptome.get_sequence(trns) if trns else None
-                    if cDNA:   
+                    if cDNA:
+                        if not self.full_length:
+                            cDNA = truncate_cDNA(cDNA, probs_3p=right_probs, probs_5p=left_probs)
                         for i in range(count):
                             umi = self.generate_random_umi()
                             seq = f"{self.adapter}{cell}{umi}{self.dT}{cDNA}{self.TSO}"
@@ -178,6 +179,7 @@ def template_maker(args):
     logging.info("Amplification rate: %s", args.amp)
     logging.info("Adapter sequence: %s", args.adapter)
     logging.info("TSO sequence: %s", args.TSO)
+    logging.info("Truncation model: %s", args.truncation_model)
     logging.info("Poly-dT sequence: %s", args.len_dT)
     logging.info("Load the FASTA in memory?: %s", args.on_disk)
     logging.info("_______________________________")
@@ -195,6 +197,7 @@ def template_maker(args):
             
     if args.full_length:
         length_dist = None
+        truncation_model = None
         
     else :
         try:
@@ -202,6 +205,9 @@ def template_maker(args):
             length_dist = [float(x) for x in [shape, loc, scale]]
         except:
             length_dist = [0.37, 0.0, 824.94]
+    
+    if not args.full_length:
+        truncation_model = pd.read_csv(args.truncation_model)
 
 
     transcriptome = Transcriptome(args.transcriptome, args.on_disk)
@@ -213,7 +219,8 @@ def template_maker(args):
                                   length_dist = length_dist,
                                   outFasta = args.outFasta, 
                                   threads = args.threads,
-                                  amp = args.amp)
+                                  amp = args.amp,
+                                  truncation_model=truncation_model)
     if args.matrix:
         matrix = pd.read_csv(args.matrix, header=0, index_col=0) 
 

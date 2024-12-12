@@ -26,6 +26,7 @@ process TEMPLATE_MAKER {
     path barcodes
     path gtf
     val length_dist
+    path truncation_ch
 
     output:
     path "template.fa", emit: template
@@ -34,7 +35,7 @@ process TEMPLATE_MAKER {
     script:
         def gtf = params.features != "transcript_id" ? "--features $params.features --gtf $gtf" : ""
         def unfiltered = barcodes.name != "no_barcode_counts"? "--unfilteredBC $barcodes" : ""
-        def full_length = params.full_length? "--full_length" : ""
+        def full_length = params.full_length? "--full_length" : "--truncation_model $truncation_ch"
     """
     python3.11 $projectDir/bin/AsaruSim.py template_maker  --matrix ${matrix} \
     --transcriptome $transcriptome \

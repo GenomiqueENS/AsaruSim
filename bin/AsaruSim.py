@@ -3,6 +3,7 @@ import version
 from badread_caller import badread_caller, setup_badread_command
 from template_maker import template_maker, setup_template_parameters
 from PCR_amplificator import PCR_amplificator, setup_PCR_parameters
+from truncation_estimator import truncation_estimator, setup_truncation_parameters
 
 def setup_parent_parser():
     parent_parser = argparse.ArgumentParser(add_help=False)
@@ -24,6 +25,8 @@ def main():
                                              add_help=False)
     subparsers.add_parser('PCR', parents=[setup_PCR_parameters(parent_parser)], 
                                              add_help=False)
+    subparsers.add_parser('truncation_estimator', parents=[setup_truncation_parameters(parent_parser)], 
+                                             add_help=False)
 
     args = main_parser.parse_args()
 
@@ -33,6 +36,8 @@ def main():
         template_maker(args)
     if args.command == 'PCR':
         PCR_amplificator(args)
+    if args.command == 'truncation_estimator':
+        truncation_estimator(args)
     
 
 if __name__ == "__main__":
