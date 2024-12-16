@@ -61,11 +61,13 @@ process ERRORS_SIMULATOR {
     path error_model
     path qscore_model
     val identity
+    val n_reads
 
     output:
     path "simulated.fastq"
 
     script:
+    def batch_size = n_reads / 2 / params.threads as int
     def error_model_arg = ""
     def qscore_model_arg = ""
     if (params.trained_model) {
@@ -81,7 +83,8 @@ process ERRORS_SIMULATOR {
     --badread-identity ${identity.trim()} \
     $error_model_arg \
     $qscore_model_arg \
-    -o simulated.fastq
+    -o simulated.fastq \
+    --batch-size $batch_size
     """
 }
 

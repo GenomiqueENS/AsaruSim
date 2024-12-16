@@ -82,6 +82,7 @@ include { ALIGNMENT } from './modules/errorModel.nf'
 include { ERROR_MODLING } from './modules/errorModel.nf'
 include { IDENTITY_ESTIMATION } from './modules/errorModel.nf'
 include { LENGTH_ESTIMATION } from './modules/errorModel.nf'
+include { BATCH_SIZE_FOR_BADREAD } from './modules/errorModel.nf'
 include { TRUNCATION_ESTIMATION } from './modules/truncationModel.nf'
 
 include { COUNT_SIMULATOR } from './modules/modules.nf'
@@ -163,7 +164,8 @@ workflow {
     }
 
     gr_truth_ch = GROUND_TRUTH(template_fa_ch)
-    error_ch    = ERRORS_SIMULATOR(template_fa_ch, error_model_ch, qscore_model_ch, identity_ch)
+    batch_size_ch  = BATCH_SIZE_FOR_BADREAD(template_fa_ch)
+    error_ch    = ERRORS_SIMULATOR(template_fa_ch, error_model_ch, qscore_model_ch, identity_ch, batch_size_ch.toInteger())
     qc_ch       = QC(error_ch, config_params_ch, workflow_params_ch, logo_ch, template_log_ch)
 }
 

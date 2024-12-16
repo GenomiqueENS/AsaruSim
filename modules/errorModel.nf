@@ -70,3 +70,16 @@ process LENGTH_ESTIMATION {
     python3.11 $projectDir/bin/params_estimator/estimator.py -r length -f $reads_fastq -t $params.threads 
     """
 }
+
+process BATCH_SIZE_FOR_BADREAD {
+    input:
+    path template
+    
+    output:
+    stdout emit: batch_size
+
+    script:
+    """
+    wc -l $template | cut -d " " -f1
+    """
+}

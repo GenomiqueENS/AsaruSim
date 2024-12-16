@@ -7,7 +7,9 @@ import argparse
 from tqdm import tqdm
 import logging
 from badread.simulate import sequence_fragment, ErrorModel, QScoreModel, Identities
-from toolkit import multiprocessing_submit, read_template
+from toolkit import read_template, process_template_chunk
+from concurrent.futures import ProcessPoolExecutor
+
 
 YELLOW = "\033[93m"
 GRAY = "\033[90m"
@@ -33,7 +35,7 @@ def setup_badread_command(parent_parser):
                         help="Identity/accuracy (in percentage) parameter pass to badread: format mean,st,max.")              
     parser.add_argument('-o','--output',  type=str, default='sim_read.fq',
                         help="Filename of simulated reads with errors.")
-    parser.add_argument('--batch-size',  type=int, default=500,
+    parser.add_argument('--batch-size',  type=int, default=5000,
                         help= "Batch size")
     parser.add_argument('--thread',  type=int, default = 1, help="Thread")
     return parser
@@ -46,13 +48,17 @@ def write_fastq(output, name, seq, quals):
                         "+\n"
                         f"{quals}\n")
 
+def write_fastq_batch(output, batch_reads):
+    with open(output, 'a') as outFasta:
+        for name, seq, quals in batch_reads:
+            outFasta.write(f"@{name}\n{seq}\n+\n{quals}\n")
 
-def error_simulator(template, identities, err_model, q_model):
-    reads=[]
-    for name, read in template:
-        err_seq, quals, _, _= sequence_fragment(read, identities, err_model, q_model)
-        reads.append((name, err_seq, quals))
-    return reads
+
+def ln_error_simulator(template, identities, err_model, q_model, output):
+    with open(output, 'w') as outFasta:
+        for name, read in tqdm(template, total=100000):
+            err_seq, quals, _, _= sequence_fragment(read, identities, err_model, q_model)
+            outFasta.write(f"@{name}\n{err_seq}\n+\n{quals}\n")
 
 
 def badread_caller(args):
@@ -64,6 +70,7 @@ def badread_caller(args):
     logging.info("Badread Qscore model: %s", args.badread_error_model)
     logging.info("Badread identity parameters: %s", args.badread_identity)
     logging.info("Output file name : %s", args.output)
+    logging.info("Batch size : %s", args.batch_size)
     logging.info("Threads: %d", args.thread)
     logging.info("_______________________________")
 
@@ -77,22 +84,33 @@ def badread_caller(args):
     mean, sd, mx = [float(x) for x in badread_identity]
     identities = Identities(mean, sd, mx, stderr).get_identity()
 
-    template_chunks = read_template(args.template,
-                                    thread=args.thread,
-                                    batch_size=args.batch_size)
 
-    results = multiprocessing_submit(error_simulator,
-                                    template_chunks, 
-                                    identities=identities, 
-                                    err_model=error_model, 
-                                    q_model=qscore_model,
-                                    n_process=args.thread, 
-                                    pbar_update=args.batch_size)                   
+    if args.thread  > 1 :
+    
+        template_chunks = read_template(args.template,
+                                        thread=args.thread,
+                                        batch_size=args.batch_size)
 
-    for f in results:
-        reads_res = f.result()
-        for name, err_seq, quals in reads_res:
-            write_fastq(args.output, name, err_seq, quals)
+        with ProcessPoolExecutor(max_workers=args.thread) as executor:
+            futures = [
+                executor.submit(process_template_chunk, chunk, identities, error_model, qscore_model)
+                for chunk in template_chunks
+            ]
+
+            for future in tqdm(futures, desc="Processing"):
+                batch_results = future.result()
+                write_fastq_batch(args.output, batch_results)
+
+    else:
+        template=read_template(args.template,
+                                        thread=1,
+                                        batch_size=0)
+        ln_error_simulator(template, 
+                                identities=identities, 
+                                err_model=error_model, 
+                                q_model=qscore_model,
+                                output=args.output)
+
 
 if __name__ == '__main__':
     args = setup_badread_command(None).parse_args()
