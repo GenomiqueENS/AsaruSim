@@ -134,13 +134,15 @@ workflow {
 
     if (params.build_model) {
         fastq_ch = Channel.fromPath(params.fastq_model, checkIfExists: true)
-        genome_ch = Channel.fromPath(params.ref_genome, checkIfExists: true)
+        //genome_ch = Channel.fromPath(params.ref_genome, checkIfExists: true)
         sub_fastq_ch = SUBSAMPLE(fastq_ch)
-        paf_ch = ALIGNMENT(sub_fastq_ch, genome_ch)
-        ERROR_MODLING(sub_fastq_ch, genome_ch, paf_ch)
+        paf_ch = ALIGNMENT(sub_fastq_ch, transcriptome_ch)
+        ERROR_MODLING(sub_fastq_ch, transcriptome_ch, paf_ch)
         identity_ch = IDENTITY_ESTIMATION(paf_ch)
         truncation_ch = TRUNCATION_ESTIMATION(paf_ch)
-        length_dist_ch = LENGTH_ESTIMATION(fastq_ch)
+        if (params.features != "transcript_id") {
+            length_dist_ch = LENGTH_ESTIMATION(fastq_ch)
+        }
         error_model_ch = ERROR_MODLING.out.error_model_ch
         qscore_model_ch = ERROR_MODLING.out.qscore_model_ch
     }

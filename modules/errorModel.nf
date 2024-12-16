@@ -15,7 +15,7 @@ process SUBSAMPLE {
 process ALIGNMENT {
     input:
     path reads_fastq
-    path ref_genome
+    path ref_transcriptome
     
 
     output:
@@ -24,14 +24,14 @@ process ALIGNMENT {
     
     script:
     """
-    /minimap2-2.28_x64-linux/minimap2 -t $params.threads -c -x map-ont $ref_genome $reads_fastq | gzip > alignments.paf.gz
+    /minimap2-2.28_x64-linux/minimap2 -t $params.threads -c -x map-ont $ref_transcriptome $reads_fastq | gzip > alignments.paf.gz
     """
 }
 
 process ERROR_MODLING {
     input:
     path reads_fastq
-    path ref_genome
+    path ref_transcriptome
     path alignment
     
     output:
@@ -40,8 +40,8 @@ process ERROR_MODLING {
 
     script:
     """
-    python3.11 /bin/Badread/badread-runner.py error_model --reference $ref_genome --reads $reads_fastq --alignment $alignment > new_error_model
-    python3.11 /bin/Badread/badread-runner.py qscore_model --reference $ref_genome --reads $reads_fastq --alignment $alignment > new_qscore_model
+    python3.11 /bin/Badread/badread-runner.py error_model --reference $ref_transcriptome --reads $reads_fastq --alignment $alignment > new_error_model
+    python3.11 /bin/Badread/badread-runner.py qscore_model --reference $ref_transcriptome --reads $reads_fastq --alignment $alignment > new_qscore_model
     """
 }
 
