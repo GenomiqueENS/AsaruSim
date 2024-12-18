@@ -53,6 +53,41 @@ process TEMPLATE_MAKER {
     """
 }
 
+// process ERRORS_SIMULATOR {
+//     publishDir params.outdir, mode:'copy'
+
+//     input:
+//     path template
+//     path error_model
+//     path qscore_model
+//     val identity
+//     val n_reads
+
+//     output:
+//     path "simulated.fastq"
+
+//     script:
+//     def batch_size = n_reads / 2 / params.threads as int
+//     def error_model_arg = ""
+//     def qscore_model_arg = ""
+//     if (params.trained_model) {
+//         error_model_arg = "--badread-error-model ${params.trained_model}"
+//         qscore_model_arg = "--badread-qscore-model ${params.trained_model}"
+//     } else {
+//         error_model_arg = error_model.name != "no_error_model" ? "--badread-error-model $error_model" : ""
+//         qscore_model_arg = qscore_model.name != "no_qscore_model" ? "--badread-qscore-model $qscore_model" : ""
+//     }
+//     """
+//     python3.11 $projectDir/bin/AsaruSim.py call_badread --thread $params.threads \
+//     -t $template \
+//     --badread-identity ${identity.trim()} \
+//     $error_model_arg \
+//     $qscore_model_arg \
+//     -o simulated.fastq \
+//     --batch-size $batch_size
+//     """
+// }
+
 process ERRORS_SIMULATOR {
     publishDir params.outdir, mode:'copy'
 
@@ -61,13 +96,11 @@ process ERRORS_SIMULATOR {
     path error_model
     path qscore_model
     val identity
-    val n_reads
 
     output:
     path "simulated.fastq"
 
     script:
-    def batch_size = n_reads / 2 / params.threads as int
     def error_model_arg = ""
     def qscore_model_arg = ""
     if (params.trained_model) {
@@ -83,8 +116,7 @@ process ERRORS_SIMULATOR {
     --badread-identity ${identity.trim()} \
     $error_model_arg \
     $qscore_model_arg \
-    -o simulated.fastq \
-    --batch-size $batch_size
+    -o simulated.fastq
     """
 }
 

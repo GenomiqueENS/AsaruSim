@@ -1,7 +1,6 @@
 params.help = false
 
-if (params.help) {
-    println """
+help_message = """
     Usage:
         nextflow run main.nf --matrix <path> [options]
 
@@ -40,6 +39,9 @@ if (params.help) {
         nextflow run main.nf --matrix 'path/to/matrix.csv' --transcriptome 'path/to/transcriptome.fa' --outdir 'results'
 
     """
+
+if (params.help) {
+    println help_message
     System.exit(0)
 }
 
@@ -51,6 +53,7 @@ log.info """\
     matrix rownames               : ${params.features}
     barcodes counts distribution  : ${params.bc_counts}
     full length transcripts       : ${params.full_length}
+    novel transcripts             : ${params.novel_transcripts}
     simulate cell types           : ${params.sim_celltypes}
     cell type annotation          : ${params.cell_types_annotation}
     GTF                           : ${params.gtf}
@@ -58,7 +61,7 @@ log.info """\
     identity model                : ${params.badread_identity}
     error model                   : ${params.error_model}
     Qscore model                  : ${params.qscore_model}
-    build erro model              : ${params.build_model}
+    build new mode                : ${params.build_model}
     FASTQ model                   : ${params.fastq_model}
     Truncation model              : ${params.truncation_model}
     reference genome              : ${params.ref_genome}
@@ -66,7 +69,9 @@ log.info """\
     PCR amplification cycles      : ${params.pcr_cycles}
     PCR duplication rate          : ${params.pcr_dup_rate}
     PCR error rate                : ${params.pcr_error_rate}
-    Total number of PCR reads     : ${params.pcr_total_reads}
+    Poly dT mean length           : ${params.dT_LENGTH}
+    Adapter sequence              : ${params.ADPTER_SEQ}
+    TSO sequence                  : ${params.TSO_SEQ}
     outdir                        : ${params.outdir}
     """
     .stripIndent()
@@ -84,6 +89,7 @@ include { IDENTITY_ESTIMATION } from './modules/errorModel.nf'
 include { LENGTH_ESTIMATION } from './modules/errorModel.nf'
 include { BATCH_SIZE_FOR_BADREAD } from './modules/errorModel.nf'
 include { TRUNCATION_ESTIMATION } from './modules/truncationModel.nf'
+include { GFF_TO_FASTA } from './modules/gff_to_fasta.nf'
 
 include { COUNT_SIMULATOR } from './modules/modules.nf'
 include { TEMPLATE_MAKER } from './modules/modules.nf'
@@ -96,7 +102,8 @@ def validSPARSIMOptions = ['Bacher', 'Camp', 'Chu', 'Engel', 'Horning', 'Tung', 
 validSPARSIMOptions = validSPARSIMOptions.collect { it + '_param_preset' }
 
 workflow {
-    transcriptome_ch = Channel.fromPath(params.transcriptome, checkIfExists: true)
+    //transcriptome_ch = Channel.fromPath(params.transcriptome, checkIfExists: true)
+
     
     if (params.matrix in validSPARSIMOptions){
         matrix_ch = file(params.matrix, type: "file")
@@ -113,8 +120,11 @@ workflow {
         log.error("Please provide one of the parameters: 'matrix counts' or 'barcodes counts'.")
         System.exit(1) 
     }
+
+    transcriptome_ch =  params.transcriptome != null ? file(params.transcriptome, checkIfExists: true) : 
+                                             file("no_transcriptome", type: "file")
     
-    gtf_ch = params.features != "transcript_id" ? Channel.fromPath(params.gtf, checkIfExists: true) : 
+    gtf_ch = (params.features != "transcript_id" || params.transcriptome == null) ? Channel.fromPath(params.gtf, checkIfExists: true) : 
                                              file("no_gtf", type: "file")
 
     cell_types_ch = params.sim_celltypes == true && (params.matrix !in validSPARSIMOptions)? Channel.fromPath(params.cell_types_annotation, checkIfExists: true) : 
@@ -132,10 +142,18 @@ workflow {
                                                     channel.from("0.37,0.0,824.94")
     truncation_ch = params.truncation_model != null ? file(params.truncation_model) :
                                                     file("bin/models/truncation_default_model.csv", type: "file")
+    
+    if (params.transcriptome == null) {
+        if (params.gtf == null){
+            error("Please provide an annotation file in GTF format! e.g '--gtf annoation.gtf' or transcriptome in FASTA format") 
+        }else{
+            genome_ch = Channel.fromPath(params.genome, checkIfExists: true)
+            transcriptome_ch = GFF_TO_FASTA(gtf_ch, genome_ch)
+        }
+    }
 
     if (params.build_model) {
         fastq_ch = Channel.fromPath(params.fastq_model, checkIfExists: true)
-        //genome_ch = Channel.fromPath(params.ref_genome, checkIfExists: true)
         sub_fastq_ch = SUBSAMPLE(fastq_ch)
         paf_ch = ALIGNMENT(sub_fastq_ch, transcriptome_ch)
         ERROR_MODLING(sub_fastq_ch, transcriptome_ch, paf_ch)
@@ -160,12 +178,12 @@ workflow {
     template_log_ch = TEMPLATE_MAKER.out.logfile
 
     if (params.pcr_cycles > 0) {
-        template_fa_ch = PCR_SIMULATOR(template_fa_ch)
+        template_fa_ch = PCR_SIMULATOR(template_fa_ch, template_log_ch)
     }
 
     gr_truth_ch = GROUND_TRUTH(template_fa_ch)
     batch_size_ch  = BATCH_SIZE_FOR_BADREAD(template_fa_ch)
-    error_ch    = ERRORS_SIMULATOR(template_fa_ch, error_model_ch, qscore_model_ch, identity_ch, batch_size_ch.toInteger())
+    error_ch    = ERRORS_SIMULATOR(template_fa_ch, error_model_ch, qscore_model_ch, identity_ch) //, batch_size_ch.toInteger())
     qc_ch       = QC(error_ch, config_params_ch, workflow_params_ch, logo_ch, template_log_ch)
 }
 

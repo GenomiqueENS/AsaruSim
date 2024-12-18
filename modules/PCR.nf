@@ -3,12 +3,13 @@ process PCR_SIMULATOR {
     
     input:
     path fasta
+    path template_log
 
     output:
     path "amplified_reads.fa" 
     
     script:
-        def totalNamber = params.pcr_total_reads == null? "" : "--totalNamber $params.pcr_total_reads"
+        def totalNumber = params.pcr_total_reads == null? "" : "--totalNumber $params.pcr_total_reads"
 
     """
     python3.11 $projectDir/bin/AsaruSim.py PCR -f ${fasta} \
@@ -16,8 +17,9 @@ process PCR_SIMULATOR {
     --dup $params.pcr_dup_rate \
     --error $params.pcr_error_rate \
     --thread $params.threads \
-    $totalNamber \
-    --seed 2024 \
+    $totalNumber \
+    --seed $params.seed \
+    --maker_log ${template_log} \
     --out amplified_reads.fa
     """
 }
