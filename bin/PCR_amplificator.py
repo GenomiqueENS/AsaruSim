@@ -5,6 +5,7 @@ import random
 import os, sys, math
 from toolkit import multiprocessing_submit
 from toolkit import read_template
+import pandas as pd
 
 YELLOW = "\033[93m"
 GRAY = "\033[90m"
@@ -28,8 +29,9 @@ def setup_PCR_parameters(parent_parser):
     parser.add_argument('-e','--error', type=float, default=0.00003, help="error rate.")
     parser.add_argument('-t','--thread', type=int, default=4, help="number of threads to use.")
     parser.add_argument('-b','--batch_size', type=int, default=500, help="batch size.")
-    parser.add_argument('-n','--totalNamber', type=int, default=None, help="total number of sequence to select from the finel pool.")
+    parser.add_argument('-n','--totalNumber', type=int, default=None, help="total number of molecules to select from the finel pool.")
     parser.add_argument('-s','--seed', type=int, default=2024, help="seed value.")
+    parser.add_argument('-l','--maker_log', type=str, default=None, help="template maker log.")
     return parser
 
 class Molecule ():
@@ -80,9 +82,13 @@ class Molecule ():
             inherited_mut=self.inherited_mut.copy())
 
         
-def sequencing(pool, outfile, totalNumber=None):
+def sequencing(pool, outfile, totalNumber, threads=1):
+
     if totalNumber:
-        pool = random.sample(pool, totalNumber)
+        n_sample = int(totalNumber/(threads))
+        if n_sample < len(pool):
+            pool = random.sample(pool, n_sample)
+
     with open(outfile, 'a') as outFasta:
         for mol in pool:
             root_seq = list(str(mol.seq))
@@ -92,7 +98,7 @@ def sequencing(pool, outfile, totalNumber=None):
                            f"{''.join(root_seq)}\n")
 
 
-def PCR(template, cycles, dup_rate, error_rate, totalNumber, outfile):
+def PCR(template, cycles, dup_rate, error_rate, totalNumber, threads, outfile):
     pool_list=[] 
     mol_counter=0
 
@@ -104,23 +110,20 @@ def PCR(template, cycles, dup_rate, error_rate, totalNumber, outfile):
                                          seq=seq,
                                          root=name, 
                                          inherited_mut=dict()))
-        print("cycle : ", cycle+1)
+                
         product = []
-        
-        if dup_rate < 1:
-            dup_number = len(pool_list) * dup_rate
-            pool_list = random.sample(pool_list, int(dup_number))
-        
-        for mol in pool_list:
-            child_mol = mol.duplicate(mol_counter)
-            child_mol.mutate(error_rate)
 
-            product.append(child_mol)
-            mol_counter += 1
+        for mol in pool_list:
+            if dup_rate < 1 and random.random() < dup_rate:
+                child_mol = mol.duplicate(mol_counter)
+                child_mol.mutate(error_rate)
+
+                product.append(child_mol)
+                mol_counter += 1
 
         pool_list.extend(product)
-
-    sequencing(pool_list, outfile, totalNumber)
+        
+    sequencing(pool_list, outfile, totalNumber, threads)
 
 
 def PCR_amplificator(args):
@@ -132,6 +135,7 @@ def PCR_amplificator(args):
     logging.info("Duplication rate   : %s" , args.dup)
     logging.info("Output file name   : %s" , args.out)
     logging.info("Thread             : %s" , args.thread)
+    logging.info("final number       : %s" , args.totalNumber)
     logging.info("Batch size         : %s" , args.batch_size)
     logging.info("_______________________________")
 
@@ -151,6 +155,11 @@ def PCR_amplificator(args):
         logging.error(f"Invalid number of --dup. It takes values between 0 and 1.")
         sys.exit()
     
+    if args.maker_log:
+        df_mk_log = pd.read_csv(args.maker_log)
+        n_reads = df_mk_log["Number of reads"].iloc[0]
+        args.batch_size = int(n_reads/(args.thread))
+
     if args.thread == 1:
         template = read_template(args.template,
                                  thread=args.thread,
@@ -160,7 +169,7 @@ def PCR_amplificator(args):
                        cycles=args.cycles, 
                        dup_rate=args.dup,
                        error_rate=args.error,
-                       totalNumber=args.totalNamber,
+                       totalNumber=args.totalNumber, 
                        outfile=args.out)
     
     else:
@@ -173,7 +182,8 @@ def PCR_amplificator(args):
                                         cycles=args.cycles,
                                         dup_rate=args.dup,
                                         error_rate=args.error,
-                                        totalNumber=args.totalNamber,
+                                        totalNumber=args.totalNumber,
+                                        threads=args.thread,
                                         outfile=args.out,
                                         n_process=args.thread, 
                                         pbar_update=args.batch_size)

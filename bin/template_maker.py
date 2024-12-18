@@ -45,7 +45,7 @@ def setup_template_parameters(parent_parser):
 
     parser.add_argument('--adapter', type=str, default="ATGCGTAGTCAGTCATGATC", help="Adapter sequence.")
     parser.add_argument('--TSO', type=str, default="ATGCGTAGTCAGTCATGATC", help="TSO sequence.")
-    parser.add_argument('--len_dT', type=str, default=15, help="Poly-dT sequence.")
+    parser.add_argument('--len_dT', type=int, default=15, help="Poly-dT sequence.")
     parser.add_argument('--log', type=str, help="Path to the log file CSV.")
     return parser
 
@@ -81,7 +81,7 @@ class TemplateGenerator:
         self.full_length = full_length
         self.length_dist = length_dist
         self.adapter = adapter
-        self.dT = "T"*int(len_dT)
+        self.len_dT = int(len_dT)
         self.TSO = TSO
         self.amp = amp
         self.truncation_model = truncation_model
@@ -89,6 +89,7 @@ class TemplateGenerator:
         self.threads = threads
         self.counter = 0
         self.unfound = 0
+        self.total_umi_counts = 0
 
     def generate_random_umi(self, length=12):
         bases = 'ATCG'
@@ -111,14 +112,18 @@ class TemplateGenerator:
         
         with open(filename, mode) as fasta:
             idx = 1
+            total_umi_counts = 0
             trns_ids = random.choices(list(self.transcriptome.transcripts.keys()), k=umi_counts)
             for idx, trns in enumerate(trns_ids):
                 cDNA = self.transcriptome.get_sequence(trns)
+                
                 if cDNA:
                     if not self.full_length:
                         cDNA = truncate_cDNA(cDNA, probs_3p=right_probs, probs_5p=left_probs)
                     umi = self.generate_random_umi()
-                    seq = f"{self.adapter}{cell}{umi}{self.dT}{cDNA}{self.TSO}"
+                    total_umi_counts += 1
+                    dT = "T"*int(np.random.normal(self.len_dT, 3))
+                    seq = f"{self.adapter}{cell}{umi}{dT}{cDNA}{self.TSO}"
                     if random.randint(0, 1) == 1:
                         seq = self.complement(seq)[::-1]
                     for j in range(np.random.poisson(self.amp)):
@@ -144,9 +149,10 @@ class TemplateGenerator:
         with open(filename, mode) as fasta:
             idx = 0
             unfound = 0
+            total_umi_counts = 0
             for trns, count in umi_counts.items():
                 count=int(count)
-                if count > 1:
+                if count > 0:
                     trns = trns if transcript_id else fetch_transcript_id_by_gene(trns, transcripts_index)
                     cDNA = self.transcriptome.get_sequence(trns) if trns else None
                     if cDNA:
@@ -154,7 +160,9 @@ class TemplateGenerator:
                             cDNA = truncate_cDNA(cDNA, probs_3p=right_probs, probs_5p=left_probs)
                         for i in range(count):
                             umi = self.generate_random_umi()
-                            seq = f"{self.adapter}{cell}{umi}{self.dT}{cDNA}{self.TSO}"
+                            total_umi_counts += 1
+                            dT = "T"*int(np.random.normal(self.len_dT, 3))
+                            seq = f"{self.adapter}{cell}{umi}{dT}{cDNA}{self.TSO}"
                             if random.randint(0, 1) == 1:
                                 seq = self.complement(seq)[::-1]
                             for j in range(np.random.poisson(self.amp)):
@@ -163,6 +171,8 @@ class TemplateGenerator:
                                 
                                 idx += 1
                     else : unfound += 1
+
+            self.total_umi_counts += total_umi_counts
             self.counter += idx
             self.unfound += unfound
 
@@ -294,8 +304,9 @@ def template_maker(args):
         log_df = {
         "Simulated Cell BC": len(matrix.columns), 
         "Simulated Filtered-Out": count_unfiltered_bc,
-        "Simulated UMI counts": generator.counter,
-        "Unknown transcript counts": generator.unfound}
+        "Simulated UMI counts": generator.total_umi_counts,
+        "Unknown transcript counts": generator.unfound,
+        "Number of reads": generator.counter}
         log_df = pd.DataFrame(log_df, index=[0])
         log_df.to_csv(args.log, index=False)
     
@@ -305,7 +316,9 @@ def template_maker(args):
                  str(len(matrix.columns))+
                  "\nSimulated Filtered-Out Cell BC: "+
                  str(count_unfiltered_bc)+
-                 "\nSimulated UMI counts: "+
+                 "\nSimulated UMI: "+
+                 str(generator.total_umi_counts)+
+                 "\nSimulated reads: "+
                  str(generator.counter)+
                  "\nUnknown transcript counts: "+str(generator.unfound))
     
