@@ -14,6 +14,8 @@ from tqdm import tqdm
 from concurrent.futures import ThreadPoolExecutor
 from pyfaidx import Fasta
 from toolkit import *
+from intron_retention import get_sequence_with_intron, gtf_to_ref_structure, read_IR_model
+import pysam
 
 YELLOW = "\033[93m"
 GRAY = "\033[90m"
@@ -30,18 +32,24 @@ def setup_template_parameters(parent_parser):
         parser = argparse.ArgumentParser(description=description)
     parser.add_argument('-r','--transcriptome', type=str, help="Path to the transcriptome FASTA file.")
     parser.add_argument('-m','--matrix', type=str, help="Path to the SPARSim matrix CSV file.")
-    parser.add_argument('-g','--gtf', type=str, help="Path to the annotation GTF file.")
+    parser.add_argument('-g','--gtf', type=str, help="Path to the annotation GTF file. or annotation file in GFF format containing the intron coordinate information. Required when intron retention mode is enabled.")
     parser.add_argument('-b','--unfilteredBC', type=str, help="Path to the unfiltered barcode counts CSV file.")
+
+    parser.add_argument('--ref_genome', type=str, help="Path to the reference genome file. Required when intron retention mode is enabled.")
 
     parser.add_argument('-o','--outFasta', type=str, default="template.fa", help="Output file name for the generated template sequences.")
     parser.add_argument('-t','--threads', type=int, default=1, help="Number of threads to use.")
     parser.add_argument('-f','--features', type=str, default="transcript_id", help="Feature rownames in input matrix.")
     parser.add_argument('--on_disk', action='store_true', help="Whether to use Faidx to index the FASTA or load the FASTA in memory.")
     parser.add_argument('-c','--amp', type=int, default=1, help="amplification rate.")
+    parser.add_argument('--unspliced_ratio', type=int, default=0, help="Unspliced_ratio transcript ratio.")
 
-    parser.add_argument('--full_length', action='store_true', help="Simulate a full length transcripts.")
+    parser.add_argument('--full_length', action='store_true', help="Simulate a full length untruncated transcripts.")
     parser.add_argument('--length_dist', type=str, default="0.37,0.0,824.94", help="amplification rate.")
     parser.add_argument('--truncation_model', type=str, default="truncation_default_model.csv", help="truncation model.")
+
+    parser.add_argument('--intron_retention', action='store_true', help="Simulate intron retention events.")
+    parser.add_argument('--IR_model', type=str, default='SC3pv3_GEX_Human_IR_markov_model', help="Intron retention model.")
 
     parser.add_argument('--adapter', type=str, default="ATGCGTAGTCAGTCATGATC", help="Adapter sequence.")
     parser.add_argument('--TSO', type=str, default="ATGCGTAGTCAGTCATGATC", help="TSO sequence.")
@@ -75,7 +83,9 @@ class Transcriptome:
 
 
 class TemplateGenerator:
-    def __init__(self, transcriptome, adapter, len_dT, TSO, outFasta, threads, amp, truncation_model, full_length, length_dist):
+    def __init__(self, transcriptome, adapter, len_dT, TSO, outFasta, threads, 
+                 amp, truncation_model, full_length, length_dist, 
+                 intron_retention, dict_ref_structure, IR_markov_model, genome_fai):
         self.COMPLEMENT_MAP  = str.maketrans('ATCG', 'TAGC')
         self.transcriptome = transcriptome
         self.full_length = full_length
@@ -85,6 +95,10 @@ class TemplateGenerator:
         self.TSO = TSO
         self.amp = amp
         self.truncation_model = truncation_model
+        self.intron_retention=intron_retention
+        self.dict_ref_structure=dict_ref_structure
+        self.IR_markov_model=IR_markov_model
+        self.genome_fai=genome_fai
         self.outFasta = outFasta
         self.threads = threads
         self.counter = 0
@@ -115,9 +129,18 @@ class TemplateGenerator:
             total_umi_counts = 0
             trns_ids = random.choices(list(self.transcriptome.transcripts.keys()), k=umi_counts)
             for idx, trns in enumerate(trns_ids):
-                cDNA = self.transcriptome.get_sequence(trns)
-                
+                if self.intron_retention:
+                        i_retained, cDNA = get_sequence_with_intron(trns, 
+                                                                    self.genome_fai,
+                                                                    self.dict_ref_structure,
+                                                                    self.IR_markov_model)
+                        if not i_retained:
+                            cDNA = self.transcriptome.get_sequence(trns)
+                else:
+                    cDNA = self.transcriptome.get_sequence(trns)
                 if cDNA:
+                    if self.unspliced_ratio and random.random() < self.unspliced_ratio:
+                        pass
                     if not self.full_length:
                         cDNA = truncate_cDNA(cDNA, probs_3p=right_probs, probs_5p=left_probs)
                     umi = self.generate_random_umi()
@@ -126,8 +149,9 @@ class TemplateGenerator:
                     seq = f"{self.adapter}{cell}{umi}{dT}{cDNA}{self.TSO}"
                     if random.randint(0, 1) == 1:
                         seq = self.complement(seq)[::-1]
+                    ir_tag = "-IR" if i_retained else ""
                     for j in range(np.random.poisson(self.amp)):
-                        fasta.write(f">{cell}_{umi}_{trns}_{idx}\n"
+                        fasta.write(f">{cell}-{umi}-{trns}-{idx}{ir_tag}\n"
                                     f"{seq}\n")
                         idx += 1
 
@@ -139,7 +163,7 @@ class TemplateGenerator:
         else:
             filename = f"tmp_cells/{cell}.fa"
             mode = 'w'
-            
+
         transcript_id = True if features=="transcript_id" else False
 
         if not self.full_length:
@@ -150,11 +174,20 @@ class TemplateGenerator:
             idx = 0
             unfound = 0
             total_umi_counts = 0
+            i_retained = False
             for trns, count in umi_counts.items():
                 count=int(count)
                 if count > 0:
                     trns = trns if transcript_id else fetch_transcript_id_by_gene(trns, transcripts_index)
-                    cDNA = self.transcriptome.get_sequence(trns) if trns else None
+                    if self.intron_retention and trns:
+                        i_retained, cDNA = get_sequence_with_intron(trns, 
+                                                                    self.genome_fai,
+                                                                    self.dict_ref_structure,
+                                                                    self.IR_markov_model)
+                        if not i_retained:
+                            cDNA = self.transcriptome.get_sequence(trns) if trns else None
+                    else:
+                        cDNA = self.transcriptome.get_sequence(trns) if trns else None
                     if cDNA:
                         if not self.full_length:
                             cDNA = truncate_cDNA(cDNA, probs_3p=right_probs, probs_5p=left_probs)
@@ -165,8 +198,9 @@ class TemplateGenerator:
                             seq = f"{self.adapter}{cell}{umi}{dT}{cDNA}{self.TSO}"
                             if random.randint(0, 1) == 1:
                                 seq = self.complement(seq)[::-1]
+                            ir_tag = "-IR" if i_retained else ""
                             for j in range(np.random.poisson(self.amp)):
-                                fasta.write(f">{cell}_{umi}_{trns}_{idx}\n"
+                                fasta.write(f">{cell}-{umi}-{trns}-{idx}{ir_tag}\n"
                                             f"{seq}\n")
                                 
                                 idx += 1
@@ -202,7 +236,7 @@ def template_maker(args):
         if args.unfilteredBC:
             logging.warning("Count matrix simulation skipped. Transcripts will be generated randomly.")
         else:
-            logging.error("\033[91mError: Please provide the path to the count matrix file using the '--matrix' or cell barcode counts using '--unfilteredBC' argument.\033[0m")
+            logging.error("\033[91mError: Please provide the path to the count matrix file using the '--matrix' or cell barcode counts using '--unfilteredBC' option.\033[0m")
             sys.exit(1)
             
     if args.full_length:
@@ -219,6 +253,16 @@ def template_maker(args):
     if not args.full_length:
         truncation_model = pd.read_csv(args.truncation_model)
 
+    dict_ref_structure = gtf_to_ref_structure(args.gtf) if args.intron_retention else None
+    IR_markov_model = read_IR_model(args.IR_model) if args.intron_retention else None
+    genome_fai = None
+    if args.intron_retention:
+        if args.ref_genome:
+            genome_fai = pysam.Fastafile(args.ref_genome)
+        else:
+            logging.error("\033[91mError: Please provide the path to the reference genome file using the '--ref_genome' option.\033[0m")
+            sys.exit(1)
+        
 
     transcriptome = Transcriptome(args.transcriptome, args.on_disk)
     generator = TemplateGenerator(transcriptome = transcriptome, 
@@ -230,7 +274,11 @@ def template_maker(args):
                                   outFasta = args.outFasta, 
                                   threads = args.threads,
                                   amp = args.amp,
-                                  truncation_model=truncation_model)
+                                  truncation_model=truncation_model,
+                                  intron_retention=args.intron_retention,
+                                  dict_ref_structure=dict_ref_structure,
+                                  IR_markov_model=IR_markov_model,
+                                  genome_fai=genome_fai)
     if args.matrix:
         matrix = pd.read_csv(args.matrix, header=0, index_col=0) 
 
@@ -255,13 +303,17 @@ def template_maker(args):
             logging.info("Filtered Matrix...")
             for cell in tqdm(matrix.columns):
                 umi_counts = matrix[cell]
-                generator.make_template(cell, umi_counts, transcripts_index, args.features)
+                generator.make_template(cell, 
+                                        umi_counts, 
+                                        transcripts_index, 
+                                        args.features)
             
         if args.unfilteredBC:
             logging.info("Unfiltered BC counts ...")
             unfiltered_bc = unfiltered_bc[~unfiltered_bc['BC'].isin(matrix.columns)]
             for _, row in tqdm(unfiltered_bc.iterrows(), total=len(unfiltered_bc)):
-                generator.make_random_template(row['BC'], row['counts'])
+                generator.make_random_template(row['BC'], 
+                                               row['counts'])
                 
     else:
         if not os.path.exists("tmp_cells"):
@@ -273,7 +325,11 @@ def template_maker(args):
                 logging.info("Filtered Matrix...")
                 for cell in tqdm(matrix.columns):
                     umi_counts = matrix[cell]
-                    future = executor.submit(generator.make_template, cell, umi_counts, transcripts_index, args.features)
+                    future = executor.submit(generator.make_template, 
+                                             cell, 
+                                             umi_counts, 
+                                             transcripts_index, 
+                                             args.features)
                     futures.append(future)
     
                 for future in futures:
@@ -284,7 +340,9 @@ def template_maker(args):
                 logging.info("Unfiltered BC counts ...")
                 unfiltered_bc = unfiltered_bc[~unfiltered_bc['BC'].isin(matrix.columns)]
                 for idx, (_, row) in tqdm(enumerate(unfiltered_bc.iterrows()), total=len(unfiltered_bc)):
-                    future = executor.submit(generator.make_random_template, row['BC'], row['counts'])
+                    future = executor.submit(generator.make_random_template, 
+                                             row['BC'], 
+                                             row['counts'])
 
                 for future in futures:
                     future.result()

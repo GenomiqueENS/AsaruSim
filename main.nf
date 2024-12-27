@@ -5,7 +5,7 @@ help_message = """
         nextflow run main.nf --matrix <path> [options]
 
     Description:
-        ASARU - SINGLE CELL NANOPORE READS SIMULATOR PIPELINE
+        ASARUSIM - SINGLE CELL NANOPORE READS SIMULATOR PIPELINE
         Simulates nanopore reads from single-cell data.
 
     Required parameters:
@@ -15,25 +15,27 @@ help_message = """
                                        (transcript_id, gene_id or gene_name)[default: transcript_id]
 
     Optional parameters:
-        --barcodes_counts <value>      Distribution of barcode counts.
-        --full_length <boolean>        Indicates if transcripts are full length [default: false].
-        --simulate_cell_types <boolean>Simulate cell types [default: false].
-        --cell_type_annotation <path>  Path to cell type annotation.
-        --gtf <path>                   Path to the GTF file.
-        --trained_model <path>         Pre-trained error model.
-        --identity_model <value>       Identity model for Badread.
-        --error_model <path>           Custom error model.
-        --qscore_model <path>          Q score model.
-        --build_model <boolean>        Build an error model [default: false].
-        --fastq_model <path>           Path to the FASTQ model.
-        --ref_genome <path>            Path to the reference genome.
-        --umi_duplication <value>      UMI duplication.
-        --pcr_cycles <int>             Number of PCR amplification cycles.
-        --pcr_dup_rate <value>         PCR duplication rate.
-        --pcr_error_rate <value>       PCR error rate.
-        --pcr_total_reads <int>        Total number of PCR reads.
-        --truncation_model <path>      Path to truncation probabilities .CSV file [default: bin/models/truncation_default_model.csv].
-        --outdir <path>                Output directory.
+        --barcodes_counts <value>       Distribution of barcode counts.
+        --full_length <boolean>         Indicates if transcripts are full length [default: false].
+        --simulate_cell_types <boolean> Simulate cell types [default: false].
+        --cell_type_annotation <path>   Path to cell type annotation.
+        --gtf <path>                    Path to the GTF file.
+        --trained_model <path>          Pre-trained error model.
+        --identity_model <value>        Identity model for Badread.
+        --error_model <path>            Custom error model.
+        --qscore_model <path>           Q score model.
+        --build_model <boolean>         Build an error model [default: false].
+        --fastq_model <path>            Path to the FASTQ model.
+        --intron_retention <boolean>    Simulate intron retention process
+        --ir_model <path> intron retention MC model (.CSV file). [default: bin/models/SC3pv3_GEX_Human_IR_markov_model]
+        --ref_genome <path>             Path to the reference genome.
+        --umi_duplication <value>       UMI duplication.
+        --pcr_cycles <int>              Number of PCR amplification cycles.
+        --pcr_dup_rate <value>          PCR duplication rate.
+        --pcr_error_rate <value>        PCR error rate.
+        --pcr_total_reads <int>         Total number of PCR reads.
+        --truncation_model <path>       Path to truncation probabilities (.CSV file). [default: bin/models/truncation_default_model.csv].
+        --outdir <path>                 Output directory.
 
     Example:
         nextflow run main.nf --matrix 'path/to/matrix.csv' --transcriptome 'path/to/transcriptome.fa' --outdir 'results'
@@ -53,6 +55,7 @@ log.info """\
     matrix rownames               : ${params.features}
     barcodes counts distribution  : ${params.bc_counts}
     full length transcripts       : ${params.full_length}
+    UMI duplication               : ${params.umi_duplication}
     novel transcripts             : ${params.novel_transcripts}
     simulate cell types           : ${params.sim_celltypes}
     cell type annotation          : ${params.cell_types_annotation}
@@ -61,11 +64,12 @@ log.info """\
     identity model                : ${params.badread_identity}
     error model                   : ${params.error_model}
     Qscore model                  : ${params.qscore_model}
-    build new mode                : ${params.build_model}
+    build new model               : ${params.build_model}
     FASTQ model                   : ${params.fastq_model}
     Truncation model              : ${params.truncation_model}
+    simulate intron retention     : ${params.intron_retention}
+    intron retention model        : ${params.ir_model}
     reference genome              : ${params.ref_genome}
-    UMI duplication               : ${params.umi_duplication}
     PCR amplification cycles      : ${params.pcr_cycles}
     PCR duplication rate          : ${params.pcr_dup_rate}
     PCR error rate                : ${params.pcr_error_rate}
@@ -102,9 +106,6 @@ def validSPARSIMOptions = ['Bacher', 'Camp', 'Chu', 'Engel', 'Horning', 'Tung', 
 validSPARSIMOptions = validSPARSIMOptions.collect { it + '_param_preset' }
 
 workflow {
-    //transcriptome_ch = Channel.fromPath(params.transcriptome, checkIfExists: true)
-
-    
     if (params.matrix in validSPARSIMOptions){
         matrix_ch = file(params.matrix, type: "file")
 
@@ -117,14 +118,14 @@ workflow {
                                             file("no_barcode_counts", type: "file")
 
     if (barcodes_ch.name == "no_barcode_counts" && matrix_ch.name == "no_matrix_counts" ) {
-        log.error("Please provide one of the parameters: 'matrix counts' or 'barcodes counts'.")
+        error("\u001B[31mPlease provide one of the parameters: 'matrix counts' or 'barcodes counts'.\u001B[0m")
         System.exit(1) 
     }
 
     transcriptome_ch =  params.transcriptome != null ? file(params.transcriptome, checkIfExists: true) : 
                                              file("no_transcriptome", type: "file")
     
-    gtf_ch = (params.features != "transcript_id" || params.transcriptome == null) ? Channel.fromPath(params.gtf, checkIfExists: true) : 
+    gtf_ch = (params.features != "transcript_id" || params.transcriptome == null || params.intron_retention) ? Channel.fromPath(params.gtf, checkIfExists: true) : 
                                              file("no_gtf", type: "file")
 
     cell_types_ch = params.sim_celltypes == true && (params.matrix !in validSPARSIMOptions)? Channel.fromPath(params.cell_types_annotation, checkIfExists: true) : 
@@ -142,12 +143,23 @@ workflow {
                                                     channel.from("0.37,0.0,824.94")
     truncation_ch = params.truncation_model != null ? file(params.truncation_model) :
                                                     file("bin/models/truncation_default_model.csv", type: "file")
+    intron_retention_ch = params.ir_model != null ? file(params.ir_model) :
+                                                    file("bin/models/SC3pv3_GEX_Human_IR_markov_model", type: "file")
+    genome_ch = params.ref_genome != null  ? file(params.ref_genome) : 
+                                             file("no_genome", type: "file")
+
+    if (params.intron_retention || params.transcriptome == null){
+        if (genome_ch.name == "no_genome") {
+            println "\u001B[31mPlease provide the path to the reference genome file using the '--ref_genome' option. This is REQUIRED when intron retention mode is enabled or when NO TRANSCRIPTOME file provided.\u001B[0m"
+            System.exit(1)
+        }
+    }
     
     if (params.transcriptome == null) {
         if (params.gtf == null){
-            error("Please provide an annotation file in GTF format! e.g '--gtf annoation.gtf' or transcriptome in FASTA format") 
+            error("\u001B[31mPlease provide an annotation file in GTF format! e.g '--gtf annoation.gtf' or transcriptome in FASTA format.\u001B[0m")
+            System.exit(1)
         }else{
-            genome_ch = Channel.fromPath(params.genome, checkIfExists: true)
             transcriptome_ch = GFF_TO_FASTA(gtf_ch, genome_ch)
         }
     }
@@ -168,10 +180,10 @@ workflow {
 
     if (params.sim_celltypes) {  
         counts_ch = COUNT_SIMULATOR(matrix_ch, cell_types_ch)
-        TEMPLATE_MAKER(counts_ch, transcriptome_ch, barcodes_ch, gtf_ch, length_dist_ch, truncation_ch)
+        TEMPLATE_MAKER(counts_ch, transcriptome_ch, barcodes_ch, gtf_ch, length_dist_ch, truncation_ch, intron_retention_ch, genome_ch)
 
     } else { 
-        TEMPLATE_MAKER(matrix_ch, transcriptome_ch, barcodes_ch, gtf_ch, length_dist_ch, truncation_ch)
+        TEMPLATE_MAKER(matrix_ch, transcriptome_ch, barcodes_ch, gtf_ch, length_dist_ch, truncation_ch, intron_retention_ch, genome_ch)
     }
 
     template_fa_ch = TEMPLATE_MAKER.out.template

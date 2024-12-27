@@ -24,9 +24,11 @@ process TEMPLATE_MAKER {
     path matrix
     path transcriptome
     path barcodes
-    path gtf
+    path ref_gtf
     val length_dist
-    path truncation_ch
+    path truncation
+    path intron_r
+    path ref_genome
 
     output:
     path "template.fa", emit: template
@@ -35,7 +37,9 @@ process TEMPLATE_MAKER {
     script:
         def gtf = params.features != "transcript_id" ? "--features $params.features --gtf $gtf" : ""
         def unfiltered = barcodes.name != "no_barcode_counts"? "--unfilteredBC $barcodes" : ""
-        def full_length = params.full_length? "--full_length" : "--truncation_model $truncation_ch"
+        def full_length = params.full_length? "--full_length" : "--truncation_model $truncation"
+        def intron_retention = params.intron_retention? "--intron_retention --IR_model $intron_r --gtf $ref_gtf" : ""
+        def genome = ref_genome.name != "no_genome"? "--ref_genome $ref_genome" : ""
     """
     python3.11 $projectDir/bin/AsaruSim.py template_maker  --matrix ${matrix} \
     --transcriptome $transcriptome \
@@ -47,46 +51,13 @@ process TEMPLATE_MAKER {
     --TSO $params.TSO_SEQ \
     --len_dT $params.dT_LENGTH \
     $full_length \
+    $intron_retention \
+    $genome \
     --length_dist ${length_dist.trim()} \
     -o template.fa \
     --log log.csv
     """
 }
-
-// process ERRORS_SIMULATOR {
-//     publishDir params.outdir, mode:'copy'
-
-//     input:
-//     path template
-//     path error_model
-//     path qscore_model
-//     val identity
-//     val n_reads
-
-//     output:
-//     path "simulated.fastq"
-
-//     script:
-//     def batch_size = n_reads / 2 / params.threads as int
-//     def error_model_arg = ""
-//     def qscore_model_arg = ""
-//     if (params.trained_model) {
-//         error_model_arg = "--badread-error-model ${params.trained_model}"
-//         qscore_model_arg = "--badread-qscore-model ${params.trained_model}"
-//     } else {
-//         error_model_arg = error_model.name != "no_error_model" ? "--badread-error-model $error_model" : ""
-//         qscore_model_arg = qscore_model.name != "no_qscore_model" ? "--badread-qscore-model $qscore_model" : ""
-//     }
-//     """
-//     python3.11 $projectDir/bin/AsaruSim.py call_badread --thread $params.threads \
-//     -t $template \
-//     --badread-identity ${identity.trim()} \
-//     $error_model_arg \
-//     $qscore_model_arg \
-//     -o simulated.fastq \
-//     --batch-size $batch_size
-//     """
-// }
 
 process ERRORS_SIMULATOR {
     publishDir params.outdir, mode:'copy'

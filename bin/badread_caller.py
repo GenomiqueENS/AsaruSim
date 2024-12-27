@@ -1,7 +1,3 @@
-"""
-This script is based on the original work from https://github.com/youyupei/SLSim/
-All original rights are acknowledged.
-"""
 import sys, os
 import argparse
 from tqdm import tqdm
