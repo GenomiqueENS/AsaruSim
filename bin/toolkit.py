@@ -6,6 +6,7 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 import random
 from scipy import stats
 import numpy as np
+import HTSeq
 from badread.simulate import sequence_fragment
 
 ont_3p = [0.46713188751686213, 0.16673847625320887, 0.03520399186107891, 0.01779148300706967, 0.011167330623367366, 0.007589634154594385, 0.0057037865834126626, 0.005360905206834167, 0.004714618927954307, 0.005824471804774172, 0.003999530793905735, 0.003578824368038042, 0.00447776008229153, 0.003863054982833373, 0.004495806470532503, 0.0033385818245800832, 0.003102850878182368, 0.0023415188742663016, 0.002119322719049316, 0.0030261537281582305, 0.002912235902387086, 0.002373100053688005, 0.003551754785676582, 0.007077567888256763, 0.00419578526602632, 0.002210682559519244, 0.004627770684544622, 0.002146392301410776, 0.0036092776481946843, 0.002611086798615842, 0.0025039363684350624, 0.003856287587243008, 0.0038607991843032513, 0.0028445619464834357, 0.003017130534037744, 0.004093146432905784, 0.002603191503760416, 0.002035858173434814, 0.003538219994495851, 0.003646498323941692, 0.004468736888171044, 0.0032054897113029043, 0.0035348362967006688, 0.0019862306057721376, 0.002995700448001588, 0.0024700993904832372, 0.002491529476519393, 0.002064055655061335, 0.003814555314435757, 0.0023054260977843546, 0.004129239209387731, 0.0024678435919531154, 0.0019704400160612855, 0.001982846907976955, 0.002121578517579438, 0.0027633531993990555, 0.00470559573383382, 0.0034919761246283566, 0.0025039363684350624, 0.004561224627906033, 0.0024982968721097582, 0.0020798462447721867, 0.002897573211941295, 0.0023437746727964235, 0.0026392842802423627, 0.0032111292076282085, 0.006500083464545616, 0.006404212027015444, 0.0049221523927255005, 0.0023291119823506323, 0.002362948960302458, 0.003120897266423342, 0.0026697375603990056, 0.0038326017026767308, 0.003440092758435558, 0.008549476429161158, 0.003399488384893368, 0.0025400291449170095, 0.002512959562555549, 0.001722302177747901, 0.002155415495531263, 0.00236633265809764, 0.0031242809642185237, 0.0027306441207122912, 0.0022715891198325294, 0.003955542722568362, 0.0019287077432540345, 0.001819301514543133, 0.003299105350302954, 0.005128557958231634, 0.0014031066857356834, 0.0016433492291936425, 0.0014741643394345165, 0.0014403273614826914, 0.0015813147696152963, 0.0037209396754357077, 0.0004489039074942139, 0.000371078858205016, 0.00019851027065070765, 4.286017207231188e-05, 0.0]
@@ -104,40 +105,39 @@ def parse_gtf(gtf_file, index_by, protein_coding=False):
         sys.exit(1)
         
     transcripts = {}
-        
-    with open(gtf_file, 'r') as f:
-        for line in f:
-            if line.startswith('#'):
+
+    gff_features = HTSeq.GFF_Reader(gtf_file, end_included=True)
+
+    for feature in gff_features:
+        if index_by in feature.attr:
+                index_key = feature.attr[index_by]
+        else:
+            continue
+
+        if feature.type == "transcript":
+            transcript_id = feature.attr.get("transcript_id")
+            if index_by in feature.attr:
+                index_key = feature.attr[index_by]
+            else:
                 continue
+            
+            length = 0
+            
+            if index_key not in transcripts:
+                    transcripts[index_key] = {}
                 
-            columns = line.strip().split("\t")
-            if len(columns) > 8:
-                Attribute = columns[8].replace('"', '')
-                feature = columns[2]
-                if feature != 'transcript': 
-                    continue
-                    
-                attributes = dict(item.strip().split(' ',1) for item in Attribute.strip().split(';') if item.strip())
-                transcript_id = attributes['transcript_id']
-                transcript_type = attributes.get('transcript_biotype', attributes.get('transcript_type', ''))
-
-                if index_by in attributes:
-                    index_key = attributes[index_by]
-                else:
-                    continue
+            if not protein_coding:
+                transcripts[index_key][transcript_id]=length
                 
-                start = int(columns[3]) 
-                end = int(columns[4])  
-                length = end - start 
-
-                if index_key not in transcripts:
-                        transcripts[index_key] = []
-                    
-                if not protein_coding:
-                    transcripts[index_key].append((transcript_id, length))
-                    
-                elif protein_coding and transcript_type == 'protein_coding':
-                    transcripts[index_key].append((transcript_id, length))
+            elif protein_coding and feature.attr['transcript_type'] == 'protein_coding':
+                transcripts[index_key][transcript_id]=length
+                
+        elif feature.type == "exon":
+            transcript_id = feature.attr.get("transcript_id")
+            if transcript_id in transcripts[index_key]:
+                transcripts[index_key][transcript_id] += feature.iv.length
+        
+    transcripts = {key: list(sub_dict.items()) for key, sub_dict in transcripts.items()}
     
     return transcripts
 
