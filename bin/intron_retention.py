@@ -148,6 +148,46 @@ def reverse_complement(seq):
     return reverse_seq
 
 
+def fitch_trx_by_tructure(structure, genome_fai):
+    new_cDNA = ""
+
+    unspliced_trx_len = calculate_reference_length(structure)
+    list_iv, _, _ = extract_read_pos(unspliced_trx_len, unspliced_trx_len, structure, False)
+
+    for interval in list_iv:
+        chrom = interval.chrom
+        if chrom not in genome_fai.references:
+            chrom = "chr" + chrom
+            if chrom not in genome_fai.references:
+                return None
+        start = interval.start
+        end = interval.end
+        new_cDNA += genome_fai.fetch(chrom, start, end) 
+
+        if interval.strand == '-':
+            new_cDNA = reverse_complement(new_cDNA)
+        
+    return new_cDNA
+
+
+def get_unspliced_sequence(trx, genome_fai, dict_ref_structure):
+
+    if trx in dict_ref_structure:
+        ref_structure = dict_ref_structure[trx]
+    else:
+        return None
+
+    unspliced_structure = [
+    ('retained_intron', *entry[1:]) if entry[0] == 'intron' else entry
+    for entry in ref_structure]
+
+    unspliced_structure = sorted(unspliced_structure, key=lambda x: x[2])
+
+    unspliced_trx = fitch_trx_by_tructure(unspliced_structure, genome_fai)
+
+    return unspliced_trx
+
+
 def get_sequence_with_intron(trx, genome_fai, dict_ref_structure, IR_markov_model):
 
     new_cDNA = ""
@@ -162,26 +202,28 @@ def get_sequence_with_intron(trx, genome_fai, dict_ref_structure, IR_markov_mode
     if retained:
         ref_trx_structure_new = sorted(ref_trx_structure_new, key=lambda x: x[2])
 
-        middle_ref = calculate_reference_length(ref_trx_structure_new)
-        ref_trx_len = middle_ref
+        new_cDNA = fitch_trx_by_tructure(ref_trx_structure_new, genome_fai)
 
-        list_iv, _, _ = extract_read_pos(middle_ref, ref_trx_len, ref_trx_structure_new, False)
+        # ref_trx_len = calculate_reference_length(ref_trx_structure_new)
 
-        for interval in list_iv:
-            chrom = interval.chrom
-            if chrom not in genome_fai.references:
-                chrom = "chr" + chrom
-                if chrom not in genome_fai.references:
-                    break
-            start = interval.start
-            end = interval.end
-            new_cDNA += genome_fai.fetch(chrom, start, end) 
+        # list_iv, _, _ = extract_read_pos(ref_trx_len, ref_trx_len, ref_trx_structure_new, False)
 
-            if interval.strand == '-':
-                new_cDNA = reverse_complement(new_cDNA)
+        # for interval in list_iv:
+        #     chrom = interval.chrom
+        #     if chrom not in genome_fai.references:
+        #         chrom = "chr" + chrom
+        #         if chrom not in genome_fai.references:
+        #             break
+        #     start = interval.start
+        #     end = interval.end
+        #     new_cDNA += genome_fai.fetch(chrom, start, end) 
+
+        #     if interval.strand == '-':
+        #         new_cDNA = reverse_complement(new_cDNA)
     else: new_cDNA = None
 
     return retained, new_cDNA
+
 
 if __name__ == "__main__":
     get_sequence_with_intron()

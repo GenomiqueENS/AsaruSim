@@ -12,7 +12,7 @@ sys.path.append(bin_path)
 
 from bin.intron_retention import get_sequence_with_intron, gtf_to_ref_structure, read_IR_model
 from bin.intron_retention import custom_key_function , update_structure, calculate_reference_length
-from bin.intron_retention import extract_read_pos
+from bin.intron_retention import extract_read_pos, get_unspliced_sequence
 
 from bin.template_maker import Transcriptome, TemplateGenerator
 
@@ -87,6 +87,13 @@ class TestStringMethods(unittest.TestCase):
 
         self.assertEqual(len(new_cDNA), 47226)
 
+    def test_get_unspliced_sequence(self):
+        unspliced_cDNA = get_unspliced_sequence("ENST00000383052",
+                                            test_genome_fai,
+                                            ref_structure)
+
+        self.assertEqual(len(unspliced_cDNA), 47226)
+
     def test_TemplateGenerator(self):
         outFasta = "data/out_test.fa"
         len_dT = 10
@@ -104,7 +111,8 @@ class TestStringMethods(unittest.TestCase):
                                         intron_retention=False,
                                         dict_ref_structure=None,
                                         IR_markov_model=None,
-                                        genome_fai=None)
+                                        genome_fai=None,
+                                        unspliced_ratio=0)
         
         for cell in matrix.columns:
                 umi_counts = matrix[cell]
@@ -138,7 +146,8 @@ class TestStringMethods(unittest.TestCase):
                                         intron_retention=True,
                                         dict_ref_structure=ref_structure,
                                         IR_markov_model=IR_markov_model,
-                                        genome_fai=test_genome_fai)
+                                        genome_fai=test_genome_fai,
+                                        unspliced_ratio=0.5)
         
         for cell in matrix.columns:
                 umi_counts = matrix[cell]

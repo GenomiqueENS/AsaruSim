@@ -15,6 +15,7 @@ from concurrent.futures import ThreadPoolExecutor
 from pyfaidx import Fasta
 from toolkit import *
 from intron_retention import get_sequence_with_intron, gtf_to_ref_structure, read_IR_model
+from intron_retention import get_unspliced_sequence
 import pysam
 
 YELLOW = "\033[93m"
@@ -42,7 +43,7 @@ def setup_template_parameters(parent_parser):
     parser.add_argument('-f','--features', type=str, default="transcript_id", help="Feature rownames in input matrix.")
     parser.add_argument('--on_disk', action='store_true', help="Whether to use Faidx to index the FASTA or load the FASTA in memory.")
     parser.add_argument('-c','--amp', type=int, default=1, help="amplification rate.")
-    parser.add_argument('--unspliced_ratio', type=int, default=0, help="Unspliced_ratio transcript ratio.")
+    parser.add_argument('--unspliced_ratio', type=float, default=0.0, help="Unspliced transcript ratio.")
 
     parser.add_argument('--full_length', action='store_true', help="Simulate a full length untruncated transcripts.")
     parser.add_argument('--length_dist', type=str, default="0.37,0.0,824.94", help="amplification rate.")
@@ -85,7 +86,7 @@ class Transcriptome:
 class TemplateGenerator:
     def __init__(self, transcriptome, adapter, len_dT, TSO, outFasta, threads, 
                  amp, truncation_model, full_length, length_dist, 
-                 intron_retention, dict_ref_structure, IR_markov_model, genome_fai):
+                 intron_retention, dict_ref_structure, IR_markov_model, genome_fai, unspliced_ratio):
         self.COMPLEMENT_MAP  = str.maketrans('ATCG', 'TAGC')
         self.transcriptome = transcriptome
         self.full_length = full_length
@@ -99,6 +100,7 @@ class TemplateGenerator:
         self.dict_ref_structure=dict_ref_structure
         self.IR_markov_model=IR_markov_model
         self.genome_fai=genome_fai
+        self.unspliced_ratio = unspliced_ratio
         self.outFasta = outFasta
         self.threads = threads
         self.counter = 0
@@ -129,7 +131,11 @@ class TemplateGenerator:
             total_umi_counts = 0
             trns_ids = random.choices(list(self.transcriptome.transcripts.keys()), k=umi_counts)
             for idx, trns in enumerate(trns_ids):
-                if self.intron_retention:
+                if self.unspliced_ratio > 0 and random.random() < self.unspliced_ratio:
+                        cDNA = get_unspliced_sequence(trns,
+                                                      self.genome_fai,
+                                                      self.dict_ref_structure)
+                elif self.intron_retention:
                         i_retained, cDNA = get_sequence_with_intron(trns, 
                                                                     self.genome_fai,
                                                                     self.dict_ref_structure,
@@ -139,8 +145,6 @@ class TemplateGenerator:
                 else:
                     cDNA = self.transcriptome.get_sequence(trns)
                 if cDNA:
-                    if self.unspliced_ratio and random.random() < self.unspliced_ratio:
-                        pass
                     if not self.full_length:
                         cDNA = truncate_cDNA(cDNA, probs_3p=right_probs, probs_5p=left_probs)
                     umi = self.generate_random_umi()
@@ -175,19 +179,26 @@ class TemplateGenerator:
             unfound = 0
             total_umi_counts = 0
             i_retained = False
+            cDNA = None
             for trns, count in umi_counts.items():
                 count=int(count)
                 if count > 0:
                     trns = trns if transcript_id else fetch_transcript_id_by_gene(trns, transcripts_index)
-                    if self.intron_retention and trns:
-                        i_retained, cDNA = get_sequence_with_intron(trns, 
-                                                                    self.genome_fai,
-                                                                    self.dict_ref_structure,
-                                                                    self.IR_markov_model)
-                        if not i_retained:
-                            cDNA = self.transcriptome.get_sequence(trns) if trns else None
-                    else:
-                        cDNA = self.transcriptome.get_sequence(trns) if trns else None
+                    if trns:
+                        if self.unspliced_ratio > 0 and random.random() < self.unspliced_ratio:
+                                cDNA = get_unspliced_sequence(trns,
+                                                              self.genome_fai,
+                                                              self.dict_ref_structure)
+                        elif self.intron_retention:
+                            i_retained, cDNA = get_sequence_with_intron(trns, 
+                                                                        self.genome_fai,
+                                                                        self.dict_ref_structure,
+                                                                        self.IR_markov_model)
+                            if not i_retained:
+                                cDNA = self.transcriptome.get_sequence(trns)
+                        else:
+                            cDNA = self.transcriptome.get_sequence(trns)
+
                     if cDNA:
                         if not self.full_length:
                             cDNA = truncate_cDNA(cDNA, probs_3p=right_probs, probs_5p=left_probs)
@@ -253,15 +264,22 @@ def template_maker(args):
     if not args.full_length:
         truncation_model = pd.read_csv(args.truncation_model)
 
-    dict_ref_structure = gtf_to_ref_structure(args.gtf) if args.intron_retention else None
-    IR_markov_model = read_IR_model(args.IR_model) if args.intron_retention else None
+    dict_ref_structure = None
+    IR_markov_model = None
     genome_fai = None
-    if args.intron_retention:
+
+    if args.intron_retention or args.unspliced_ratio > 0 :
+        dict_ref_structure = gtf_to_ref_structure(args.gtf)
+
         if args.ref_genome:
             genome_fai = pysam.Fastafile(args.ref_genome)
         else:
             logging.error("\033[91mError: Please provide the path to the reference genome file using the '--ref_genome' option.\033[0m")
             sys.exit(1)
+        
+        if args.intron_retention:
+            IR_markov_model = read_IR_model(args.IR_model)
+
         
 
     transcriptome = Transcriptome(args.transcriptome, args.on_disk)
@@ -278,7 +296,8 @@ def template_maker(args):
                                   intron_retention=args.intron_retention,
                                   dict_ref_structure=dict_ref_structure,
                                   IR_markov_model=IR_markov_model,
-                                  genome_fai=genome_fai)
+                                  genome_fai=genome_fai,
+                                  unspliced_ratio=args.unspliced_ratio)
     if args.matrix:
         matrix = pd.read_csv(args.matrix, header=0, index_col=0) 
 

@@ -53,6 +53,7 @@ process TEMPLATE_MAKER {
     $full_length \
     $intron_retention \
     $genome \
+    --unspliced_ratio $params.unspliced_ratio \
     --length_dist ${length_dist.trim()} \
     -o template.fa \
     --log log.csv

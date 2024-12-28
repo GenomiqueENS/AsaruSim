@@ -69,6 +69,7 @@ log.info """\
     Truncation model              : ${params.truncation_model}
     simulate intron retention     : ${params.intron_retention}
     intron retention model        : ${params.ir_model}
+    unspliced ratio               : ${params.unspliced_ratio}
     reference genome              : ${params.ref_genome}
     PCR amplification cycles      : ${params.pcr_cycles}
     PCR duplication rate          : ${params.pcr_dup_rate}
