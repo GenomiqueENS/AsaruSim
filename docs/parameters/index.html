@@ -1,140 +1,883 @@
-<!DOCTYPE html>
-<html class="writer-html5" lang="en" >
-<head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Input parameters - AsaruSim</title>
-    <link rel="stylesheet" href="../css/theme.css" />
-    <link rel="stylesheet" href="../css/theme_extra.css" />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
     
-      <script>
-        // Current page data
-        var mkdocs_page_name = "Input parameters";
-        var mkdocs_page_input_path = "parameters.md";
-        var mkdocs_page_url = null;
-      </script>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../introduction/">
+      
+      
+        <link rel="next" href="../examples/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.41">
     
-    <!--[if lt IE 9]>
-      <script src="../js/html5shiv.min.js"></script>
-    <![endif]-->
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
-      <script>hljs.highlightAll();</script> 
-</head>
+    
+      
+        <title>Input parameters - AsaruSim</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.0253249f.min.css">
+      
+      
 
-<body class="wy-body-for-nav" role="document">
 
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
-    <div class="wy-side-scroll">
-      <div class="wy-side-nav-search">
-          <a href=".." class="icon icon-home"> AsaruSim
-        </a><div role="search">
-  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
-      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
-  </form>
-</div>
-      </div>
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
 
-      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../introduction/">Introduction</a>
-                </li>
-              </ul>
-              <ul>
-                <li class="toctree-l1"><a class="reference internal" href="..">Installation</a>
-                </li>
-              </ul>
-              <ul class="current">
-                <li class="toctree-l1 current"><a class="reference internal current" href="#">Input parameters</a>
-    <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#count-matrix">Count matrix</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#-matrix">--matrix</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#-bc_counts">--bc_counts</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#-cell_types_annotation">--cell_types_annotation</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#template">Template</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#-dt_length">--dT_LENGTH</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#-adapter_seq">--ADAPTER_SEQ</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#-tso_seq">--TSO_SEQ</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#reference-transcriptome">Reference transcriptome</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#-transcriptome">--transcriptome</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#-length_dist">--length_dist</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#pcr-amplification">PCR amplification</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#-pcr_cycles">--PCR_cycles</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#-pcr_efficiency">--PCR_efficiency</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#-pcr_error_rate">--PCR_error_rate</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#-total_reads">--total_reads</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#error-model">Error model</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#-trained_model">--trained_model</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#-badread_identity">--badread_identity</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#-build_model">--build_model</a>
-    </li>
-        </ul>
-    </li>
-    </ul>
-                </li>
-              </ul>
-              <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../examples/">Use example</a>
-                </li>
-              </ul>
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#input-parameters" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="AsaruSim" class="md-header__button md-logo" aria-label="AsaruSim" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            AsaruSim
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Input parameters
+            
+          </span>
+        </div>
       </div>
     </div>
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="..">AsaruSim</a>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
         
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
       </nav>
-      <div class="wy-nav-content">
-        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
-  <ul class="wy-breadcrumbs">
-    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Input parameters</li>
-    <li class="wy-breadcrumbs-aside">
-    </li>
-  </ul>
-  <hr/>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-            <div class="section" itemprop="articleBody">
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
               
-                <h1 id="input-parameters">Input parameters</h1>
-<p>AsaruSim simulation requires an input parameter to work, describing the macro characteristics of the desired synthetic reads.</p>
-<h2 id="count-matrix">Count matrix</h2>
-<h4 id="-matrix"><code>--matrix</code></h4>
-<p>The <code>--matrix</code> parameter is a feature-by-cell (gene/cell or isoform/cell) count table <code>(.CSV) file</code> where rows represent the features of interest  <em>(genes or transcripts)</em> and columns represent cells <em>(or spatial barcodes)</em>. The input matrix may be derived from an existing single-cell short- or long-read preprocessed run. this parameter is <strong>required</strong>.</p>
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="AsaruSim" class="md-nav__button md-logo" aria-label="AsaruSim" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    AsaruSim
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Introduction
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../introduction/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Installation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Input parameters
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Input parameters
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#count-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      Count matrix
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Count matrix">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#-matrix-csv-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      --matrix csv file
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#-bc_counts-csv-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      --bc_counts csv file
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#-cell_types_annotation-csv-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      --cell_types_annotation csv file
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#template" class="md-nav__link">
+    <span class="md-ellipsis">
+      Template
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Template">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#-dt_length-int" class="md-nav__link">
+    <span class="md-ellipsis">
+      --dT_LENGTH INT
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#-adapter_seq-str" class="md-nav__link">
+    <span class="md-ellipsis">
+      --ADAPTER_SEQ STR
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#-tso_seq-str" class="md-nav__link">
+    <span class="md-ellipsis">
+      --TSO_SEQ STR
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#-full_length-bool" class="md-nav__link">
+    <span class="md-ellipsis">
+      --full_length BOOL
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#-truncation_model-csv-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      --truncation_model csv file
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#-unspliced_ratio-float" class="md-nav__link">
+    <span class="md-ellipsis">
+      --unspliced_ratio FLOAT
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#-intron_retention-bool" class="md-nav__link">
+    <span class="md-ellipsis">
+      --intron_retention BOOL
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#-ir_model-csv-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      --ir_model csv file
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reference-transcripts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Reference transcripts
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Reference transcripts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#-transcriptome-fasta-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      --transcriptome FASTA file
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#-length_dist-str" class="md-nav__link">
+    <span class="md-ellipsis">
+      --length_dist STR
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#-ref_genome-fasta-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      --ref_genome FASTA file
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pcr-amplification" class="md-nav__link">
+    <span class="md-ellipsis">
+      PCR amplification
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="PCR amplification">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#-pcr_cycles-int" class="md-nav__link">
+    <span class="md-ellipsis">
+      --PCR_cycles INT
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#-pcr_efficiency-float" class="md-nav__link">
+    <span class="md-ellipsis">
+      --PCR_efficiency FLOAT
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#-pcr_error_rate-float" class="md-nav__link">
+    <span class="md-ellipsis">
+      --PCR_error_rate FLOAT
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#-total_reads-int" class="md-nav__link">
+    <span class="md-ellipsis">
+      --total_reads INT
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#error-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      Error model
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Error model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#-trained_model-str" class="md-nav__link">
+    <span class="md-ellipsis">
+      --trained_model STR
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#-badread_identity-str" class="md-nav__link">
+    <span class="md-ellipsis">
+      --badread_identity STR
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#-build_model-bool" class="md-nav__link">
+    <span class="md-ellipsis">
+      --build_model BOOL
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Use example
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#count-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      Count matrix
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Count matrix">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#-matrix-csv-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      --matrix csv file
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#-bc_counts-csv-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      --bc_counts csv file
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#-cell_types_annotation-csv-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      --cell_types_annotation csv file
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#template" class="md-nav__link">
+    <span class="md-ellipsis">
+      Template
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Template">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#-dt_length-int" class="md-nav__link">
+    <span class="md-ellipsis">
+      --dT_LENGTH INT
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#-adapter_seq-str" class="md-nav__link">
+    <span class="md-ellipsis">
+      --ADAPTER_SEQ STR
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#-tso_seq-str" class="md-nav__link">
+    <span class="md-ellipsis">
+      --TSO_SEQ STR
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#-full_length-bool" class="md-nav__link">
+    <span class="md-ellipsis">
+      --full_length BOOL
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#-truncation_model-csv-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      --truncation_model csv file
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#-unspliced_ratio-float" class="md-nav__link">
+    <span class="md-ellipsis">
+      --unspliced_ratio FLOAT
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#-intron_retention-bool" class="md-nav__link">
+    <span class="md-ellipsis">
+      --intron_retention BOOL
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#-ir_model-csv-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      --ir_model csv file
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reference-transcripts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Reference transcripts
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Reference transcripts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#-transcriptome-fasta-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      --transcriptome FASTA file
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#-length_dist-str" class="md-nav__link">
+    <span class="md-ellipsis">
+      --length_dist STR
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#-ref_genome-fasta-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      --ref_genome FASTA file
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pcr-amplification" class="md-nav__link">
+    <span class="md-ellipsis">
+      PCR amplification
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="PCR amplification">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#-pcr_cycles-int" class="md-nav__link">
+    <span class="md-ellipsis">
+      --PCR_cycles INT
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#-pcr_efficiency-float" class="md-nav__link">
+    <span class="md-ellipsis">
+      --PCR_efficiency FLOAT
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#-pcr_error_rate-float" class="md-nav__link">
+    <span class="md-ellipsis">
+      --PCR_error_rate FLOAT
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#-total_reads-int" class="md-nav__link">
+    <span class="md-ellipsis">
+      --total_reads INT
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#error-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      Error model
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Error model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#-trained_model-str" class="md-nav__link">
+    <span class="md-ellipsis">
+      --trained_model STR
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#-badread_identity-str" class="md-nav__link">
+    <span class="md-ellipsis">
+      --badread_identity STR
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#-build_model-bool" class="md-nav__link">
+    <span class="md-ellipsis">
+      --build_model BOOL
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<h1 id="input-parameters">Input parameters</h1>
+<p>AsaruSim simulation requires input parameters, describing the macro characteristics of the desired synthetic reads.</p>
+<h2 id="count-matrix"><strong>Count matrix</strong></h2>
+<h4 id="-matrix-csv-file"><code>--matrix</code>  <code>csv file</code></h4>
+<p>Feature-by-cell (gene/cell or isoform/cell) count matrix in csv format, where rows represent the features <em>(genes or transcripts)</em> and columns represent cells <em>(or spatial barcodes)</em>. The input matrix may be derived from an existing single-cell short- or long-read preprocessed run. this parameter is <strong>required</strong>.</p>
 <div class="admonition caution">
 <p class="admonition-title">AsaruSim require a feature name and GTF annotation for gene-per-cell matrix</p>
 <p>Since the sequence names in the reference transcriptome correspond to <strong>transcript ids</strong>, it is necessary for users to specify the feature name within their matrix when gene-per-cell matrix is provided. Set the feature name using the <code>--features</code> parameter. <br /> Available options include:</p>
@@ -147,8 +890,9 @@
 </blockquote>
 <p>Additionally, users are required to supply a gene annotation <code>(.gtf format)</code> file using the <code>--gtf</code> parameter. </p>
 </div>
-<h4 id="-bc_counts"><code>--bc_counts</code></h4>
-<p>To simulate specific UMI counts per cell barcode, set the <code>--bc_counts</code> parameter to the path of a UMI counts <code>.CSV file</code>. This parameter eliminates the need for an input matrix, enabling the simulation of UMI counts where transcripts are chosed randomly.</p>
+<h4 id="-bc_counts-csv-file"><code>--bc_counts</code> <code>csv file</code></h4>
+<p>To simulate specific UMI counts per cell barcode with random transcripts, set the <code>--bc_counts</code> parameter to the path of a UMI counts <code>.CSV file</code>. This parameter eliminates the need for an input matrix, enabling the simulation of UMI counts where transcripts are chosed randomly.</p>
+<p>example of UMI counts per CB file:</p>
 <table>
 <thead>
 <tr>
@@ -167,7 +911,7 @@
 </tr>
 </tbody>
 </table>
-<h4 id="-cell_types_annotation"><code>--cell_types_annotation</code></h4>
+<h4 id="-cell_types_annotation-csv-file"><code>--cell_types_annotation</code> <code>csv file</code></h4>
 <p>AsaruSim can generate synthetic count tables with varying <strong>cell types</strong>, <strong>differentially expressed genes</strong>, or <strong>isoforms</strong>. This capability is particularly useful for simulating count matrices that mimic the characteristics of existing cell populations. <br />
 To simulate cell groups, AsaruSim requirs suplimentary parameters describing the characteristic of desired cell groups.</p>
 <p><strong>Requirements for simulating cell groups</strong> : <br />
@@ -200,20 +944,37 @@ AsaruSim use <a href="https://sysbiobig.dei.unipd.it/software/sparsim/">SPARSim<
 </tbody>
 </table>
 <p>AsaruSim will then use the provided matrix to estimate characteristic of each cell groups and generate a synthetic count matrix.</p>
-<h2 id="template">Template</h2>
+<h2 id="template"><strong>Template</strong></h2>
 <p>AsaruSim generates reads that correspond to a 10X Genomics library construction coupled with Nanopore sequencing. The final construction corresponds to : an <strong>adaptor sequence</strong> composed of 10X and Nanopore adaptors,  a <strong>cellular barcode</strong> (CB), <strong>UMI</strong> sequences at the same frequencies as in the synthetic count matrix, a 20 bp <em>oligo(dT)</em>, the feature-corresponding <strong>cDNA sequence</strong> from the reference transcriptome and a <strong>template switch oligo</strong> (TSO) at the end.</p>
-<h4 id="-dt_length"><code>--dT_LENGTH</code></h4>
-<p>Specifies the length of the oligo(dT) tail sequence. Default: <code>20</code> bp.</p>
-<h4 id="-adapter_seq"><code>--ADAPTER_SEQ</code></h4>
-<p>Defines the sequence of the adapter used in the ONT and 10X Genomics libraries. By default, the 10X 3' solution V3 adapter sequence is used
-Default: <code>ACTAAAGGCCATTACGGCCTACACGACGCTCTTCCGATCT</code>.</p>
-<h4 id="-tso_seq"><code>--TSO_SEQ</code></h4>
-<p>Specifies the sequence of the Template Switching Oligo (TSO) nucleotid. Default: <code>TGTACTCTGCGTTGATACCACTGCTT</code>.</p>
-<h2 id="reference-transcriptome">Reference transcriptome</h2>
-<p>The feature-corresponding cDNA sequence is sampled from the reference transcriptome.</p>
-<h4 id="-transcriptome"><code>--transcriptome</code></h4>
+<h4 id="-dt_length-int"><code>--dT_LENGTH</code> <code>INT</code></h4>
+<p>The mean length of the oligo(dT) tail sequence, assuming a normal distribution. 
+(<em>default</em> : <code>15 bp</code>).</p>
+<h4 id="-adapter_seq-str"><code>--ADAPTER_SEQ</code> <code>STR</code></h4>
+<p>Defines the sequence of the adapter used in the ONT and 10X Genomics libraries. By default, the 10X 3' solution V3 adapter sequence is used.</p>
+<p>(<em>default</em> :<code>ACTAAAGGCCATTACGGCCTACACGACGCTCTTCCGATCT</code>).</p>
+<h4 id="-tso_seq-str"><code>--TSO_SEQ</code> <code>STR</code></h4>
+<p>Specifies the sequence of the Template Switching Oligo (TSO) nucleotid.</p>
+<p>(<em>default</em> :<code>TGTACTCTGCGTTGATACCACTGCTT</code>).</p>
+<h4 id="-full_length-bool"><code>--full_length</code> <code>BOOL</code></h4>
+<p>Simulate untruncated reads.
+(<em>default</em> :<code>false</code>).</p>
+<h4 id="-truncation_model-csv-file"><code>--truncation_model</code> <code>csv file</code></h4>
+<p>Truncation probability distribution. Automatically generated when the <code>--build_model</code> option is enabled.
+(<em>default</em> :<code>bin/models/truncation_default_model.csv</code>)</p>
+<h4 id="-unspliced_ratio-float"><code>--unspliced_ratio</code> <code>FLOAT</code></h4>
+<p>The percentage of unspliced reads to simulate.
+(<em>default</em> :<code>0.0</code>).</p>
+<h4 id="-intron_retention-bool"><code>--intron_retention</code> <code>BOOL</code></h4>
+<p>Enable simulation of intron retention events. If enabled, a reference genome must be provided using the <code>--ref_genome</code> option.
+(<em>default</em> :<code>false</code>)</p>
+<h4 id="-ir_model-csv-file"><code>--ir_model</code> <code>csv file</code></h4>
+<p>Markov model of Intron Retention events. This can be generated using the Nanosim module <code>model_intron_retention.py</code>. 
+(<em>default</em> :<code>bin/models/SC3pv3_GEX_Human_IR_markov_model</code>)</p>
+<h2 id="reference-transcripts"><strong>Reference transcripts</strong></h2>
+<p>The feature-corresponding cDNA sequence is sampled from the reference transcriptome or reference genome for unsplaced and intron retained transcripts. </p>
+<h4 id="-transcriptome-fasta-file"><code>--transcriptome</code> <code>FASTA file</code></h4>
 <p>A reference transcriptome file in <code>.fasta</code> format can be downloaded from <a href="https://www.ensembl.org/Homo_sapiens/Info/Index">Ensembl</a>.</p>
-<h4 id="-length_dist"><code>--length_dist</code></h4>
+<h4 id="-length_dist-str"><code>--length_dist</code> <code>STR</code></h4>
 <p>To mimic the real read length distribution when a gene expression matrix is provided, a realistic read length distribution is achieved by selecting a random cDNA of the corresponding gene, with a prior probability favoring short-length cDNA.</p>
 <p>AsaruSim estimates this read length using a <a href="https://en.wikipedia.org/wiki/Log-normal_distribution">log-normal distribution</a>. Users may provide their parameters to personalize the distribution using three comma-delimited values (shape, location, scale) with the parameter <code>--length_dist</code>. 
 (<em>default</em> :<code>0.37,0.0,825</code>)</p>
@@ -226,28 +987,30 @@ Default: <code>ACTAAAGGCCATTACGGCCTACACGACGCTCTTCCGATCT</code>.</p>
 <p class="admonition-title">Fit read distribution of real reads</p>
 <p>Users may also fit their real reads distribution with this approach by providing a subset of real reads (in <code>.FASTQ</code> format) using the <code>--model_fastq</code> parameter. (See also <strong>build model</strong> in the <a href="#build_model">Error model</a> section)</p>
 </div>
-<h2 id="pcr-amplification">PCR amplification</h2>
+<h4 id="-ref_genome-fasta-file"><code>--ref_genome</code> <code>FASTA file</code></h4>
+<p>The reference genome file in <code>.fasta</code> format can be downloaded from <a href="https://www.ensembl.org/Homo_sapiens/Info/Index">Ensembl</a>.</p>
+<h2 id="pcr-amplification"><strong>PCR amplification</strong></h2>
 <p>AsaruSim take into account the bias of PCR amplification introduced during library constructions process. The PCR amplification is simulated by replicating the synthetic reads at each cycle, with a capturing probabily and un error rate.</p>
-<h4 id="-pcr_cycles"><code>--PCR_cycles</code></h4>
+<h4 id="-pcr_cycles-int"><code>--PCR_cycles</code> <code>INT</code></h4>
 <p>The number of PCR cycles to simulate. During each cycle, the reads are duplicated exponentially, following the formula:
 $$\  N = N_0 \times (1 + E)^{C} \ $$</p>
 <p>where: <em>N</em> is the final number of reads,
  <em>N0</em> is the initial number of reads,
  <em>E</em> is the efficiency rate, and
  <em>C</em> is the number of cycles.</p>
-<h4 id="-pcr_efficiency"><code>--PCR_efficiency</code></h4>
+<h4 id="-pcr_efficiency-float"><code>--PCR_efficiency</code> <code>FLOAT</code></h4>
 <p>The efficiency rate of duplication is fixed by the user (<em>default</em>: <code>--PCR_efficiency 0.9</code>)</p>
-<h4 id="-pcr_error_rate"><code>--PCR_error_rate</code></h4>
+<h4 id="-pcr_error_rate-float"><code>--PCR_error_rate</code> <code>FLOAT</code></h4>
 <p>The probability to be mutated during the process for each nucleotide in the duplicated read. The error rate is also fixed by the user (<em>default</em>: <code>--PCR_error_rate 3.5e-05</code>)</p>
-<h4 id="-total_reads"><code>--total_reads</code></h4>
+<h4 id="-total_reads-int"><code>--total_reads</code> <code>INT</code></h4>
 <p>Number of total reads to random subset from the resulting artificial PCR product, to mimic the experimental protocol where only a subset of the sample is used for the sequencing step.</p>
 <div class="admonition tip">
 <p class="admonition-title">Users can use amplification rate instead of PCR amplification</p>
 <p>Inspired by SLSim, the amplification rate allows users to repeat each template read a specified number of times. This is a simpler way to simulate amplification with: $$\ x \sim \text{Poi}(\text{amp_rate}) \ $$ The value of <strong>x</strong> is set by the user using <code>--amp_rate</code></p>
 </div>
-<h2 id="error-model">Error model</h2>
+<h2 id="error-model"><strong>Error model</strong></h2>
 <p>AsaruSim uses the <a href="https://github.com/rrwick/Badread">Badread</a> Python library to simulate nanopore sequencing errors and assign per-base quality scores based on pre-trained error models (see Badread documentation for more information). To do so, AsaruSim requires:</p>
-<h4 id="-trained_model"><code>--trained_model</code></h4>
+<h4 id="-trained_model-str"><code>--trained_model</code> <code>STR</code></h4>
 <p>This allows the user to choose one of the built-in error models within the <a href="https://github.com/rrwick/Badread?tab=readme-ov-file#error-model">Badread</a> database. The possible values are:</p>
 <blockquote>
 <p><code>nanopore2023</code>: a model trained on ONT R10.4.1 reads from 2023 (the default).<br />
@@ -256,62 +1019,69 @@ $$\  N = N_0 \times (1 + E)^{C} \ $$</p>
 <code>random</code>: a random error model with a 1/3 chance each of insertion, deletion, and substitution.
     a file path for a trained model. <br /></p>
 </blockquote>
-<h4 id="-badread_identity"><code>--badread_identity</code></h4>
+<h4 id="-badread_identity-str"><code>--badread_identity</code> <code>STR</code></h4>
 <p>Badread uses the <a href="https://www.desmos.com/calculator/u9fivqmisa?lang=fr">Beta distribution</a> to sample read identities. The distribution is defined with three parameters: <code>mean</code>, <code>standard deviation</code>, and <code>maximum</code> value.<br />
 To pass these parameters to AsaruSim, use three comma-delimited values (identity mean, max, stdev). <em>default :</em> <code>--badread_identity 95,99,2.5</code>.</p>
-<h4 id="-build_model"><code>--build_model</code></h4>
+<h4 id="-build_model-bool"><code>--build_model</code> <code>BOOL</code></h4>
 <p><a name="build_model"></a>
 To internally train a personalized <strong>read identity</strong>, <strong>Qscore</strong>, and <strong>error</strong> models, AsaruSim requires a real FASTQ read file that can be provided using <strong><code>--model_fastq</code></strong> and a reference genome (.FASTA) file using <strong><code>--ref_genome</code></strong>.</p>
 <div class="admonition tips">
 <p class="admonition-title">AsaruSim also accepts pre-built model files</p>
 <p>Users can use <strong><code>--error_model</code></strong> and <strong><code>--qscore_model</code></strong> to provide Badread pre-built models in file format.</p>
 </div>
-              
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
             </div>
-          </div><footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href=".." class="btn btn-neutral float-left" title="Installation"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../examples/" class="btn btn-neutral float-right" title="Use example">Next <span class="icon icon-circle-arrow-right"></span></a>
-    </div>
-
-  <hr/>
-
-  <div role="contentinfo">
-    <!-- Copyright etc -->
-  </div>
-
-  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
-</footer>
           
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
         </div>
-      </div>
-
-    </section>
-
-  </div>
-
-  <div class="rst-versions" role="note" aria-label="Versions">
-  <span class="rst-current-version" data-toggle="rst-current-version">
-    
-    
-      <span><a href=".." style="color: #fcfcfc">&laquo; Previous</a></span>
-    
-    
-      <span><a href="../examples/" style="color: #fcfcfc">Next &raquo;</a></span>
-    
-  </span>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
 </div>
-    <script src="../js/jquery-3.6.0.min.js"></script>
-    <script>var base_url = "..";</script>
-    <script src="../js/theme_extra.js"></script>
-    <script src="../js/theme.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-      <script src="../search/main.js"></script>
-    <script>
-        jQuery(function () {
-            SphinxRtdTheme.Navigation.enable(true);
-        });
-    </script>
-
-</body>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.83f73b43.min.js"></script>
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      
+    
+  </body>
 </html>
