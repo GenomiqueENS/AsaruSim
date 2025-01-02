@@ -35,7 +35,7 @@ process TEMPLATE_MAKER {
     path "log.csv", emit: logfile
     
     script:
-        def gtf = params.features != "transcript_id" ? "--features $params.features --gtf $gtf" : ""
+        def gtf = params.features != "transcript_id" ? "--features $params.features --gtf $ref_gtf" : ""
         def unfiltered = barcodes.name != "no_barcode_counts"? "--unfilteredBC $barcodes" : ""
         def full_length = params.full_length? "--full_length" : "--truncation_model $truncation"
         def intron_retention = params.intron_retention? "--intron_retention --IR_model $intron_r --gtf $ref_gtf" : ""
