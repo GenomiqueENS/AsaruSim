@@ -201,7 +201,7 @@ class TemplateGenerator:
                 count=int(count)
                 if count > 0:
                     total_matrix_counts += count
-                    trns = trns if transcript_id else fetch_transcript_id_by_gene(trns, transcripts_index)
+                    trns = trns if transcript_id else fetch_transcript_id_by_gene(trns, transcripts_index, self.length_dist)
                     if trns:
                         if self.unspliced_ratio > 0 and random.random() < self.unspliced_ratio:
                                 cDNA = get_unspliced_sequence(trns,
@@ -282,18 +282,15 @@ def template_maker(args):
             sys.exit(1)
             
     if args.full_length:
-        length_dist = None
         truncation_model = None
-        
     else :
-        try:
-            shape, loc, scale = args.length_dist.split(",")
-            length_dist = [float(x) for x in [shape, loc, scale]]
-        except:
-            length_dist = [0.37, 0.0, 824.94]
-    
-    if not args.full_length:
         truncation_model = pd.read_csv(args.truncation_model)
+
+    try:
+        shape, loc, scale = args.length_dist.split(",")
+        length_dist = [float(x) for x in [shape, loc, scale]]
+    except:
+        length_dist = [0.37, 0.0, 824.94]
 
     dict_ref_structure = None
     IR_markov_model = None
