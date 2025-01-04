@@ -103,6 +103,7 @@ class TemplateGenerator:
         self.unspliced_ratio = unspliced_ratio
         self.outFasta = outFasta
         self.threads = threads
+        self.total_matrix_counts = 0
         self.counter = 0
         self.unfound = 0
         self.total_umi_counts = 0
@@ -114,7 +115,8 @@ class TemplateGenerator:
     def complement(self, sequence):
         return sequence.translate(self.COMPLEMENT_MAP)
     
-    def make_random_template(self, cell, umi_counts):
+    def make_random_template(self, cell, umi_counts, seed=2024):
+
         if self.threads == 1:
             filename = self.outFasta
             mode = 'a'
@@ -173,7 +175,8 @@ class TemplateGenerator:
             self.unfound += unfound
 
 
-    def make_template(self, cell, umi_counts, transcripts_index, features):
+    def make_template(self, cell, umi_counts, transcripts_index, features, seed=2024):
+
         if self.threads == 1:
             filename = self.outFasta
             mode = 'a'
@@ -190,12 +193,14 @@ class TemplateGenerator:
         with open(filename, mode) as fasta:
             idx = 0
             unfound = 0
+            total_matrix_counts = 0
             total_umi_counts = 0
             i_retained = False
             cDNA = None
             for trns, count in umi_counts.items():
                 count=int(count)
                 if count > 0:
+                    total_matrix_counts += count
                     trns = trns if transcript_id else fetch_transcript_id_by_gene(trns, transcripts_index)
                     if trns:
                         if self.unspliced_ratio > 0 and random.random() < self.unspliced_ratio:
@@ -212,18 +217,24 @@ class TemplateGenerator:
                         else:
                             cDNA = self.transcriptome.get_sequence(trns)
 
+                    else:
+                        unfound += count
+                        continue
+
                     if cDNA:
                         if not self.full_length:
                             cDNA = truncate_cDNA(cDNA, probs_3p=right_probs, probs_5p=left_probs)
                         for _ in range(count):
                             umi = self.generate_random_umi()
                             total_umi_counts += 1
+
                             dT = "T"*int(np.random.normal(self.len_dT, 3))
                             seq = f"{self.adapter}{cell}{umi}{dT}{cDNA}{self.TSO}"
+
                             if random.randint(0, 1) == 1:
                                 seq = self.complement(seq)[::-1]
-                            ir_tag = "-IR" if i_retained else ""
 
+                            ir_tag = "-IR" if i_retained else ""
                             fasta.write(f">{cell}-{umi}-{trns}-{idx}{ir_tag}\n"
                                                 f"{seq}\n")
                             idx += 1
@@ -233,11 +244,13 @@ class TemplateGenerator:
                                                 f"{seq}\n")
                                     idx += 1
 
-                    else : unfound += 1
+                    else :
+                        unfound += count
 
             self.total_umi_counts += total_umi_counts
             self.counter += idx
             self.unfound += unfound
+            self.total_matrix_counts += total_matrix_counts
 
 
 def template_maker(args):
@@ -407,6 +420,8 @@ def template_maker(args):
     
     logging.info("Completed successfully. Have a great day!")
     logging.info("Stats : "+
+                 "\nTotal matrix counts : "+
+                 str(generator.total_matrix_counts)+
                  "\nSimulated Cell BC: "+
                  str(len(matrix.columns))+
                  "\nSimulated Filtered-Out Cell BC: "+
