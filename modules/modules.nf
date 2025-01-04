@@ -18,7 +18,7 @@ process COUNT_SIMULATOR {
 }
 
 process TEMPLATE_MAKER {
-    publishDir params.outdir, mode:'copy'
+    publishDir params.outdir, mode:'copy', pattern: "log.csv"
     
     input:
     path matrix
@@ -61,7 +61,7 @@ process TEMPLATE_MAKER {
 }
 
 process ERRORS_SIMULATOR {
-    publishDir params.outdir, mode:'copy'
+    publishDir params.outdir, mode:'copy', pattern: '*.fa.gz'
 
     input:
     path template
@@ -70,7 +70,9 @@ process ERRORS_SIMULATOR {
     val identity
 
     output:
-    path "simulated.fastq"
+    path "simulated.fastq", emit: fastq
+    path "template.fa.gz", optional: true
+    path "amplified_reads.fa.gz", optional: true
 
     script:
     def error_model_arg = ""
@@ -88,7 +90,8 @@ process ERRORS_SIMULATOR {
     --badread-identity ${identity.trim()} \
     $error_model_arg \
     $qscore_model_arg \
-    -o simulated.fastq
+    -o simulated.fastq &&
+    gzip -f $template
     """
 }
 
@@ -99,11 +102,11 @@ process GROUND_TRUTH {
     path template
 
     output:
-    path "ground_truth.tsv"
+    path "ground_truth.tsv.gz"
 
     script:
     """
-    seqkit seq -n $template | sed 's/_/\t/g'  > ground_truth.tsv
+    seqkit seq -n $template | sed 's/_/\t/g' | gzip > ground_truth.tsv.gz
 
     """
 }
@@ -120,6 +123,7 @@ process QC {
 
     output:
     path "${params.projetctName}.html"
+    path "simulated.fastq.gz"
 
     script:
     """
@@ -132,5 +136,6 @@ process QC {
             ${work_params.join('').replaceAll(/[\(\)\$]/, "")} \
             "\$bedread_version" \
             "\$nextflow_version" \
+    && gzip -f $fastq
     """
 }

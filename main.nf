@@ -191,13 +191,14 @@ workflow {
     template_log_ch = TEMPLATE_MAKER.out.logfile
 
     if (params.pcr_cycles > 0) {
-        template_fa_ch = PCR_SIMULATOR(template_fa_ch, template_log_ch)
+        PCR_SIMULATOR(template_fa_ch, template_log_ch)
+        template_fa_ch = PCR_SIMULATOR.out.fasta
     }
 
     gr_truth_ch = GROUND_TRUTH(template_fa_ch)
     batch_size_ch  = BATCH_SIZE_FOR_BADREAD(template_fa_ch)
-    error_ch    = ERRORS_SIMULATOR(template_fa_ch, error_model_ch, qscore_model_ch, identity_ch) //, batch_size_ch.toInteger())
-    qc_ch       = QC(error_ch, config_params_ch, workflow_params_ch, logo_ch, template_log_ch)
+    ERRORS_SIMULATOR(template_fa_ch, error_model_ch, qscore_model_ch, identity_ch) //, batch_size_ch.toInteger())
+    QC(ERRORS_SIMULATOR.out.fastq, config_params_ch, workflow_params_ch, logo_ch, template_log_ch)
 }
 
 workflow.onComplete {

@@ -1,12 +1,13 @@
 process PCR_SIMULATOR {
-    publishDir params.outdir, mode:'copy'
+    publishDir params.outdir, mode:'copy', pattern: 'template.fa.gz'
     
     input:
     path fasta
     path template_log
 
     output:
-    path "amplified_reads.fa" 
+    path "amplified_reads.fa", emit: fasta
+    path "template.fa.gz", optional: true
     
     script:
         def totalNumber = params.pcr_total_reads == null? "" : "--totalNumber $params.pcr_total_reads"
@@ -20,6 +21,7 @@ process PCR_SIMULATOR {
     $totalNumber \
     --seed $params.seed \
     --maker_log ${template_log} \
-    --out amplified_reads.fa
+    --out amplified_reads.fa &&
+    gzip -f ${fasta}
     """
 }
