@@ -42,7 +42,7 @@ def setup_template_parameters(parent_parser):
     parser.add_argument('-t','--threads', type=int, default=1, help="Number of threads to use.")
     parser.add_argument('-f','--features', type=str, default="transcript_id", help="Feature rownames in input matrix.")
     parser.add_argument('--on_disk', action='store_true', help="Whether to use Faidx to index the FASTA or load the FASTA in memory.")
-    parser.add_argument('-c','--amp', type=int, default=1, help="amplification rate.")
+    parser.add_argument('-c','--amp', type=int, default=0, help="amplification rate.")
     parser.add_argument('--unspliced_ratio', type=float, default=0.0, help="Unspliced transcript ratio.")
 
     parser.add_argument('--full_length', action='store_true', help="Simulate a full length untruncated transcripts.")
@@ -127,10 +127,11 @@ class TemplateGenerator:
             right_probs = list(self.truncation_model.right)
         
         with open(filename, mode) as fasta:
-            idx = 1
+            cnt = 0
+            unfound = 0
             total_umi_counts = 0
             trns_ids = random.choices(list(self.transcriptome.transcripts.keys()), k=umi_counts)
-            for idx, trns in enumerate(trns_ids):
+            for _, trns in enumerate(trns_ids):
                 if self.unspliced_ratio > 0 and random.random() < self.unspliced_ratio:
                         cDNA = get_unspliced_sequence(trns,
                                                       self.genome_fai,
@@ -151,13 +152,25 @@ class TemplateGenerator:
                     total_umi_counts += 1
                     dT = "T"*int(np.random.normal(self.len_dT, 3))
                     seq = f"{self.adapter}{cell}{umi}{dT}{cDNA}{self.TSO}"
+                    
                     if random.randint(0, 1) == 1:
                         seq = self.complement(seq)[::-1]
                     ir_tag = "-IR" if i_retained else ""
-                    for j in range(np.random.poisson(self.amp)):
-                        fasta.write(f">{cell}-{umi}-{trns}-{idx}{ir_tag}\n"
+
+                    fasta.write(f">{cell}-{umi}-{trns}-{cnt}{ir_tag}\n"
                                     f"{seq}\n")
-                        idx += 1
+                    cnt += 1
+                    if self.amp > 0:
+                        for j in range(np.random.poisson(self.amp)):
+                            fasta.write(f">{cell}-{umi}-{trns}-{cnt}{ir_tag}\n"
+                                        f"{seq}\n")
+                            cnt += 1
+
+                else : unfound += 1
+
+            self.total_umi_counts += total_umi_counts
+            self.counter += cnt
+            self.unfound += unfound
 
 
     def make_template(self, cell, umi_counts, transcripts_index, features):
@@ -202,7 +215,7 @@ class TemplateGenerator:
                     if cDNA:
                         if not self.full_length:
                             cDNA = truncate_cDNA(cDNA, probs_3p=right_probs, probs_5p=left_probs)
-                        for i in range(count):
+                        for _ in range(count):
                             umi = self.generate_random_umi()
                             total_umi_counts += 1
                             dT = "T"*int(np.random.normal(self.len_dT, 3))
@@ -210,11 +223,16 @@ class TemplateGenerator:
                             if random.randint(0, 1) == 1:
                                 seq = self.complement(seq)[::-1]
                             ir_tag = "-IR" if i_retained else ""
-                            for j in range(np.random.poisson(self.amp)):
-                                fasta.write(f">{cell}-{umi}-{trns}-{idx}{ir_tag}\n"
-                                            f"{seq}\n")
-                                
-                                idx += 1
+
+                            fasta.write(f">{cell}-{umi}-{trns}-{idx}{ir_tag}\n"
+                                                f"{seq}\n")
+                            idx += 1
+                            if self.amp > 0:
+                                for _ in range(np.random.poisson(self.amp)):
+                                    fasta.write(f">{cell}-{umi}-{trns}-{idx}{ir_tag}\n"
+                                                f"{seq}\n")
+                                    idx += 1
+
                     else : unfound += 1
 
             self.total_umi_counts += total_umi_counts
