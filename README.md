@@ -9,12 +9,14 @@
 # Asaru Sim Documentation
 <a href="images/asarusim_v2.svg"><img src="images/asarusim_v2.svg" align="middle" height="100" width="290" >
 
-`AsaruSim` is an automated Nextflow workflow designed for simulating 10x single-cell Nanopore reads. This workflow aims to generate a gold standard dataset for the objective assessment and optimization of single-cell long-read methods.
+`AsaruSim` AsaruSim is an automated Nextflow workflow designed for simulating 10x single-cell long read data from the count matrix level to the sequence level. It aimed at creating a gold standard dataset for the assessment and optimization of single-cell long-read methods.
 Full [documentation](https://GenomiqueENS.github.io/AsaruSim/) is avialable [here](https://GenomiqueENS.github.io/AsaruSim/).
 
 <a href="images/schema.png"><img src="images/schema.png" align="middle" height="650" width="920" >
-## Prerequisites
 
+## Requirements
+
+This pipeline is powered by Nextflow workflow manager. All dependencies are automatically managed by Nextflow through a preconfigured Docker container, ensuring a seamless and reproducible installation process.
 
 Before starting, ensure the following tools are installed and properly set up on your system:
 
@@ -46,46 +48,66 @@ Customize runs by editing the `nextflow.config` file and/or specifying parameter
 
 Here are the primary input parameters for configuring the workflow:
 
-| Parameter          | Description                                                   | Default Value                                 |
-|--------------------|---------------------------------------------------------------|-----------------------------------------------|
-| `matrix`           | Path to the count matrix csv file (required)                  | `test_data/matrix.csv`                        |
-| `bc_counts`        | Path to the barcode count file                                | `test_data/test_bc.csv`                       |
-| `transcriptome`    | Path to the reference transcriptome file (required)           | `test_data/transcriptome.fa`                  |
-| `features`         | Matrix feature counts                                         | `transcript_id`                               |
-| `gtf`              | Path to transcriptom annotation .gtf file                     | `null`                                        |
-| `cell_types_annotation`    | Path to cell type annotation .csv file                | `null`                                        |
+| Parameter          | Description                                         | Format   | Default Value                                 |
+|--------------------|-----------------------------------------------------|----------|-----------------------------------------------|
+| `matrix`           | Path to the count matrix csv file (required)        |   .CSV       | `test_data/matrix.csv`                        |
+| `bc_counts`        | Path to the barcode count file                      |    .CSV       | `test_data/test_bc.csv`                       |
+| `transcriptome`    | Path to the reference transcriptome file (required) |    FASTA      | `test_data/transcriptome.fa`                  |
+| `features`         | Matrix feature counts                               |    STR      | `transcript_id`                               |
+| `gtf`              | Path to transcriptom annotation .gtf file           |    GTF      | `null`                                        |
+| `cell_types_annotation`    | Path to cell type annotation .csv file      |     CSV     | `null`                                        |
 
 ### Error/Qscore Parameters
 
 Configuration for error model:
 
-| Parameter          | Description                                                   | Default Value                                 |
-|--------------------|---------------------------------------------------------------|-----------------------------------------------|
-| `trained_model`    | Badread pre-trained error/Qscore model name                   | `nanopore2023`                                |
-| `badread_identity` | Comma-separated values for Badread identity parameters        | `"98,2,99"`                                   |
-| `error_model`      | Custom error model file (optional)                            | `null`                                        |
-| `qscore_model`     | Custom Q-score model file (optional)                          | `null`                                        |
-| `build_model`      | to build your own error/Qscor model                           | `false`                                       |
-| `fastq_model`      | reference real read (.fastq) to train error model   (optional)      | `false`                                       |
-| `ref_genome`       | reference genome .fasta file (optional)                       | `false`                                       |
+| Parameter          | Description                                                   | format   | Default Value                                 |
+|--------------------|---------------------------------------------------------------|-------|--------------------------------------------|
+| `trained_model`    | Badread pre-trained error/Qscore model name                   |  STR  | `nanopore2023`                                |
+| `badread_identity` | Comma-separated values for Badread identity parameters        |  STR  | `"98,2,99"`                                   |
+| `error_model`      | Custom error model file (optional)                            |  TXT  | `null`                                        |
+| `qscore_model`     | Custom Q-score model file (optional)                          |  TXT  | `null`                                        |
+| `build_model`      | to build your own error/Qscor model                           |  STR  | `false`                                       |
+| `fastq_model`      | reference real read (.fastq) to train error model   (optional) |   FASTQ      | `false`                                       |
+| `ref_genome`       | reference genome .fasta file (optional)                       | FASTA   | `false`                                       |
 
 ### Additional Parameters
 
-| Parameter          | Description                                                   | Default Value                                 |
-|--------------------|---------------------------------------------------------------|-----------------------------------------------|
-| `amp`              | Amplification factor                                          | `1`                                           |
-| `outdir`           | Output directory for results                                  | `"results"`                                   |
-| `projectName`      | Name of the project                                           | `"test_project"`                              |
+| Parameter          | Description                                            |   Format    | Default Value                                 |
+|--------------------|--------------------------------------------------------|-------|-----------------------------------------------|
+| `amp`              | Amplification factor                                   |   INT    | `1`                                           |
+| `outdir`           | Output directory for results                           |   PATH    | `"results"`                                   |
+| `projectName`      | Name of the project                                    |    STR   | `"test_project"`                              |
 
 ### Run Parameters
 
 Configuration for running the workflow:
 
-| Parameter         | Description                        | Default Value             |
-|-------------------|------------------------------------|---------------------------|
-| `threads`         | Number of threads to use           | `4`                       |
-| `container`       | Docker container for the workflow  | `'hamraouii/wf-SLSim'`    |
-| `docker.runOptions` | Docker run options to use       | `'-u $(id -u):$(id -g)'`  |
+| Parameter         | Description                        |   Format    | Default Value             |
+|-------------------|------------------------------------|-------------|---------------------------|
+| `threads`         | Number of threads to use           |      INT       | `4`                       |
+| `container`       | Docker container for the workflow  |     STR        | `'hamraouii/wf-SLSim'`    |
+| `docker.runOptions` | Docker run options to use       |    STR         | `'-u $(id -u):$(id -g)'`  |
+
+### File format discription
+#### `--bc_counts`
+To simulate specific UMI counts per cell barcode with random transcripts, set the --bc_counts parameter to the path of a UMI counts .CSV file. This parameter eliminates the need for an input matrix, enabling the simulation of UMI counts where transcripts are chosed randomly.
+
+example of UMI counts per CB file:
+|CB 	|counts|
+|--------------|------|
+|ACGGCGATCGCGAGCC 	|1260|
+|ACGGCGATCGCGAGCC 	|1104|
+
+#### `--cell_types_annotation`
+AsaruSim allows user to estimate this characteristic from an existing count table. To do so, the user need to set --sim_celltypes parameter to true and to provide the list of cell barcodes of each group (.CSV file) using --cell_types_annotation parameter:
+|CB |	cell_type|
+|--------------|------|
+|ACGGCGATCGCGAGCC| 	type 1|
+|ACGGCGATCGCGAGCC|	type 2|
+
+AsaruSim will then use the provided matrix to estimate characteristic of each cell groups and generate a synthetic count matrix.
+
 
 ## Usage
 User can choose among 4 ways to simulate template reads.
