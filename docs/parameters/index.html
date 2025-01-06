@@ -509,9 +509,9 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#-trained_model-str" class="md-nav__link">
+  <a href="#-trained_modelstr" class="md-nav__link">
     <span class="md-ellipsis">
-      --trained_model STR
+      --trained_modelSTR`
     </span>
   </a>
   
@@ -827,9 +827,9 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#-trained_model-str" class="md-nav__link">
+  <a href="#-trained_modelstr" class="md-nav__link">
     <span class="md-ellipsis">
-      --trained_model STR
+      --trained_modelSTR`
     </span>
   </a>
   
@@ -876,7 +876,7 @@
 <h1 id="input-parameters">Input parameters</h1>
 <p>AsaruSim simulation requires input parameters, describing the macro characteristics of the desired synthetic reads.</p>
 <h2 id="count-matrix"><strong>Count matrix</strong></h2>
-<h4 id="-matrix-csv-file"><code>--matrix</code>  <code>csv file</code></h4>
+<h4 id="-matrix-csv-file"><span style="color:#88419D;">--matrix</span> <code>csv file</code></h4>
 <p>Feature-by-cell (gene/cell or isoform/cell) count matrix in csv format, where rows represent the features <em>(genes or transcripts)</em> and columns represent cells <em>(or spatial barcodes)</em>. The input matrix may be derived from an existing single-cell short- or long-read preprocessed run. this parameter is <strong>required</strong>.</p>
 <div class="admonition caution">
 <p class="admonition-title">AsaruSim require a feature name and GTF annotation for gene-per-cell matrix</p>
@@ -890,7 +890,7 @@
 </blockquote>
 <p>Additionally, users are required to supply a gene annotation <code>(.gtf format)</code> file using the <code>--gtf</code> parameter. </p>
 </div>
-<h4 id="-bc_counts-csv-file"><code>--bc_counts</code> <code>csv file</code></h4>
+<h4 id="-bc_counts-csv-file"><span style="color:#88419D;">--bc_counts</span> <code>csv file</code></h4>
 <p>To simulate specific UMI counts per cell barcode with random transcripts, set the <code>--bc_counts</code> parameter to the path of a UMI counts <code>.CSV file</code>. This parameter eliminates the need for an input matrix, enabling the simulation of UMI counts where transcripts are chosed randomly.</p>
 <p>example of UMI counts per CB file:</p>
 <table>
@@ -911,7 +911,7 @@
 </tr>
 </tbody>
 </table>
-<h4 id="-cell_types_annotation-csv-file"><code>--cell_types_annotation</code> <code>csv file</code></h4>
+<h4 id="-cell_types_annotation-csv-file"><span style="color:#88419D;">--cell_types_annotation</span> <code>csv file</code></h4>
 <p>AsaruSim can generate synthetic count tables with varying <strong>cell types</strong>, <strong>differentially expressed genes</strong>, or <strong>isoforms</strong>. This capability is particularly useful for simulating count matrices that mimic the characteristics of existing cell populations. <br />
 To simulate cell groups, AsaruSim requirs suplimentary parameters describing the characteristic of desired cell groups.</p>
 <p><strong>Requirements for simulating cell groups</strong> : <br />
@@ -946,35 +946,41 @@ AsaruSim use <a href="https://sysbiobig.dei.unipd.it/software/sparsim/">SPARSim<
 <p>AsaruSim will then use the provided matrix to estimate characteristic of each cell groups and generate a synthetic count matrix.</p>
 <h2 id="template"><strong>Template</strong></h2>
 <p>AsaruSim generates reads that correspond to a 10X Genomics library construction coupled with Nanopore sequencing. The final construction corresponds to : an <strong>adaptor sequence</strong> composed of 10X and Nanopore adaptors,  a <strong>cellular barcode</strong> (CB), <strong>UMI</strong> sequences at the same frequencies as in the synthetic count matrix, a 20 bp <em>oligo(dT)</em>, the feature-corresponding <strong>cDNA sequence</strong> from the reference transcriptome and a <strong>template switch oligo</strong> (TSO) at the end.</p>
-<h4 id="-dt_length-int"><code>--dT_LENGTH</code> <code>INT</code></h4>
+<h4 id="-dt_length-int"><span style="color:#88419D;">--dT_LENGTH</span> <code>INT</code></h4>
 <p>The mean length of the oligo(dT) tail sequence, assuming a normal distribution. 
 (<em>default</em> : <code>15 bp</code>).</p>
-<h4 id="-adapter_seq-str"><code>--ADAPTER_SEQ</code> <code>STR</code></h4>
+<h4 id="-adapter_seq-str"><span style="color:#88419D;">--ADAPTER_SEQ</span> <code>STR</code></h4>
 <p>Defines the sequence of the adapter used in the ONT and 10X Genomics libraries. By default, the 10X 3' solution V3 adapter sequence is used.</p>
 <p>(<em>default</em> :<code>ACTAAAGGCCATTACGGCCTACACGACGCTCTTCCGATCT</code>).</p>
-<h4 id="-tso_seq-str"><code>--TSO_SEQ</code> <code>STR</code></h4>
+<h4 id="-tso_seq-str"><span style="color:#88419D;">--TSO_SEQ</span> <code>STR</code></h4>
 <p>Specifies the sequence of the Template Switching Oligo (TSO) nucleotid.</p>
 <p>(<em>default</em> :<code>TGTACTCTGCGTTGATACCACTGCTT</code>).</p>
-<h4 id="-full_length-bool"><code>--full_length</code> <code>BOOL</code></h4>
+<h4 id="-full_length-bool"><span style="color:#88419D;">--full_length</span> <code>BOOL</code></h4>
 <p>Simulate untruncated reads.
 (<em>default</em> :<code>false</code>).</p>
-<h4 id="-truncation_model-csv-file"><code>--truncation_model</code> <code>csv file</code></h4>
+<h4 id="-truncation_model-csv-file"><span style="color:#88419D;">--truncation_model</span> <code>csv file</code></h4>
 <p>Truncation probability distribution. Automatically generated when the <code>--build_model</code> option is enabled.
 (<em>default</em> :<code>bin/models/truncation_default_model.csv</code>)</p>
-<h4 id="-unspliced_ratio-float"><code>--unspliced_ratio</code> <code>FLOAT</code></h4>
+<h4 id="-unspliced_ratio-float"><span style="color:#88419D;">--unspliced_ratio</span> <code>FLOAT</code></h4>
 <p>The percentage of unspliced reads to simulate.
 (<em>default</em> :<code>0.0</code>).</p>
-<h4 id="-intron_retention-bool"><code>--intron_retention</code> <code>BOOL</code></h4>
+<h4 id="-intron_retention-bool"><span style="color:#88419D;">--intron_retention</span> <code>BOOL</code></h4>
 <p>Enable simulation of intron retention events. If enabled, a reference genome must be provided using the <code>--ref_genome</code> option.
 (<em>default</em> :<code>false</code>)</p>
-<h4 id="-ir_model-csv-file"><code>--ir_model</code> <code>csv file</code></h4>
+<h4 id="-ir_model-csv-file"><span style="color:#88419D;">--ir_model</span> <code>csv file</code></h4>
 <p>Markov model of Intron Retention events. This can be generated using the Nanosim module <code>model_intron_retention.py</code>. 
 (<em>default</em> :<code>bin/models/SC3pv3_GEX_Human_IR_markov_model</code>)</p>
+<div class="admonition caution">
+<p class="admonition-title">AsaruSim requires both a reference genome and a GTF annotation to simulate intron retention events and unspliced transcripts</p>
+<p>To simulate intron retention events (<code>--intron_retention</code>) and unspliced transcripts (<code>--unspliced_ratio</code>), you must provide a reference genome in FASTA format. Additionally, a GTF annotation file containing intron coordinate information is required, which can be generated using the AGAT tool:\</p>
+<p><pre> <code>conda install -c bioconda agat
+agat_sp_add_introns.pl --gff genes.sorted.gtf -o genes.sorted.intron.gff</code> </pre></p>
+</div>
 <h2 id="reference-transcripts"><strong>Reference transcripts</strong></h2>
 <p>The feature-corresponding cDNA sequence is sampled from the reference transcriptome or reference genome for unsplaced and intron retained transcripts. </p>
-<h4 id="-transcriptome-fasta-file"><code>--transcriptome</code> <code>FASTA file</code></h4>
+<h4 id="-transcriptome-fasta-file"><span style="color:#88419D;">--transcriptome</span> <code>FASTA file</code></h4>
 <p>A reference transcriptome file in <code>.fasta</code> format can be downloaded from <a href="https://www.ensembl.org/Homo_sapiens/Info/Index">Ensembl</a>.</p>
-<h4 id="-length_dist-str"><code>--length_dist</code> <code>STR</code></h4>
+<h4 id="-length_dist-str"><span style="color:#88419D;">--length_dist</span> <code>STR</code></h4>
 <p>To mimic the real read length distribution when a gene expression matrix is provided, a realistic read length distribution is achieved by selecting a random cDNA of the corresponding gene, with a prior probability favoring short-length cDNA.</p>
 <p>AsaruSim estimates this read length using a <a href="https://en.wikipedia.org/wiki/Log-normal_distribution">log-normal distribution</a>. Users may provide their parameters to personalize the distribution using three comma-delimited values (shape, location, scale) with the parameter <code>--length_dist</code>. 
 (<em>default</em> :<code>0.37,0.0,825</code>)</p>
@@ -987,22 +993,22 @@ AsaruSim use <a href="https://sysbiobig.dei.unipd.it/software/sparsim/">SPARSim<
 <p class="admonition-title">Fit read distribution of real reads</p>
 <p>Users may also fit their real reads distribution with this approach by providing a subset of real reads (in <code>.FASTQ</code> format) using the <code>--model_fastq</code> parameter. (See also <strong>build model</strong> in the <a href="#build_model">Error model</a> section)</p>
 </div>
-<h4 id="-ref_genome-fasta-file"><code>--ref_genome</code> <code>FASTA file</code></h4>
+<h4 id="-ref_genome-fasta-file"><span style="color:#88419D;">--ref_genome</span> <code>FASTA file</code></h4>
 <p>The reference genome file in <code>.fasta</code> format can be downloaded from <a href="https://www.ensembl.org/Homo_sapiens/Info/Index">Ensembl</a>.</p>
 <h2 id="pcr-amplification"><strong>PCR amplification</strong></h2>
 <p>AsaruSim take into account the bias of PCR amplification introduced during library constructions process. The PCR amplification is simulated by replicating the synthetic reads at each cycle, with a capturing probabily and un error rate.</p>
-<h4 id="-pcr_cycles-int"><code>--PCR_cycles</code> <code>INT</code></h4>
+<h4 id="-pcr_cycles-int"><span style="color:#88419D;">--PCR_cycles</span> <code>INT</code></h4>
 <p>The number of PCR cycles to simulate. During each cycle, the reads are duplicated exponentially, following the formula:
 $$\  N = N_0 \times (1 + E)^{C} \ $$</p>
 <p>where: <em>N</em> is the final number of reads,
  <em>N0</em> is the initial number of reads,
  <em>E</em> is the efficiency rate, and
  <em>C</em> is the number of cycles.</p>
-<h4 id="-pcr_efficiency-float"><code>--PCR_efficiency</code> <code>FLOAT</code></h4>
+<h4 id="-pcr_efficiency-float"><span style="color:#88419D;">--PCR_efficiency</span> <code>FLOAT</code></h4>
 <p>The efficiency rate of duplication is fixed by the user (<em>default</em>: <code>--PCR_efficiency 0.9</code>)</p>
-<h4 id="-pcr_error_rate-float"><code>--PCR_error_rate</code> <code>FLOAT</code></h4>
+<h4 id="-pcr_error_rate-float"><span style="color:#88419D;">--PCR_error_rate</span> <code>FLOAT</code></h4>
 <p>The probability to be mutated during the process for each nucleotide in the duplicated read. The error rate is also fixed by the user (<em>default</em>: <code>--PCR_error_rate 3.5e-05</code>)</p>
-<h4 id="-total_reads-int"><code>--total_reads</code> <code>INT</code></h4>
+<h4 id="-total_reads-int"><span style="color:#88419D;">--total_reads</span> <code>INT</code></h4>
 <p>Number of total reads to random subset from the resulting artificial PCR product, to mimic the experimental protocol where only a subset of the sample is used for the sequencing step.</p>
 <div class="admonition tip">
 <p class="admonition-title">Users can use amplification rate instead of PCR amplification</p>
@@ -1010,7 +1016,7 @@ $$\  N = N_0 \times (1 + E)^{C} \ $$</p>
 </div>
 <h2 id="error-model"><strong>Error model</strong></h2>
 <p>AsaruSim uses the <a href="https://github.com/rrwick/Badread">Badread</a> Python library to simulate nanopore sequencing errors and assign per-base quality scores based on pre-trained error models (see Badread documentation for more information). To do so, AsaruSim requires:</p>
-<h4 id="-trained_model-str"><code>--trained_model</code> <code>STR</code></h4>
+<h4 id="-trained_modelstr"><span style="color:#88419D;">--trained_model<code></code>STR`</h4>
 <p>This allows the user to choose one of the built-in error models within the <a href="https://github.com/rrwick/Badread?tab=readme-ov-file#error-model">Badread</a> database. The possible values are:</p>
 <blockquote>
 <p><code>nanopore2023</code>: a model trained on ONT R10.4.1 reads from 2023 (the default).<br />
@@ -1019,10 +1025,10 @@ $$\  N = N_0 \times (1 + E)^{C} \ $$</p>
 <code>random</code>: a random error model with a 1/3 chance each of insertion, deletion, and substitution.
     a file path for a trained model. <br /></p>
 </blockquote>
-<h4 id="-badread_identity-str"><code>--badread_identity</code> <code>STR</code></h4>
+<h4 id="-badread_identity-str"><span style="color:#88419D;">--badread_identity</span> <code>STR</code></h4>
 <p>Badread uses the <a href="https://www.desmos.com/calculator/u9fivqmisa?lang=fr">Beta distribution</a> to sample read identities. The distribution is defined with three parameters: <code>mean</code>, <code>standard deviation</code>, and <code>maximum</code> value.<br />
 To pass these parameters to AsaruSim, use three comma-delimited values (identity mean, max, stdev). <em>default :</em> <code>--badread_identity 95,99,2.5</code>.</p>
-<h4 id="-build_model-bool"><code>--build_model</code> <code>BOOL</code></h4>
+<h4 id="-build_model-bool"><span style="color:#88419D;">--build_model</span> <code>BOOL</code></h4>
 <p><a name="build_model"></a>
 To internally train a personalized <strong>read identity</strong>, <strong>Qscore</strong>, and <strong>error</strong> models, AsaruSim requires a real FASTQ read file that can be provided using <strong><code>--model_fastq</code></strong> and a reference genome (.FASTA) file using <strong><code>--ref_genome</code></strong>.</p>
 <div class="admonition tips">
