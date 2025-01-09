@@ -4,7 +4,7 @@
 
 ![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)
 [![DOI](https://img.shields.io/badge/DOI-10.1101%2F2024.09.20.613625%20-red)](https://doi.org/10.1101/2024.09.20.613625)
-[![Twitter Follow](https://img.shields.io/twitter/follow/Genomique_ENS.svg?style=social)](https://twitter.com/Genomique_ENS)
+[![Mastodon Follow](https://img.shields.io/mastodon/follow/111487733409234458?domain=genomic.social)](https://genomic.social/@Genomique_ENS)
 
 # Asaru Sim Documentation
 <a href="images/asarusim_v2.svg"><img src="images/asarusim_v2.svg" align="middle" height="100" width="290" >
