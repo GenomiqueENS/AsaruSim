@@ -197,9 +197,16 @@ nextflow run main.nf --matrix dataset/sub_pbmc_matrice.csv \
                       --pcr_error_rate 0.00003
 ```
 
-## Results
+## Output
 
-After execution, results will be available in the specified `--outdir`. This includes simulated Nanopore reads `.fastq`, along with log files and QC report.
+After execution, results will be available in the specified `--outdir`. This includes simulated Nanopore reads `simulated.fastq.gz`, along with log file and QC report.
+
+```bash
+QC_report.html                    # final QC report
+pipeline_info                     # Pipeline execution trace, timeline and Dag
+simulated.fastq.gz                # Simulated reads including sequencing errors
+template.fa.gz                    # Simulated template
+```
 
 ## Cleaning Up
 
