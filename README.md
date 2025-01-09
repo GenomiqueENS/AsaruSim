@@ -246,7 +246,7 @@ nextflow clean -f
 ## Acknowledgements
 
 - We would like to express our gratitude to [Youyupei](https://github.com/youyupei) for the development of [SLSim](https://github.com/youyupei/SLSim), which has been helpful to the `AsaruSim` workflow.
-- Additionally, our thanks go to the teams behind [Badread](https://github.com/rrwick/Badread) and [SPARSim](https://gitlab.com/sysbiobig/sparsim), whose tools are integral to the `AsaruSim` workflow.
+- Additionally, our thanks go to the teams behind [Badread](https://github.com/rrwick/Badread), [SPARSim](https://gitlab.com/sysbiobig/sparsim) and Trans-NanoSim [https://github.com/bcgsc/NanoSim] whose tools are integral to the `AsaruSim` workflow.
 
 ## Support and Contributions
 
