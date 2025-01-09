@@ -1,8 +1,8 @@
 [![version - AsaruSim](https://img.shields.io/badge/dynamic/yaml?url=https%3A%2F%2Fraw.githubusercontent.com%2FGenomiqueENS%2FAsaruSim%2Frefs%2Fheads%2Fmain%2Fversion.yml&query=%24.version&prefix=V&label=AsaruSim)](https://github.com/GenomiqueENS/AsaruSim/releases)
 [![dependency - Nextflow](https://img.shields.io/badge/dependency-Nextflow-green)](https://pkg.go.dev/Nextflow)
 [![Made with Docker](https://img.shields.io/badge/Made_with-Docker-blue?logo=docker&logoColor=white)](https://www.docker.com/ "Go to Docker homepage")
-
 ![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)
+
 [![DOI](https://img.shields.io/badge/DOI-10.1101%2F2024.09.20.613625%20-red)](https://doi.org/10.1101/2024.09.20.613625)
 [![Mastodon Follow](https://img.shields.io/mastodon/follow/111487733409234458?domain=genomic.social)](https://genomic.social/@Genomique_ENS)
 
