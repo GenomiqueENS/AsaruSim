@@ -6,10 +6,10 @@
 [![DOI](https://img.shields.io/badge/DOI-10.1101%2F2024.09.20.613625%20-red)](https://doi.org/10.1101/2024.09.20.613625)
 [![Mastodon Follow](https://img.shields.io/mastodon/follow/111487733409234458?domain=genomic.social)](https://genomic.social/@Genomique_ENS)
 
-# AsaruSim documentation
+# Documentation
 <a href="images/asarusim_v2.svg"><img src="images/asarusim_v2.svg" align="middle" height="100" width="290" >
 
-`AsaruSim` AsaruSim is an automated Nextflow workflow designed for simulating 10x single-cell long read data from the count matrix level to the sequence level. It aimed at creating a gold standard dataset for the assessment and optimization of single-cell long-read methods.
+AsaruSim is an automated Nextflow workflow designed for simulating 10x single-cell long read data from the count matrix level to the sequence level. It aimed at creating a gold standard dataset for the assessment and optimization of single-cell long-read methods.
 Full [documentation](https://GenomiqueENS.github.io/AsaruSim/) is avialable [here](https://GenomiqueENS.github.io/AsaruSim/).
 
 <a href="images/schema.png"><img src="images/schema.png" align="middle" height="650" width="920" >
