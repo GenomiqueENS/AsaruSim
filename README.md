@@ -67,7 +67,7 @@ Here are the primary input parameters for configuring the workflow:
 | `intron_retention`    | Simulate intron retention proces      |     BOOL     | `false`                                        |
 | `ir_model`    | Intron retention MC model .CSV file     |     CSV     | `bin/models/SC3pv3_GEX_Human_IR_markov_model`                                        |
 | `unspliced_ratio`    | percentage of transcrits to be unspliced     |     FLOAT     | `0.0`                                        |
-| `ref_genome`       | reference genome .fasta file (if IR)                       | FASTA   | `false`                                       |
+| `ref_genome`       | reference genome .fasta file (if IR)                       | FASTA   | `null`                                       |
 | `full_length`    | Indicates if transcripts are full length      |     BOOL     | `false`                                        |
 | `truncation_model`    | Path to truncation probabilities .csv file      |     CSV     | `bin/models/truncation_default_model.csv`                                        |
 
@@ -76,7 +76,7 @@ Here are the primary input parameters for configuring the workflow:
 | Parameter          | Description                                            |   Format    | Default Value                                 |
 |--------------------|--------------------------------------------------------|-------|-----------------------------------------------|
 | `pcr_cycles`              | Number of PCR amplification cycles                                 |   INT    | `0`                                           |
-| `pcr_error_rate`           | PCR error rate                           |   INT    | `"0.0000001"`                                   |
+| `pcr_error_rate`           | PCR error rate                           |   FLOAT    | `"0.0000001"`                                   |
 | `pcr_dup_rate`      | PCR duplication rate                                   |    FLOAT   | `0.7`                              |
 | `pcr_total_reads`      | Name of the project                                    |    INT   | `1000000`                              |
 
@@ -88,8 +88,8 @@ Configuration for error model:
 |--------------------|---------------------------------------------------------------|-------|--------------------------------------------|
 | `trained_model`    | Badread pre-trained error/Qscore model name                   |  STR  | `nanopore2023`                                |
 | `badread_identity` | Comma-separated values for Badread identity parameters        |  STR  | `"98,2,99"`                                   |
-| `error_model`      | Custom error model file (optional)                            |  TXT  | `null`                                        |
-| `qscore_model`     | Custom Q-score model file (optional)                          |  TXT  | `null`                                        |
+| `error_model`      | Custom error model file (optional)                            |  .TXT  | `null`                                        |
+| `qscore_model`     | Custom Q-score model file (optional)                          |  .TXT  | `null`                                        |
 | `build_model`      | to build your own error/Qscor model                           |  STR  | `false`                                       |
 | `fastq_model`      | reference real read (.fastq) to train error model   (optional) |   FASTQ      | `false`                                       |
 
@@ -109,7 +109,7 @@ Configuration for running the workflow:
 | Parameter         | Description                        |   Format    | Default Value             |
 |-------------------|------------------------------------|-------------|---------------------------|
 | `threads`         | Number of threads to use           |      INT       | `4`                       |
-| `container`       | Docker container for the workflow  |     STR        | `'hamraouii/asarusim:0.2.1'`    |
+| `container`       | Docker container for the workflow  |     STR        | `'hamraouii/asarusim:0.1'`    |
 | `docker.runOptions` | Docker run options to use       |    STR         | `'-u $(id -u):$(id -g)'`  |
 
 For more details about workflow options see the [Input parameters](https://genomiqueens.github.io/AsaruSim/parameters/) section in the documentation.
