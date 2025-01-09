@@ -48,14 +48,37 @@ Customize runs by editing the `nextflow.config` file and/or specifying parameter
 
 Here are the primary input parameters for configuring the workflow:
 
+### Main Parameters
+
 | Parameter          | Description                                         | Format   | Default Value                                 |
 |--------------------|-----------------------------------------------------|----------|-----------------------------------------------|
 | `matrix`           | Path to the count matrix csv file (required)        |   .CSV       | `test_data/matrix.csv`                        |
-| `bc_counts`        | Path to the barcode count file                      |    .CSV       | `test_data/test_bc.csv`                       |
 | `transcriptome`    | Path to the reference transcriptome file (required) |    FASTA      | `test_data/transcriptome.fa`                  |
+| `bc_counts`        | Path to the barcode count file (if no matrix provided).                   |    .CSV       | `test_data/test_bc.csv`                       |
+
+### Optional Parameters
+
+| Parameter          | Description                                         | Format   | Default Value                                 |
+|--------------------|-----------------------------------------------------|----------|-----------------------------------------------|
 | `features`         | Matrix feature counts                               |    STR      | `transcript_id`                               |
-| `gtf`              | Path to transcriptom annotation .gtf file           |    GTF      | `null`                                        |
 | `cell_types_annotation`    | Path to cell type annotation .csv file      |     CSV     | `null`                                        |
+| `gtf`              | Path to transcriptom annotation .gtf file           |    GTF      | `null`                                        |
+| `umi_duplication`    | UMI duplication     |     INT     | `0`                                        |
+| `intron_retention`    | Simulate intron retention proces      |     BOOL     | `false`                                        |
+| `ir_model`    | Intron retention MC model .CSV file     |     CSV     | `bin/models/SC3pv3_GEX_Human_IR_markov_model`                                        |
+| `unspliced_ratio`    | percentage of transcrits to be unspliced     |     FLOAT     | `0.0`                                        |
+| `ref_genome`       | reference genome .fasta file (if IR)                       | FASTA   | `false`                                       |
+| `full_length`    | Indicates if transcripts are full length      |     BOOL     | `false`                                        |
+| `truncation_model`    | Path to truncation probabilities .csv file      |     CSV     | `bin/models/truncation_default_model.csv`                                        |
+
+### PCR Parameters
+
+| Parameter          | Description                                            |   Format    | Default Value                                 |
+|--------------------|--------------------------------------------------------|-------|-----------------------------------------------|
+| `pcr_cycles`              | Number of PCR amplification cycles                                 |   INT    | `0`                                           |
+| `pcr_error_rate`           | PCR error rate                           |   INT    | `"0.0000001"`                                   |
+| `pcr_dup_rate`      | PCR duplication rate                                   |    FLOAT   | `0.7`                              |
+| `pcr_total_reads`      | Name of the project                                    |    INT   | `1000000`                              |
 
 ### Error/Qscore Parameters
 
@@ -69,7 +92,7 @@ Configuration for error model:
 | `qscore_model`     | Custom Q-score model file (optional)                          |  TXT  | `null`                                        |
 | `build_model`      | to build your own error/Qscor model                           |  STR  | `false`                                       |
 | `fastq_model`      | reference real read (.fastq) to train error model   (optional) |   FASTQ      | `false`                                       |
-| `ref_genome`       | reference genome .fasta file (optional)                       | FASTA   | `false`                                       |
+
 
 ### Additional Parameters
 
@@ -86,8 +109,10 @@ Configuration for running the workflow:
 | Parameter         | Description                        |   Format    | Default Value             |
 |-------------------|------------------------------------|-------------|---------------------------|
 | `threads`         | Number of threads to use           |      INT       | `4`                       |
-| `container`       | Docker container for the workflow  |     STR        | `'hamraouii/wf-SLSim'`    |
+| `container`       | Docker container for the workflow  |     STR        | `'hamraouii/asarusim:0.2.1'`    |
 | `docker.runOptions` | Docker run options to use       |    STR         | `'-u $(id -u):$(id -g)'`  |
+
+For more details about workflow options see the [Input parameters](https://genomiqueens.github.io/AsaruSim/parameters/) section in the documentation.
 
 ### File format discription
 #### `--bc_counts`
@@ -107,7 +132,6 @@ AsaruSim allows user to estimate this characteristic from an existing count tabl
 |ACGGCGATCGCGAGCC|	type 2|
 
 AsaruSim will then use the provided matrix to estimate characteristic of each cell groups and generate a synthetic count matrix.
-
 
 ## Usage
 User can choose among 4 ways to simulate template reads.
