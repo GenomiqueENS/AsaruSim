@@ -28,6 +28,7 @@ help_message = """
         --fastq_model <path>            Path to the FASTQ model.
         --intron_retention <boolean>    Simulate intron retention process
         --ir_model <path> intron retention MC model (.CSV file). [default: bin/models/SC3pv3_GEX_Human_IR_markov_model]
+        --unspliced_ratio <value>       Percentage of transcrits to be unspliced.
         --ref_genome <path>             Path to the reference genome.
         --umi_duplication <value>       UMI duplication.
         --pcr_cycles <int>              Number of PCR amplification cycles.
