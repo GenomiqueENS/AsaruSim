@@ -28,7 +28,7 @@ Before starting, ensure the following tools are installed and properly set up on
 Clone the `AsaruSim` GitHub repository:
 
 ```bash
-git clone https://github.com/alihamraoui/AsaruSim.git
+git clone https://github.com/GenomiqueENS/AsaruSim.git
 cd AsaruSim
 ```
 
