@@ -1,4 +1,4 @@
-#!/bin/bash
+!/bin/bash
 
 # Check if main.nf exists
 if [ ! -f "main.nf" ]; then
@@ -49,7 +49,7 @@ if [ ! -x "$(command -v nextflow)" ]; then
 fi
 
 echo "* Execute basic workflow"
-nextflow run main.nf --matrix dataset/sub_pbmc_matrice.csv \
+nextflow run main.nf --matrix dataset/test_sub_pbmc_matrice.csv \
                      --transcriptome dataset/Homo_sapiens.GRCh38.cdna.all.fa \
                      --features gene_name \
                      --gtf dataset/GRCh38-2020-A-genes.gtf
