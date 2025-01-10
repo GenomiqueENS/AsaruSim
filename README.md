@@ -22,7 +22,6 @@ Before starting, ensure the following tools are installed and properly set up on
 
 - $\textcolor{#4DAF4A}{Nextflow}$ >= $\textcolor{#4DAF4A}{24.04.4}$ : A workflow engine for complex data pipelines. [Installation guide for Nextflow](https://www.nextflow.io/docs/latest/getstarted.html).
 - $\textcolor{#4DAF4A}{Docker}$ or $\textcolor{#4DAF4A}{Singularity}$ : Containers for packaging necessary software, ensuring reproducibility. [Docker installation guide](https://docs.docker.com/get-docker/), [Singularity installation guide](https://sylabs.io/guides/3.0/user-guide/installation.html).
-- **Git**: Required to clone the workflow repository. [Git installation guide](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git).
 
 ## $\textcolor{#FF7F00}{Installation}$
 
