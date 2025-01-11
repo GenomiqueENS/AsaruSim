@@ -1,5 +1,5 @@
 [![version - AsaruSim](https://img.shields.io/badge/dynamic/yaml?url=https%3A%2F%2Fraw.githubusercontent.com%2FGenomiqueENS%2FAsaruSim%2Frefs%2Fheads%2Fmain%2Fversion.yml&query=%24.version&prefix=V&label=AsaruSim)](https://github.com/GenomiqueENS/AsaruSim/releases)
-[![dependency - Nextflow](https://img.shields.io/badge/dependency-Nextflow-green)](https://pkg.go.dev/Nextflow)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/6cb8154a35ae419689c35eeedcd71dac)](https://app.codacy.com/gh/alihamraoui/AsaruSim/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 [![Made with Docker](https://img.shields.io/badge/Made_with-Docker-blue?logo=docker&logoColor=white)](https://www.docker.com/ "Go to Docker homepage")
 ![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)
 
