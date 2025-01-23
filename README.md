@@ -1,46 +1,46 @@
 [![version - AsaruSim](https://img.shields.io/badge/dynamic/yaml?url=https%3A%2F%2Fraw.githubusercontent.com%2FGenomiqueENS%2FAsaruSim%2Frefs%2Fheads%2Fmain%2Fversion.yml&query=%24.version&prefix=V&label=AsaruSim)](https://github.com/GenomiqueENS/AsaruSim/releases)
-[![dependency - Nextflow](https://img.shields.io/badge/dependency-Nextflow-green)](https://pkg.go.dev/Nextflow)
 [![Made with Docker](https://img.shields.io/badge/Made_with-Docker-blue?logo=docker&logoColor=white)](https://www.docker.com/ "Go to Docker homepage")
-
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/6cb8154a35ae419689c35eeedcd71dac)](https://app.codacy.com/gh/alihamraoui/AsaruSim/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 ![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)
-[![DOI](https://img.shields.io/badge/DOI-10.1101%2F2024.09.20.613625%20-red)](https://doi.org/10.1101/2024.09.20.613625)
-[![Twitter Follow](https://img.shields.io/twitter/follow/Genomique_ENS.svg?style=social)](https://twitter.com/Genomique_ENS)
 
-# Asaru Sim Documentation
+[![DOI](https://img.shields.io/badge/DOI-10.1101%2F2024.09.20.613625%20-red)](https://doi.org/10.1101/2024.09.20.613625)
+[![Mastodon Follow](https://img.shields.io/mastodon/follow/111487733409234458?domain=genomic.social)](https://genomic.social/@Genomique_ENS)
+
+# Documentation
 <a href="images/asarusim_v2.svg"><img src="images/asarusim_v2.svg" align="middle" height="100" width="290" >
 
-`AsaruSim` AsaruSim is an automated Nextflow workflow designed for simulating 10x single-cell long read data from the count matrix level to the sequence level. It aimed at creating a gold standard dataset for the assessment and optimization of single-cell long-read methods.
+AsaruSim is an automated Nextflow workflow designed for simulating 10x single-cell long read data from the count matrix level to the sequence level. It aimed at creating a gold standard dataset for the assessment and optimization of single-cell long-read methods.
 Full [documentation](https://GenomiqueENS.github.io/AsaruSim/) is avialable [here](https://GenomiqueENS.github.io/AsaruSim/).
 
 <a href="images/schema.png"><img src="images/schema.png" align="middle" height="650" width="920" >
 
-## Requirements
+## $\textcolor{#FF7F00}{Requirements}$
 
 This pipeline is powered by Nextflow workflow manager. All dependencies are automatically managed by Nextflow through a preconfigured Docker container, ensuring a seamless and reproducible installation process.
 
 Before starting, ensure the following tools are installed and properly set up on your system:
 
-- **Nextflow >= v24.04.4**: A workflow engine for complex data pipelines. [Installation guide for Nextflow](https://www.nextflow.io/docs/latest/getstarted.html).
-- **Docker** or **Singularity**: Containers for packaging necessary software, ensuring reproducibility. [Docker installation guide](https://docs.docker.com/get-docker/), [Singularity installation guide](https://sylabs.io/guides/3.0/user-guide/installation.html).
-- **Git**: Required to clone the workflow repository. [Git installation guide](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git).
+- $\textcolor{#4DAF4A}{Nextflow}$ >= $\textcolor{#4DAF4A}{24.04.4}$ : A workflow engine for complex data pipelines. [Installation guide for Nextflow](https://www.nextflow.io/docs/latest/getstarted.html).
+- $\textcolor{#4DAF4A}{Docker}$ or $\textcolor{#4DAF4A}{Singularity}$ : Containers for packaging necessary software, ensuring reproducibility. [Docker installation guide](https://docs.docker.com/get-docker/), [Singularity installation guide](https://sylabs.io/guides/3.0/user-guide/installation.html).
 
-## Installation
+## $\textcolor{#FF7F00}{Installation}$
 
 Clone the `AsaruSim` GitHub repository:
 
 ```bash
-git clone https://github.com/alihamraoui/AsaruSim.git
+git clone https://github.com/GenomiqueENS/AsaruSim.git
 cd AsaruSim
 ```
 
-## Test
+## $\textcolor{#FF7F00}{Test}$
+
 To test your installation, we provide an automated script to download reference annotations and simulate a subset of human PBMC dataset `run_test.sh`.
 
 ```bash
 bash run_test.sh
 ```
 
-## Configuration
+## $\textcolor{#FF7F00}{Configuration}$
 
 Customize runs by editing the `nextflow.config` file and/or specifying parameters at the command line.
 
@@ -67,7 +67,7 @@ Here are the primary input parameters for configuring the workflow:
 | `intron_retention`    | Simulate intron retention proces      |     BOOL     | `false`                                        |
 | `ir_model`    | Intron retention MC model .CSV file     |     CSV     | `bin/models/SC3pv3_GEX_Human_IR_markov_model`                                        |
 | `unspliced_ratio`    | percentage of transcrits to be unspliced     |     FLOAT     | `0.0`                                        |
-| `ref_genome`       | reference genome .fasta file (if IR)                       | FASTA   | `false`                                       |
+| `ref_genome`       | reference genome .fasta file (if IR)                       | FASTA   | `null`                                       |
 | `full_length`    | Indicates if transcripts are full length      |     BOOL     | `false`                                        |
 | `truncation_model`    | Path to truncation probabilities .csv file      |     CSV     | `bin/models/truncation_default_model.csv`                                        |
 
@@ -76,7 +76,7 @@ Here are the primary input parameters for configuring the workflow:
 | Parameter          | Description                                            |   Format    | Default Value                                 |
 |--------------------|--------------------------------------------------------|-------|-----------------------------------------------|
 | `pcr_cycles`              | Number of PCR amplification cycles                                 |   INT    | `0`                                           |
-| `pcr_error_rate`           | PCR error rate                           |   INT    | `"0.0000001"`                                   |
+| `pcr_error_rate`           | PCR error rate                           |   FLOAT    | `"0.0000001"`                                   |
 | `pcr_dup_rate`      | PCR duplication rate                                   |    FLOAT   | `0.7`                              |
 | `pcr_total_reads`      | Name of the project                                    |    INT   | `1000000`                              |
 
@@ -88,8 +88,8 @@ Configuration for error model:
 |--------------------|---------------------------------------------------------------|-------|--------------------------------------------|
 | `trained_model`    | Badread pre-trained error/Qscore model name                   |  STR  | `nanopore2023`                                |
 | `badread_identity` | Comma-separated values for Badread identity parameters        |  STR  | `"98,2,99"`                                   |
-| `error_model`      | Custom error model file (optional)                            |  TXT  | `null`                                        |
-| `qscore_model`     | Custom Q-score model file (optional)                          |  TXT  | `null`                                        |
+| `error_model`      | Custom error model file (optional)                            |  .TXT  | `null`                                        |
+| `qscore_model`     | Custom Q-score model file (optional)                          |  .TXT  | `null`                                        |
 | `build_model`      | to build your own error/Qscor model                           |  STR  | `false`                                       |
 | `fastq_model`      | reference real read (.fastq) to train error model   (optional) |   FASTQ      | `false`                                       |
 
@@ -109,7 +109,7 @@ Configuration for running the workflow:
 | Parameter         | Description                        |   Format    | Default Value             |
 |-------------------|------------------------------------|-------------|---------------------------|
 | `threads`         | Number of threads to use           |      INT       | `4`                       |
-| `container`       | Docker container for the workflow  |     STR        | `'hamraouii/asarusim:0.2.1'`    |
+| `container`       | Docker container for the workflow  |     STR        | `'hamraouii/asarusim:0.1'`    |
 | `docker.runOptions` | Docker run options to use       |    STR         | `'-u $(id -u):$(id -g)'`  |
 
 For more details about workflow options see the [Input parameters](https://genomiqueens.github.io/AsaruSim/parameters/) section in the documentation.
@@ -133,7 +133,7 @@ AsaruSim allows user to estimate this characteristic from an existing count tabl
 
 AsaruSim will then use the provided matrix to estimate characteristic of each cell groups and generate a synthetic count matrix.
 
-## Usage
+## $\textcolor{#FF7F00}{Usage}$
 User can choose among 4 ways to simulate template reads.
 - use a real count matrix
 - estimated the parameter from a real count matrix to simulate synthetic count matrix 
@@ -221,7 +221,7 @@ nextflow run main.nf --matrix dataset/sub_pbmc_matrice.csv \
                       --pcr_error_rate 0.00003
 ```
 
-## Output
+## $\textcolor{#FF7F00}{Output}$
 
 After execution, results will be available in the specified `--outdir`. This includes simulated Nanopore reads `simulated.fastq.gz`, along with log file and QC report.
 
@@ -232,7 +232,7 @@ simulated.fastq.gz                # Simulated reads including sequencing errors
 template.fa.gz                    # Simulated template
 ```
 
-## Cleaning Up
+#### Cleaning Up
 
 To clean up temporary files generated by Nextflow:
 
@@ -240,23 +240,25 @@ To clean up temporary files generated by Nextflow:
 nextflow clean -f
 ```
 
-## Workflow
+## $\textcolor{#FF7F00}{Workflow}$
+
 ![Workflow Schema](images/workflow.png)
 
-## Acknowledgements
+## $\textcolor{#FF7F00}{Acknowledgements}$
 
 - We would like to express our gratitude to [Youyupei](https://github.com/youyupei) for the development of [SLSim](https://github.com/youyupei/SLSim), which has been helpful to the `AsaruSim` workflow.
-- Additionally, our thanks go to the teams behind [Badread](https://github.com/rrwick/Badread) and [SPARSim](https://gitlab.com/sysbiobig/sparsim), whose tools are integral to the `AsaruSim` workflow.
+- Additionally, our thanks go to the teams behind [Badread](https://github.com/rrwick/Badread), [SPARSim](https://gitlab.com/sysbiobig/sparsim) and [Trans-NanoSim](https://github.com/bcgsc/NanoSim) whose tools are integral to the `AsaruSim` workflow.
 
-## Support and Contributions
+## $\textcolor{#FF7F00}{Support\ and\ Contributions}$
 
 For support, please open an issue in the repository's "Issues" section. Contributions via Pull Requests are welcome. Follow the contribution guidelines specified in `CONTRIBUTING.md`.
 
-## License
+## $\textcolor{#FF7F00}{License}$
 
 `AsaruSim` is distributed under a specific license. Check the `LICENSE` file in the GitHub repository for details.
 
-## Citation
+## $\textcolor{#FF7F00}{Citation}$
+
 If you use AsaruSim in your research, please cite this manuscript:<br>
 > Ali Hamraoui, Laurent Jourdren and Morgane Thomas-Chollier. AsaruSim: a single-cell and spatial RNA-Seq Nanopore long-reads simulation workflow. bioRxiv 2024.09.20.613625; doi: https://doi.org/10.1101/2024.09.20.613625 
 
