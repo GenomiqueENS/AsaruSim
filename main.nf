@@ -72,12 +72,13 @@ log.info """\
     intron retention model        : ${params.ir_model}
     unspliced ratio               : ${params.unspliced_ratio}
     reference genome              : ${params.ref_genome}
-    PCR amplification cycles      : ${params.pcr_cycles}
-    PCR duplication rate          : ${params.pcr_dup_rate}
+    PCR amplification cycles      : ${params.pcr_cycles} Cycles
+    PCR duplication rate          : ${params.pcr_dup_rate} 
     PCR error rate                : ${params.pcr_error_rate}
-    Poly dT mean length           : ${params.dT_LENGTH}
+    Poly dT mean length           : ${params.dT_LENGTH} nt
     Adapter sequence              : ${params.ADPTER_SEQ}
     TSO sequence                  : ${params.TSO_SEQ}
+    Threads                       : ${params.Threads} CPUs
     outdir                        : ${params.outdir}
     """
     .stripIndent()
@@ -198,7 +199,7 @@ workflow {
 
     gr_truth_ch = GROUND_TRUTH(template_fa_ch)
     batch_size_ch  = BATCH_SIZE_FOR_BADREAD(template_fa_ch)
-    ERRORS_SIMULATOR(template_fa_ch, error_model_ch, qscore_model_ch, identity_ch) //, batch_size_ch.toInteger())
+    ERRORS_SIMULATOR(template_fa_ch, error_model_ch, qscore_model_ch, identity_ch, batch_size_ch.toInteger())
     QC(ERRORS_SIMULATOR.out.fastq, config_params_ch, workflow_params_ch, logo_ch, template_log_ch)
 }
 

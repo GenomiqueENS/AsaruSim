@@ -68,6 +68,7 @@ process ERRORS_SIMULATOR {
     path error_model
     path qscore_model
     val identity
+    val batch_size
 
     output:
     path "simulated.fastq", emit: fastq
@@ -85,13 +86,14 @@ process ERRORS_SIMULATOR {
         qscore_model_arg = qscore_model.name != "no_qscore_model" ? "--badread-qscore-model $qscore_model" : ""
     }
     """
-    python3.11 $projectDir/bin/AsaruSim.py call_badread --thread $params.threads \
-    -t $template \
-    --badread-identity ${identity.trim()} \
-    $error_model_arg \
-    $qscore_model_arg \
-    -o simulated.fastq &&
-    gzip -f $template
+    python3.11 $projectDir/bin/AsaruSim.py call_badread  -t $template \
+        --badread-identity ${identity.trim()} \
+        $error_model_arg \
+        $qscore_model_arg \
+        --batch-size ${batch_size / 2} \
+        --thread $params.threads \
+        -o simulated.fastq &&
+        gzip -f $template
     """
 }
 
