@@ -509,9 +509,9 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#-trained_modelstr" class="md-nav__link">
+  <a href="#-trained_model-str" class="md-nav__link">
     <span class="md-ellipsis">
-      --trained_modelSTR`
+      --trained_model STR
     </span>
   </a>
   
@@ -827,9 +827,9 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#-trained_modelstr" class="md-nav__link">
+  <a href="#-trained_model-str" class="md-nav__link">
     <span class="md-ellipsis">
-      --trained_modelSTR`
+      --trained_model STR
     </span>
   </a>
   
@@ -1016,7 +1016,7 @@ $$\  N = N_0 \times (1 + E)^{C} \ $$</p>
 </div>
 <h2 id="error-model"><strong>Error model</strong></h2>
 <p>AsaruSim uses the <a href="https://github.com/rrwick/Badread">Badread</a> Python library to simulate nanopore sequencing errors and assign per-base quality scores based on pre-trained error models (see Badread documentation for more information). To do so, AsaruSim requires:</p>
-<h4 id="-trained_modelstr"><span style="color:#88419D;">--trained_model<code></code>STR`</h4>
+<h4 id="-trained_model-str"><span style="color:#88419D;">--trained_model <code>STR</code></h4>
 <p>This allows the user to choose one of the built-in error models within the <a href="https://github.com/rrwick/Badread?tab=readme-ov-file#error-model">Badread</a> database. The possible values are:</p>
 <blockquote>
 <p><code>nanopore2023</code>: a model trained on ONT R10.4.1 reads from 2023 (the default).<br />
@@ -1030,7 +1030,8 @@ $$\  N = N_0 \times (1 + E)^{C} \ $$</p>
 To pass these parameters to AsaruSim, use three comma-delimited values (identity mean, max, stdev). <em>default :</em> <code>--badread_identity 95,99,2.5</code>.</p>
 <h4 id="-build_model-bool"><span style="color:#88419D;">--build_model</span> <code>BOOL</code></h4>
 <p><a name="build_model"></a>
-To internally train a personalized <strong>read identity</strong>, <strong>Qscore</strong>, and <strong>error</strong> models, AsaruSim requires a real FASTQ read file that can be provided using <strong><code>--model_fastq</code></strong> and a reference genome (.FASTA) file using <strong><code>--ref_genome</code></strong>.</p>
+To internally train a personalized <strong>read identity</strong>, <strong>Qscore</strong>, and <strong>error</strong> models, AsaruSim requires a real FASTQ read file that can be provided using <strong><code>--model_fastq</code></strong>.
+The user can choose the model to estimate sequence identity with the --identity_model option, which includes three possible identity models, either including or excluding gaps. By default, the "Gap-Excluded Identity" model is used.</p>
 <div class="admonition tips">
 <p class="admonition-title">AsaruSim also accepts pre-built model files</p>
 <p>Users can use <strong><code>--error_model</code></strong> and <strong><code>--qscore_model</code></strong> to provide Badread pre-built models in file format.</p>
