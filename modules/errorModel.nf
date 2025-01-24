@@ -45,6 +45,7 @@ process ERROR_MODLING {
     """
 }
 
+
 process IDENTITY_ESTIMATION {
     input:
     path alignment
@@ -53,8 +54,9 @@ process IDENTITY_ESTIMATION {
     stdout emit: beta_params
 
     script:
+    def identity_model = params.identity_model == null ? "gap_excluded_identity" : params.identity_model
     """
-    python3.11 $projectDir/bin/params_estimator/estimator.py -r identity -p $alignment 
+    python3.11 $projectDir/bin/params_estimator/estimator.py -r identity -m $identity_model -p $alignment
     """
 }
 

@@ -22,6 +22,7 @@ parser = argparse.ArgumentParser(description="Script for estimating real data id
 parser.add_argument('-r','--params', type=str, default="identity", help="read parametres to estimate: (identity or lengths)")
 parser.add_argument('-p','--paf', type=str, help="a PAF (Pairwise Alignment Format) file")
 
+parser.add_argument('-m','--model', type=str, default="gap_excluded_identity", help="model to use for identity estimation")
 parser.add_argument('-f','--fastq', type=str, help="trainning FASTQ file. can also be a compressed .gz FASTQ file")
 parser.add_argument('-t','--thread', type=int, help="number of threads")
 
@@ -32,7 +33,6 @@ col_names = [
     'NM', 'ms', 'AS', 'nn', 'tp', 'cm',
     's1', 's2', 'de', 'rl', 'cigar'
 ]
-
 
 def BLAST_identity(paf_file):
     """
@@ -149,6 +149,11 @@ def estimate_beta_params(data):
 
     return mean, std_dev, mode
 
+models = {
+    "BLAST_identity": BLAST_identity,
+    "gap_excluded_identity": gap_excluded_identity,
+    "gap_compressed_identity": gap_compressed_identity
+}
 
 def main():
     args = parser.parse_args()
@@ -160,7 +165,8 @@ def main():
         print("{},{},{}".format(round(shape,2), round(loc,2), round(scale,2)))
 
     elif args.params == "identity":
-        identities = gap_excluded_identity(args.paf)
+        identity_model = models.get(args.model, gap_excluded_identity)
+        identities = identity_model(args.paf)
         mean, std_dev, mode = estimate_beta_params(identities)
         print("{},{},{}".format(round(mean,2)*100, round(std_dev,2)*100, round(mode,2)*100))
     

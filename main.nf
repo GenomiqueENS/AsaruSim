@@ -62,7 +62,8 @@ log.info """\
     cell type annotation          : ${params.cell_types_annotation}
     GTF                           : ${params.gtf}
     pre-trained error model       : ${params.trained_model}
-    identity model                : ${params.badread_identity}
+    badread sequence identity     : ${params.badread_identity}
+    sequence identity model       : ${params.identity_model}
     error model                   : ${params.error_model}
     Qscore model                  : ${params.qscore_model}
     build new model               : ${params.build_model}
