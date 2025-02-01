@@ -79,7 +79,7 @@ log.info """\
     Poly dT mean length           : ${params.dT_LENGTH} nt
     Adapter sequence              : ${params.ADPTER_SEQ}
     TSO sequence                  : ${params.TSO_SEQ}
-    Threads                       : ${params.Threads} CPUs
+    Threads                       : ${params.threads} CPUs
     outdir                        : ${params.outdir}
     """
     .stripIndent()
