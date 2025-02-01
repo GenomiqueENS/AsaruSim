@@ -48,8 +48,8 @@ def truncate_cDNA(cDNA, probs_3p=ont_3p, probs_5p=ont_5p):
     del3 = int(np.random.choice(bp_list, p=probs_3p) * cDNA_len / 100.0)
     del5 = int(np.random.choice(bp_list, p=probs_5p) * cDNA_len / 100.0)
 
-    new_len = max(min(50, cDNA_len), cDNA_len - del3 - del5)
-    start_pos = max(0, min(del5, cDNA_len - new_len))
+    new_len = max(min(50, cDNA_len - 1), cDNA_len - del3 - del5 - 1)
+    start_pos = max(0, min(del5 - 1, cDNA_len - new_len - 1))
 
     new_cDNA = cDNA[start_pos:start_pos+new_len]
     return new_cDNA
