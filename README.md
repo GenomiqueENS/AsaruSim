@@ -3,7 +3,7 @@
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/6cb8154a35ae419689c35eeedcd71dac)](https://app.codacy.com/gh/alihamraoui/AsaruSim/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 ![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)
 
-[![DOI](https://img.shields.io/badge/DOI-10.1101%2F2024.09.20.613625%20-red)](https://doi.org/10.1101/2024.09.20.613625)
+[![DOI](https://img.shields.io/badge/DOI-10.1093/bioinformatics/btaf087%20-red)](https://doi.org/10.1093/bioinformatics/btaf087)
 [![Mastodon Follow](https://img.shields.io/mastodon/follow/111487733409234458?domain=genomic.social)](https://genomic.social/@Genomique_ENS)
 
 # Documentation
