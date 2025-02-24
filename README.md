@@ -260,5 +260,4 @@ For support, please open an issue in the repository's "Issues" section. Contribu
 ## $\textcolor{#FF7F00}{Citation}$
 
 If you use AsaruSim in your research, please cite this manuscript:<br>
-> Ali Hamraoui, Laurent Jourdren and Morgane Thomas-Chollier. AsaruSim: a single-cell and spatial RNA-Seq Nanopore long-reads simulation workflow. bioRxiv 2024.09.20.613625; doi: https://doi.org/10.1101/2024.09.20.613625 
-
+> Ali Hamraoui, Laurent Jourdren, Morgane Thomas-Chollier, AsaruSim: a single-cell and spatial RNA-Seq Nanopore long-reads simulation workflow, Bioinformatics, 2025;, btaf087, https://doi.org/10.1093/bioinformatics/btaf087
