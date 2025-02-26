@@ -90,7 +90,7 @@ process ERRORS_SIMULATOR {
         --badread-identity ${identity.trim()} \
         $error_model_arg \
         $qscore_model_arg \
-        --batch-size ${batch_size/params.threads} \
+        --batch-size ${Math.min((batch_size/(2*params.threads)).toInteger(), 100000)} \
         --thread $params.threads \
         -o simulated.fastq &&
         gzip -f $template
