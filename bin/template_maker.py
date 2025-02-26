@@ -149,6 +149,7 @@ class TemplateGenerator:
                 else:
                     cDNA = self.transcriptome.get_sequence(trns)
                 if cDNA:
+                    cDNA=self.complement(cDNA)[::-1]
                     if not self.full_length:
                         cDNA = truncate_cDNA(cDNA, probs_3p=right_probs, probs_5p=left_probs)
                     umi = self.generate_random_umi()
@@ -223,6 +224,7 @@ class TemplateGenerator:
                         continue
 
                     if cDNA:
+                        cDNA = self.complement(cDNA)[::-1]
                         if not self.full_length:
                             cDNA = truncate_cDNA(cDNA, probs_3p=right_probs, probs_5p=left_probs)
                         for _ in range(count):
