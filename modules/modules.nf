@@ -35,13 +35,14 @@ process TEMPLATE_MAKER {
     path "log.csv", emit: logfile
     
     script:
+        def matrix = matrix.name != "no_matrix_counts"? "--matrix $matrix" : ""
         def gtf = params.features != "transcript_id" ? "--features $params.features --gtf $ref_gtf" : ""
         def unfiltered = barcodes.name != "no_barcode_counts"? "--unfilteredBC $barcodes" : ""
         def full_length = params.full_length? "--full_length" : "--truncation_model $truncation"
         def intron_retention = params.intron_retention? "--intron_retention --IR_model $intron_r --gtf $ref_gtf" : ""
         def genome = ref_genome.name != "no_genome"? "--ref_genome $ref_genome" : ""
     """
-    python3.11 $projectDir/bin/AsaruSim.py template_maker  --matrix ${matrix} \
+    python3.11 $projectDir/bin/AsaruSim.py template_maker  $matrix \
     --transcriptome $transcriptome \
     $unfiltered \
     $gtf \

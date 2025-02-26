@@ -132,6 +132,7 @@ class TemplateGenerator:
             cnt = 0
             unfound = 0
             total_umi_counts = 0
+            i_retained = False
             trns_ids = random.choices(list(self.transcriptome.transcripts.keys()), k=umi_counts)
             for _, trns in enumerate(trns_ids):
                 if self.unspliced_ratio > 0 and random.random() < self.unspliced_ratio:
@@ -357,11 +358,12 @@ def template_maker(args):
             
         if args.unfilteredBC:
             logging.info("Unfiltered BC counts ...")
-            unfiltered_bc = unfiltered_bc[~unfiltered_bc['BC'].isin(matrix.columns)]
+            if args.matrix:
+                unfiltered_bc = unfiltered_bc[~unfiltered_bc['BC'].isin(matrix.columns)]
             for _, row in tqdm(unfiltered_bc.iterrows(), total=len(unfiltered_bc)):
                 generator.make_random_template(row['BC'], 
                                                row['counts'])
-                
+
     else:
         if not os.path.exists("tmp_cells"):
             os.makedirs("tmp_cells")
@@ -407,8 +409,8 @@ def template_maker(args):
 
     if args.log:
         log_df = {
-        "Simulated Cell BC": len(matrix.columns), 
-        "Simulated Filtered-Out": count_unfiltered_bc,
+        "Simulated Cell BC": len(matrix.columns) if args.matrix else count_unfiltered_bc,
+        "Simulated Filtered-Out": 0,
         "Simulated UMI counts": generator.total_umi_counts,
         "Unknown transcript counts": generator.unfound,
         "Number of reads": generator.counter}
@@ -420,9 +422,9 @@ def template_maker(args):
                  "\nTotal matrix counts : "+
                  str(generator.total_matrix_counts)+
                  "\nSimulated Cell BC: "+
-                 str(len(matrix.columns))+
+                 str(len(matrix.columns) if args.matrix else count_unfiltered_bc)+
                  "\nSimulated Filtered-Out Cell BC: "+
-                 str(count_unfiltered_bc)+
+                 str(0)+
                  "\nSimulated UMI: "+
                  str(generator.total_umi_counts)+
                  "\nSimulated reads: "+
