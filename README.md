@@ -143,6 +143,9 @@ User can choose among 4 ways to simulate template reads.
 We use SPARSIM tools to simulate count matrix. for more information a bout synthetic count matrix, please read [SPARSIM](https://gitlab.com/sysbiobig/sparsim/-/blob/master/vignettes/sparsim.Rmd?ref_type=heads#Sec_Input_parameter_estimated_from_data) documentaion.
 
 ### EXAMPLES 
+
+<img width="602" alt="Capture d’écran 2025-03-03 à 23 44 57" src="https://github.com/user-attachments/assets/4a8b97c9-ead7-4216-9a84-b36369b55702" />
+
 ##### Sample data
 A demonstration dataset to initiate this workflow is accessible on zenodo DOI : [10.5281/zenodo.12731408](https://zenodo.org/records/12731409). This dataset is a subsample from a Nanopore run of the [10X 5k human pbmcs](https://www.10xgenomics.com/datasets/5k-human-pbmcs-3-v3-1-chromium-controller-3-1-standard).
 
