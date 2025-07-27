@@ -2,6 +2,7 @@
 [![Made with Docker](https://img.shields.io/badge/Made_with-Docker-blue?logo=docker&logoColor=white)](https://www.docker.com/ "Go to Docker homepage")
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/6cb8154a35ae419689c35eeedcd71dac)](https://app.codacy.com/gh/alihamraoui/AsaruSim/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 ![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)
+![Downloads](https://img.shields.io/github/downloads/GenomiqueENS/AsaruSim/total)
 
 [![DOI](https://img.shields.io/badge/DOI-10.1093/bioinformatics/btaf087%20-green)](https://doi.org/10.1093/bioinformatics/btaf087)
 [![Mastodon Follow](https://img.shields.io/mastodon/follow/111487733409234458?domain=genomic.social)](https://genomic.social/@Genomique_ENS)
